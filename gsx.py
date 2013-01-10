@@ -13,8 +13,10 @@ logging.basicConfig(level=logging.INFO)
 
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
+# Must use a few module-level global variables
 CLIENT = None
-SESSION = dict()          # module-level variable
+SESSION = dict()
+LOCALE = 'en_XXX'
 
 def validate(value, what=None):
     """
@@ -59,6 +61,11 @@ class GsxObject(object):
 
     def set_method(self, new_method):
         self.method = new_method
+
+    def get_format(self):
+        df = open(os.path.join(os.path.dirname(__file__), 'langs.json'), 'r')
+        data = json.load(df)
+        return data[LOCALE]
 
     def set_type(self, new_dt):
         """
@@ -244,6 +251,16 @@ class Repair(GsxObject):
 
     def __init__(self, *args, **kwargs):
         super(Repair, self).__init__()
+
+        formats = self.get_format()
+
+        # native date types are not welcome here :)
+        for k, v in kwargs.items():
+            if isinstance(v, date):
+                kwargs[k] = v.strftime(formats['df'])
+            if isinstance(v, time):
+                kwargs[k] = v.strftime(formats['tf'])
+        
         self.data = kwargs
 
     def create_carryin(self):
@@ -256,7 +273,8 @@ class Repair(GsxObject):
         self.dt.customerAddress = self.data['customerAddress']
         self.set_request('ns2:carryInRequestType', 'repairData')
         result = self.submit('CreateCarryInRepair')
-        print result
+        
+        return result.repairConfirmation
 
     def create_cnd(self):
         """
@@ -408,10 +426,12 @@ def init(env='ut', region='emea'):
     CLIENT = Client(url)
 
 def connect(user_id, password, sold_to, lang='en', tz='CEST', 
-    env='ut', region='emea'):
+    env='ut', region='emea', locale=LOCALE):
     global SESSION
-    
+    global LOCALE
+
     SESSION = {}
+    LOCALE = LOCALE
 
     init(env, region)
 
