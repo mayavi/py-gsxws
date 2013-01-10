@@ -1,6 +1,8 @@
 #coding=utf-8
 
 import re
+import os
+import json
 import base64
 from suds.client import Client
 from datetime import date, time
@@ -110,6 +112,24 @@ class GsxObject(object):
             setattr(data, k, v)
 
         return data
+
+class CompTia:
+    """
+    Stores and accesses CompTIA codes.
+    This should really be fetched from GSX, but suds gives this error:
+    suds.TypeNotFound: Type not found: 'comptiaDescription'
+    when calling CompTIACodes()...
+    """
+    def __init__(self):
+        df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
+        self.data = json.load(df)
+
+    def symptoms(self, component=None):
+        symptoms = self.data['symptoms']
+        return symptoms[component] if component else symptoms
+
+    def modifiers(self):
+        return self.data['modifiers']
 
 class Lookup(GsxObject):
     def parts(self):
