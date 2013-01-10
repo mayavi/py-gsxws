@@ -12,9 +12,10 @@ logging.getLogger('suds.client').setLevel(logging.DEBUG)
 CLIENT = None
 SESSION = dict()          # module-level variable
 
-def looks_like(value, what=None):
+def validate(value, what=None):
     """
-    Tries to guess the meaning of value
+    Tries to guess the meaning of value or validate that
+    value looks like what it's supposed to be.
     """
     result = None
 
