@@ -46,6 +46,12 @@ def validate(value, what=None):
 
     return (result == what) if what else result
 
+def get_format(locale=LOCALE):
+    df = open(os.path.join(os.path.dirname(__file__), 'langs.json'), 'r')
+    data = json.load(df)
+
+    return data[locale]
+
 class GsxObject(object):
     """
     The thing that gets sent to and from GSX
@@ -61,11 +67,6 @@ class GsxObject(object):
 
     def set_method(self, new_method):
         self.method = new_method
-
-    def get_format(self):
-        df = open(os.path.join(os.path.dirname(__file__), 'langs.json'), 'r')
-        data = json.load(df)
-        return data[LOCALE]
 
     def set_type(self, new_dt):
         """
@@ -252,7 +253,7 @@ class Repair(GsxObject):
     def __init__(self, *args, **kwargs):
         super(Repair, self).__init__()
 
-        formats = self.get_format()
+        formats = get_format()
 
         # native date types are not welcome here :)
         for k, v in kwargs.items():
@@ -273,7 +274,7 @@ class Repair(GsxObject):
         self.dt.customerAddress = self.data['customerAddress']
         self.set_request('ns2:carryInRequestType', 'repairData')
         result = self.submit('CreateCarryInRepair')
-        
+
         return result.repairConfirmation
 
     def create_cnd(self):
