@@ -4,6 +4,7 @@ import re
 import os
 import json
 import base64
+import suds
 from suds.client import Client
 from datetime import date, time
 
@@ -130,6 +131,15 @@ class CompTia:
 
     def modifiers(self):
         return self.data['modifiers']
+
+class GsxError(suds.WebFault):
+    def __init__(self, message, code=None):
+        super(GsxError, self).__init__()
+        self.code = code
+        sys.stderr.write("%s\n" % message)
+
+    def __unicode__(self):
+        return self.message
 
 class Lookup(GsxObject):
     def parts(self):
