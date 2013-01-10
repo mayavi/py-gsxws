@@ -1,8 +1,9 @@
-#!/usr/bin/env python
 #coding=utf-8
 
 import re
+import base64
 from suds.client import Client
+from datetime import date, time
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -86,6 +87,29 @@ class GsxObject(object):
 
     def __make_type(self, new_dt):
         return CLIENT.factory.create(new_dt)
+
+    def _process(self, data):
+        """
+        Tries to coerce some types to their Python counterparts
+        """
+        for k, v in data:
+            # decode binary data
+            if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
+                v = base64.b64decode(v)
+            
+            if isinstance(v, basestring):
+                # convert dates to native Python
+                if re.search('^\d{2}/\d{2}/\d{2}$', v):
+                    m, d, y = v.split('/')
+                    v = date(2000+int(y), int(m), int(d)).isoformat()
+
+                # strip currency prefix and munge into float
+                if re.search('Price$', k):
+                    v = float(re.sub('[A-Z ,]', '', v))
+
+            setattr(data, k, v)
+
+        return data
 
 class Lookup(GsxObject):
     def parts(self):
@@ -320,7 +344,7 @@ class Product(GsxObject):
         """
         self.set_request('ns3:warrantyStatusRequestType', 'unitDetail')
         result = self.submit('WarrantyStatus')
-        return result.warrantyDetailInfo
+        return self._process(result.warrantyDetailInfo)
 
     def get_activation(self):
         """
