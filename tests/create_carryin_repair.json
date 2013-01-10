@@ -1,0 +1,36 @@
+{
+	"shipTo": "677592",
+	"requestReviewByApple": "N",
+	"serialNumber": "C3TFJJTNDCP9",
+	"symptom": "Does not work",
+	"diagnosis": "Does not work",
+	"unitReceivedDate": "01/01/13",
+	"unitReceivedTime": "12:00 AM",
+	"checkIfOutOfWarrantyCoverage": "N",
+	"overrideDiagnosticCodeCheck": "Y",
+	"poNumber": "Order12341",
+	"orderLines": [
+		{
+			"partNumber": "FD661-6136",
+			"comptiaCode": "T03",
+			"comptiaModifier": "B",
+			"abused": "Y",
+			"outOfWarrantyFlag": "N",
+			"diagnosticCode": ""
+		}
+	],
+	"customerAddress": {
+		"addressLine1": "Address line 1",
+		"country": "FI",
+		"zipCode": "95014",
+		"regionCode": "005",
+		"city": "Cupertino",
+		"state": "ZZ",
+		"street": "Valley Green Dr",
+		"firstName": "First",
+		"lastName": "Last",
+		"companyName": "Apple Inc",
+		"primaryPhone": "4088887766",
+		"emailAddress": "abc@test.com"
+	}
+}
