@@ -7,6 +7,7 @@ import base64
 import suds
 from suds.client import Client
 from datetime import date, time
+import xml.etree.ElementTree as ET
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -188,16 +189,48 @@ class Diagnostics(GsxObject):
             self.set_request('ns3:fetchRepairDiagnosticRequestType', 'lookupRequestData')
 
 class Returns(GsxObject):
+    def __init__(self, order_number=None, *args, **kwargs):
+        super(Returns, self).__init__(*args, **kwargs)
+        self.dt.returnOrderNumber = order_number
+
     def get_report(self):
         """
         The Return Report API returns a list of all parts that are returned 
         or pending for return, based on the search criteria. 
         """
 
-    def get_label(self):
+    def get_label(self, part_number):
         """
         The Return Label API retrieves the Return Label for a given Return Order Number.
+        This is another example where SUDS doesn't play nice with GSX WS (Type not found: 'comptiaCode')
+        so we're parsing the raw SOAP response and creating a "fake" return object from that.
         """
+        if not validate(part_number, 'partNumber'):
+            raise ValueError('%s is not a valid part number' % part_number)
+
+        class ReturnData(dict):
+            pass
+
+        rd = ReturnData()
+
+        CLIENT.set_options(retxml=True)
+
+        dt = CLIENT.factory.create('ns1:returnLabelRequestType')
+        dt.returnOrderNumber = self.dt.returnOrderNumber
+        dt.partNumber = part_number
+        dt.userSession = SESSION
+
+        result = CLIENT.service.ReturnLabel(dt)
+        el = ET.fromstring(result).findall('*//%s' % 'returnLabelData')[0]
+
+        for r in el.iter():
+            k, v = r.tag, r.text
+            if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
+                v = base64.b64decode(v)
+
+            setattr(rd, k, v)
+
+        return rd
 
     def get_proforma(self):
         """
@@ -218,6 +251,11 @@ class Returns(GsxObject):
         The Parts Pending Return API returns a list of all parts that 
         are pending for return, based on the search criteria. 
         """
+        dt = CLIENT.factory.create('ns1:partsPendingReturnRequestType')
+        dt.repairData = self.data
+        dt.userSession = SESSION
+        result = CLIENT.service.PartsPendingReturn(dt)
+        return result.partsPendingResponse
 
 class Part(GsxObject):
     def lookup(self):
