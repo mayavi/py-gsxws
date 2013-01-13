@@ -188,6 +188,21 @@ class Diagnostics(GsxObject):
         else:
             self.set_request('ns3:fetchRepairDiagnosticRequestType', 'lookupRequestData')
 
+class Order(GsxObject):
+    def __init__(self, type='stocking', *args, **kwargs):
+        super(Order, self).__init__(*args, **kwargs)
+        self.data['orderLines'] = list()
+
+    def add_part(self, part_number, quantity):
+        self.data['orderLines'].append({'partNumber': part_number, 'quantity': quantity})
+
+    def submit(self):
+        dt = CLIENT.factory.create('ns1:createStockingOrderRequestType')
+        dt.userSession = SESSION
+        dt.orderData = self.data
+        result = CLIENT.service.CreateStockingOrder(dt)
+        return result.orderConfirmation
+
 class Returns(GsxObject):
     def __init__(self, order_number=None, *args, **kwargs):
         super(Returns, self).__init__(*args, **kwargs)
