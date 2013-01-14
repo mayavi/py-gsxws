@@ -1,6 +1,11 @@
 py-gsx
 ======
 
+Installation:
+
+  pip install -e git+git://github.com/filipp/py-gsx.git#egg=py-gs
+
+
 It goes a little something like this:
     
     # check warranty status
