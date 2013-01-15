@@ -123,16 +123,75 @@ class GsxObject(object):
 
         return data
 
+    def get_response(self, xml_el):
+
+        if isinstance(xml_el, list):
+            out = []
+            for i in xml_el:
+                out.append(self.get_response(i))
+
+            return out
+
+        class ReturnData(dict):
+            pass
+
+        rd = ReturnData()
+        
+        for r in xml_el.iter():
+            print type(r)
+            k, v = r.tag, r.text
+            if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
+                v = base64.b64decode(v)
+
+            setattr(rd, k, v)
+
+        return rd
+
+
 class CompTia:
     """
     Stores and accesses CompTIA codes.
-    This should really be fetched from GSX, but suds gives this error:
-    suds.TypeNotFound: Type not found: 'comptiaDescription'
-    when calling CompTIACodes()...
     """
     def __init__(self):
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
+
+    def fetch(self):
+        """
+        Here we must resort to raw XML parsing since SUDS throws this:
+        suds.TypeNotFound: Type not found: 'comptiaDescription'
+        when calling CompTIACodes()...
+        """
+        CLIENT.set_options(retxml=True)
+        dt = CLIENT.factory.create('ns3:comptiaCodeLookupRequestType')
+        dt.userSession = SESSION
+        xml = CLIENT.service.CompTIACodes(dt)
+
+        root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
+
+        # Process CompTIA Groups
+        class ComptiaGroup:
+            pass
+
+        class ComptiaModifier:
+            pass
+
+        self.groups = list()
+        self.modifiers = list()
+
+        for el in root.findall('.//comptiaGroup'):
+            dt = ComptiaGroup()
+            self.groups.append(self.__process(el, dt))
+
+        for el in root.findall('.//comptiaModifier'):
+            mod = ComptiaModifier()
+            self.modifiers.append(self.__process(el, mod))
+
+    def __process(self, element, obj):
+        for i in element.iter():
+            setattr(obj, i.tag, i.text)
+            
+        return obj
 
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
@@ -162,6 +221,7 @@ class Lookup(GsxObject):
         dt.userSession = SESSION
         dt.lookupRequestData = self.data
         result = CLIENT.service.PartsLookup(dt)
+        comptiaInfo
         return result.parts
 
     def repairs(self):
