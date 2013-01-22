@@ -73,7 +73,7 @@ class GsxObject(object):
         """
         Sets the object's primary data type to new_dt
         """
-        self.dt = self.__make_type(new_dt)
+        self.dt = self._make_type(new_dt)
 
         try:
             for k, v in self.data.items():
@@ -86,7 +86,7 @@ class GsxObject(object):
         Sets the field of this object's request datatype to the new value
         """
         if new_dt:
-            self.request_dt = self.__make_type(new_dt)
+            self.request_dt = self._make_type(new_dt)
 
         setattr(self.request_dt, field, self.dt)
 
