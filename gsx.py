@@ -6,7 +6,7 @@ import json
 import base64
 import suds
 from suds.client import Client
-from datetime import date, time
+from datetime import datetime, date, time
 import xml.etree.ElementTree as ET
 
 import logging
@@ -97,7 +97,7 @@ class GsxObject(object):
         result = f(self.request_dt)
         return result
 
-    def __make_type(self, new_dt):
+    def _make_type(self, new_dt):
         return CLIENT.factory.create(new_dt)
 
     def _process(self, data):
@@ -132,13 +132,19 @@ class GsxObject(object):
 
             return out
 
+        if isinstance(xml_el, dict):
+            out = []
+            for i in xml_el.items():
+                out.append(self.get_response(i))
+
+            return out
+
         class ReturnData(dict):
             pass
 
         rd = ReturnData()
         
         for r in xml_el.iter():
-            print type(r)
             k, v = r.tag, r.text
             if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
                 v = base64.b64decode(v)
@@ -190,7 +196,7 @@ class CompTia:
     def __process(self, element, obj):
         for i in element.iter():
             setattr(obj, i.tag, i.text)
-            
+
         return obj
 
     def symptoms(self, component=None):
@@ -199,6 +205,59 @@ class CompTia:
 
     def modifiers(self):
         return self.data['modifiers']
+
+class GsxResponse(dict):
+    """
+    This contains the data returned by a raw GSX query
+    """
+    def __getattr__(self, item):
+        return self.__getitem__(item)
+
+    def __setattr__(self, item, value):
+        self.__setitem__(item, value)
+
+    @classmethod
+    def Process(cls, node):
+        nodedict = cls()
+        
+        for child in node:
+            k, v = child.tag, child.text
+            newitem = cls.Process(child)
+
+            if nodedict.has_key(k):
+                # found duplicate tag
+                if isinstance(nodedict[k], list):
+                    # append to existing list
+                    nodedict[k].append(newitem)
+                else:
+                    # convert to list
+                    nodedict[k] = [nodedict[k], newitem]
+            else:
+                # unique tag -> set the dictionary
+                nodedict[k] = newitem
+
+            if k in ('packingList', 'proformaFileData', 'returnLabelFileData'):
+                nodedict[k] = base64.b64decode(v)
+
+            if isinstance(v, basestring):
+                # convert dates to native Python type
+
+                if re.search('^\d{2}/\d{2}/\d{2}$', v):
+                    m, d, y = v.split('/')
+                    v = date(2000+int(y), int(m), int(d)).isoformat()
+
+                # strip currency prefix and munge into float
+                if re.search('Price$', k):
+                    v = float(re.sub('[A-Z ,]', '', v))
+
+                # Convert timestamps to native Python type
+                # 18-Jan-13 14:38:04
+                if re.search('TimeStamp$', k):
+                    v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
+
+                nodedict[k] = v
+
+        return nodedict
 
 class GsxError(suds.WebFault):
     def __init__(self, message, code=None):
@@ -221,7 +280,6 @@ class Lookup(GsxObject):
         dt.userSession = SESSION
         dt.lookupRequestData = self.data
         result = CLIENT.service.PartsLookup(dt)
-        comptiaInfo
         return result.parts
 
     def repairs(self):
@@ -246,7 +304,14 @@ class Diagnostics(GsxObject):
             self.set_request('ns3:fetchIOSDiagnosticRequestType', 'lookupRequestData')
             result = self.submit('FetchIOSDiagnostic')
         else:
-            self.set_request('ns3:fetchRepairDiagnosticRequestType', 'lookupRequestData')
+            # TypeNotFound: Type not found: 'toolID'
+            CLIENT.set_options(retxml=True)
+            dt = self._make_type('ns3:fetchRepairDiagnosticRequestType')
+            dt.userSession = SESSION
+            dt.lookupRequestData = self.data
+            result = CLIENT.service.FetchRepairDiagnostic(dt)
+            root = ET.fromstring(result).findall('*//%s' % 'FetchRepairDiagnosticResponse')[0]
+            return GsxResponse.Process(root)
 
 class Order(GsxObject):
     def __init__(self, type='stocking', *args, **kwargs):
@@ -524,6 +589,10 @@ class Product(GsxObject):
 
     def get_repairs(self):
         return self.lookup.repairs()
+
+    def get_diagnostics(self):
+        diags = Diagnostics(serialNumber=self.sn)
+        return diags.fetch()
 
 def init(env='ut', region='emea'):
     global CLIENT
