@@ -516,18 +516,30 @@ class Repair(GsxObject):
         """
         pass
 
-    def get_status():
+    def get_status(self, numbers=None):
         """
         The Repair Status API retrieves the status
         for the submitted repair confirmation number(s).
         """
-        pass
+        dt = self._make_type('ns1:repairStatusRequestType')
+        dt.userSession = SESSION
+        dt.repairConfirmationNumbers = [self.data['dispatchId']]
+        result = CLIENT.service.RepairStatus(dt)
+
+        if len(result.repairStatus) == 1:
+            return result.repairStatus[0]
+        else:
+            return result.repairStatus
 
     def get_details(self):
+        """
+        The Repair Details API includes the shipment information similar to the Repair Lookup API. 
+        """
         dt = CLIENT.factory.create('ns0:repairDetailsRequestType')
         dt.dispatchId = self.data['dispatchId']
         dt.userSession = SESSION
         results = CLIENT.service.RepairDetails(dt)
+        return results.lookupResponseData[0]
 
 class Communication(GsxObject):
     def get_content():
