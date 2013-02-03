@@ -98,7 +98,15 @@ class GsxObject(object):
         return result
 
     def _make_type(self, new_dt):
-        return CLIENT.factory.create(new_dt)
+        """
+        Creates the top-level datatype for the API call
+        """
+        dt = CLIENT.factory.create(new_dt)
+
+        if SESSION:
+            dt.userSession = SESSION
+
+        return dt
 
     def _process(self, data):
         """
@@ -500,12 +508,16 @@ class Repair(GsxObject):
         results = self.submit('RepairLookup')
         return results
 
-    def mark_complete(self):
+    def mark_complete(self, numbers=None):
         """
         The Mark Repair Complete API allows a single or an array of 
         repair confirmation numbers to be submitted to GSX to be marked as complete.
         """
-        pass
+        dt = self._make_type('ns1:markRepairCompleteRequestType')
+        dt.repairConfirmationNumbers = [self.data['dispatchId']]
+        result = CLIENT.service.MarkRepairComplete(dt)
+        print result
+        return result
 
     def delete(self):
         """
@@ -522,7 +534,6 @@ class Repair(GsxObject):
         for the submitted repair confirmation number(s).
         """
         dt = self._make_type('ns1:repairStatusRequestType')
-        dt.userSession = SESSION
         dt.repairConfirmationNumbers = [self.data['dispatchId']]
         result = CLIENT.service.RepairStatus(dt)
 
@@ -535,9 +546,8 @@ class Repair(GsxObject):
         """
         The Repair Details API includes the shipment information similar to the Repair Lookup API. 
         """
-        dt = CLIENT.factory.create('ns0:repairDetailsRequestType')
+        dt = self._make_type('ns0:repairDetailsRequestType')
         dt.dispatchId = self.data['dispatchId']
-        dt.userSession = SESSION
         results = CLIENT.service.RepairDetails(dt)
         return results.lookupResponseData[0]
 

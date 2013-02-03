@@ -4,7 +4,7 @@ import sys, os
 version = '0.1'
 
 setup(
-    name='py-gsx',
+    name='gsx',
     version=version,
     description="Apple GSX integration.",
     long_description='',
@@ -17,7 +17,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP'
     ],
     keywords='gsx, python',
-    py_modules=['py-gsx'],
+    py_modules=['gsx'],
     author='Filipp Lepalaan',
     author_email='filipp@mcare.fi',
     url='https://github.com/filipp/py-gsx',
