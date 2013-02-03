@@ -9,9 +9,9 @@ Installation:
 It goes a little something like this:
     
     # check warranty status
-    from gsx import gsx
-    gsx.connect(apple_id, password, sold_to)
-    mac = gsx.Product('70033CDFA4S')
+    import gsxws
+    gsxws.connect(apple_id, password, sold_to)
+    mac = gsxws.Product('70033CDFA4S')
     mac.get_warranty()
 
     # get available parts for this machine
