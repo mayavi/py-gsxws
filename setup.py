@@ -22,4 +22,5 @@ setup(
     author_email='filipp@mcare.fi',
     url='https://github.com/filipp/py-gsx',
     license='BSD',
+    packages = find_packages(),
 )
