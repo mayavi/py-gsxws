@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #coding=utf-8
 
 import re
@@ -516,8 +518,8 @@ class Repair(GsxObject):
         dt = self._make_type('ns1:markRepairCompleteRequestType')
         dt.repairConfirmationNumbers = [self.data['dispatchId']]
         result = CLIENT.service.MarkRepairComplete(dt)
-        print result
-        return result
+
+        return result.repairConfirmationNumbers
 
     def delete(self):
         """
@@ -549,7 +551,17 @@ class Repair(GsxObject):
         dt = self._make_type('ns0:repairDetailsRequestType')
         dt.dispatchId = self.data['dispatchId']
         results = CLIENT.service.RepairDetails(dt)
-        return results.lookupResponseData[0]
+        details = results.lookupResponseData[0]
+
+        # fix tracking URL if available
+        for i, p in enumerate(details.partsInfo):
+            try:
+                url = re.sub('<<TRKNO>>', p.deliveryTrackingNumber, p.carrierURL)
+                details.partsInfo[i].carrierURL = url
+            except AttributeError, e:
+                pass
+
+        return details
 
 class Communication(GsxObject):
     def get_content():
@@ -630,22 +642,24 @@ def init(env='ut', region='emea'):
 
     CLIENT = Client(url)
 
-def connect(user_id, password, sold_to, lang='en', tz='CEST', 
-    env='ut', region='emea', locale=LOCALE):
+def connect(user_id, password, sold_to, 
+            language='en', timezone='CEST', 
+            environment='ut', region='emea', locale=LOCALE):
+
     global SESSION
     global LOCALE
 
     SESSION = {}
     LOCALE = LOCALE
 
-    init(env, region)
+    init(environment, region)
 
     account = CLIENT.factory.create('ns3:authenticateRequestType')
 
     account.userId = user_id
     account.password = password
-    account.languageCode = lang
-    account.userTimeZone = tz
+    account.languageCode = language
+    account.userTimeZone = timezone
     account.serviceAccountNo = sold_to
 
     result = CLIENT.service.Authenticate(account)
@@ -659,7 +673,21 @@ def logout():
 if __name__ == '__main__':
     import json
     import sys
-    #connect(*sys.argv[1:4])
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Communicate with GSX Web Services')
+
+    parser.add_argument('user_id')
+    parser.add_argument('password')
+    parser.add_argument('sold_to')
+    parser.add_argument('--language', default='en')
+    parser.add_argument('--timezone', default='CEST')
+    parser.add_argument('--environment', default='pr')
+    parser.add_argument('--region', default='emea')
+    args = parser.parse_args()
+
+    #connect(**vars(args))
+
     #f = 'tests/create_carryin_repair.json'
     #f = 'tests/update_escalation.json'
     #fp = open(f, 'r')
