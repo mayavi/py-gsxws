@@ -264,6 +264,10 @@ class GsxResponse(dict):
                 if re.search('TimeStamp$', k):
                     v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
 
+                # convert Y and N to corresponding boolean
+                if re.search('^[YN]$', k):
+                    v = (v == 'Y')
+
                 nodedict[k] = v
 
         return nodedict
@@ -441,12 +445,14 @@ class Repair(GsxObject):
         super(Repair, self).__init__(*args, **kwargs)
         formats = get_format()
 
-        # native date types are not welcome here :)
+        # native types are not welcome here :)
         for k, v in kwargs.items():
             if isinstance(v, date):
                 kwargs[k] = v.strftime(formats['df'])
             if isinstance(v, time):
                 kwargs[k] = v.strftime(formats['tf'])
+            if isinstance(v, bool):
+                kwargs[k] = 'Y' if v else 'N'
         
         self.data = kwargs
 
@@ -457,6 +463,7 @@ class Repair(GsxObject):
         """
         dt = self._make_type('ns2:carryInRequestType')
         dt.repairData = self.data
+
         result = CLIENT.service.CreateCarryInRepair(dt)
         return result.repairConfirmation
 
@@ -689,6 +696,7 @@ if __name__ == '__main__':
     #f = 'tests/update_escalation.json'
     fp = open(f, 'r')
     data = json.load(fp)
+    data['requestReviewByApple'] = False
     rep = Repair(**data)
     print rep.create_carryin()
 
