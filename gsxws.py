@@ -251,7 +251,6 @@ class GsxResponse(dict):
 
             if isinstance(v, basestring):
                 # convert dates to native Python type
-
                 if re.search('^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
                     v = date(2000+int(y), int(m), int(d)).isoformat()
@@ -439,8 +438,7 @@ class Repair(GsxObject):
     request_dt = 'ns1:repairLookupRequestType'
 
     def __init__(self, *args, **kwargs):
-        super(Repair, self).__init__()
-
+        super(Repair, self).__init__(*args, **kwargs)
         formats = get_format()
 
         # native date types are not welcome here :)
@@ -454,15 +452,12 @@ class Repair(GsxObject):
 
     def create_carryin(self):
         """
-        The Parts Pending Return API returns a list of all parts that 
-        are pending for return, based on the search criteria. 
+        GSX validates the information and if all of the validations go through,
+        it obtains a quote for the repair and creates the carry-in repair.
         """
-        self.set_type('ns2:emeaAspCreateCarryInRepairDataType')
-        ca = CLIENT.factory.create('ns7:addressType')
-        self.dt.customerAddress = self.data['customerAddress']
-        self.set_request('ns2:carryInRequestType', 'repairData')
-        result = self.submit('CreateCarryInRepair')
-
+        dt = self._make_type('ns2:carryInRequestType')
+        dt.repairData = self.data
+        result = CLIENT.service.CreateCarryInRepair(dt)
         return result.repairConfirmation
 
     def create_cnd(self):
@@ -478,6 +473,7 @@ class Repair(GsxObject):
         N07 Third Party Part
         N99 Other
         """
+        pass
 
     def update_carryin(self):
         """
@@ -605,6 +601,7 @@ class Product(GsxObject):
         """
         self.set_request('ns3:warrantyStatusRequestType', 'unitDetail')
         result = self.submit('WarrantyStatus')
+        
         return self._process(result.warrantyDetailInfo)
 
     def get_activation(self):
@@ -686,10 +683,13 @@ if __name__ == '__main__':
     parser.add_argument('--region', default='emea')
     args = parser.parse_args()
 
-    #connect(**vars(args))
+    connect(**vars(args))
 
-    #f = 'tests/create_carryin_repair.json'
+    f = 'tests/create_carryin_repair.json'
     #f = 'tests/update_escalation.json'
-    #fp = open(f, 'r')
-    #data = json.load(fp)
+    fp = open(f, 'r')
+    data = json.load(fp)
+    rep = Repair(**data)
+    print rep.create_carryin()
+
     
