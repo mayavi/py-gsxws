@@ -486,8 +486,8 @@ class Repair(GsxObject):
         """
         The Update Carry-In Repair API allows the service providers 
         to update the existing  open carry-in repairs. 
-        This API assists in addition/deletion of parts and addition of notes to a repair. 
-        On successful update, the repair confirmation number and 
+        This API assists in addition/deletion of parts and addition of notes 
+        to a repair. On successful update, the repair confirmation number and 
         quote for any newly added parts  would be returned.
         In case of any validation error or unsuccessful update, a fault code is issued.
 
@@ -498,6 +498,26 @@ class Repair(GsxObject):
         RFPU    Ready for Pickup
         """
         pass
+
+    def update_kgb_sn(self, sn):
+        """
+        Description:
+        The KGB Serial Number Update API is always to be used on 
+        whole unit repairs that are in a released state. 
+        This API allows users to provide the KGB serial number for the 
+        whole unit exchange repairs. It also checks for the privilege 
+        to create/ update whole unit exchange repairs 
+        before updating the whole unit exchange repair. 
+        Context:
+        The API is to be used on whole unit repairs that are in a released state. 
+        This API can be invoked only after carry-in repair creation API.
+        """
+        dt = self._make_type('ns1:updateKGBSerialNumberRequestType')
+        dt.repairConfirmationNumber = self.data['dispatchId']
+        dt.serialNumber = sn
+
+        result = CLIENT.service.KGBSerialNumberUpdate(dt)
+        return result
 
     def lookup(self):
         """
@@ -692,12 +712,13 @@ if __name__ == '__main__':
 
     connect(**vars(args))
 
-    f = 'tests/create_carryin_repair.json'
+    #f = 'tests/create_carryin_repair.json'
     #f = 'tests/update_escalation.json'
-    fp = open(f, 'r')
-    data = json.load(fp)
-    data['requestReviewByApple'] = False
-    rep = Repair(**data)
-    print rep.create_carryin()
+    #fp = open(f, 'r')
+    #data = json.load(fp)
+    #data['requestReviewByApple'] = False
+    #rep = Repair(dispatchId='')
+    #print rep.update_kgb_sn('')
+
 
     
