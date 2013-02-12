@@ -332,7 +332,9 @@ class Order(GsxObject):
         self.data['orderLines'] = list()
 
     def add_part(self, part_number, quantity):
-        self.data['orderLines'].append({'partNumber': part_number, 'quantity': quantity})
+        self.data['orderLines'].append({
+            'partNumber': part_number, 'quantity': quantity
+            })
 
     def submit(self):
         dt = CLIENT.factory.create('ns1:createStockingOrderRequestType')
@@ -512,12 +514,17 @@ class Repair(GsxObject):
         The API is to be used on whole unit repairs that are in a released state. 
         This API can be invoked only after carry-in repair creation API.
         """
+
+        # Using raw XML to avoid:
+        # Exception: <UpdateKGBSerialNumberResponse/> not mapped to message part
+        CLIENT.set_options(retxml=True)
         dt = self._make_type('ns1:updateKGBSerialNumberRequestType')
         dt.repairConfirmationNumber = self.data['dispatchId']
         dt.serialNumber = sn
 
         result = CLIENT.service.KGBSerialNumberUpdate(dt)
-        return result
+        root = ET.fromstring(result).findall('*//%s' % 'UpdateKGBSerialNumberResponse')
+        return GsxResponse.Process(root[0])
 
     def lookup(self):
         """
@@ -569,7 +576,8 @@ class Repair(GsxObject):
 
     def get_details(self):
         """
-        The Repair Details API includes the shipment information similar to the Repair Lookup API. 
+        The Repair Details API includes the shipment information 
+        similar to the Repair Lookup API. 
         """
         dt = self._make_type('ns0:repairDetailsRequestType')
         dt.dispatchId = self.data['dispatchId']
@@ -717,8 +725,5 @@ if __name__ == '__main__':
     #fp = open(f, 'r')
     #data = json.load(fp)
     #data['requestReviewByApple'] = False
-    #rep = Repair(dispatchId='')
-    #print rep.update_kgb_sn('')
-
-
-    
+    rep = Repair(dispatchId='G139951292')
+    print rep.update_kgb_sn('QR252BK5A4S')
