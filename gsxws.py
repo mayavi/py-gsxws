@@ -725,5 +725,5 @@ if __name__ == '__main__':
     #fp = open(f, 'r')
     #data = json.load(fp)
     #data['requestReviewByApple'] = False
-    rep = Repair(dispatchId='G139951292')
-    print rep.update_kgb_sn('QR252BK5A4S')
+    #rep = Repair(dispatchId='')
+    #print rep.update_kgb_sn('')
