@@ -164,7 +164,7 @@ class GsxObject(object):
         return rd
 
 
-class CompTia:
+class CompTIA:
     """
     Stores and accesses CompTIA codes.
     """
@@ -211,10 +211,22 @@ class CompTia:
 
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
-        return symptoms[component] if component else symptoms
+        
+        if component:
+            r = list()
+            for k, v in symptoms[component].items():
+                r.append((k, v))
+            return r
+
+        return symptoms
 
     def modifiers(self):
-        return self.data['modifiers']
+        modifiers = list()
+
+        for k, v in self.data['modifiers'].items():
+            modifiers.append((k, v))
+
+        return modifiers
 
 class GsxResponse(dict):
     """

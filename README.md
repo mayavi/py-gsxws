@@ -1,9 +1,9 @@
-py-gsx
+py-gsxws
 ======
 
 Installation:
 
-  pip install -e git+git://github.com/filipp/py-gsx.git#egg=py-gs
+  pip install -e git+git://github.com/filipp/py-gsxws.git#egg=py-gs
 
 
 It goes a little something like this:
