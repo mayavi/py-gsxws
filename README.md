@@ -3,7 +3,7 @@ py-gsxws
 
 Installation:
 
-  pip install -e git+git://github.com/filipp/py-gsxws.git#egg=py-gs
+  pip install -e git+git://github.com/filipp/py-gsxws.git#egg=gsxws
 
 
 It goes a little something like this:
