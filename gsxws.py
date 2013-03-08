@@ -92,12 +92,17 @@ class GsxObject(object):
 
         setattr(self.request_dt, field, self.dt)
 
-    def submit(self, method):
-        setattr(self.request_dt, 'userSession', SESSION)
-
+    def submit(self, method, data, attr=None):
+        """
+        Submits the SOAP envelope
+        """
         f = getattr(CLIENT.service, method)
-        result = f(self.request_dt)
-        return result
+        
+        try:
+            result = f(data)
+            return getattr(result, attr) if attr else result
+        except suds.WebFault, e:
+            raise GsxError(code=e.fault.faultcode, message=e.fault.faultstring)
 
     def _make_type(self, new_dt):
         """
@@ -284,14 +289,20 @@ class GsxResponse(dict):
 
         return nodedict
 
-class GsxError(suds.WebFault):
+class GsxError(Exception):
     def __init__(self, message, code=None):
-        super(GsxError, self).__init__()
         self.code = code
-        sys.stderr.write("%s\n" % message)
+        self.message = message
+        self.data = (self.code, self.message)
 
-    def __unicode__(self):
-        return self.message
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+    def __repr__(self):
+        print self.data
+
+    def __str__(self):
+        return self.data[1]
 
 class Lookup(GsxObject):
     def parts(self):
@@ -301,20 +312,21 @@ class Lookup(GsxObject):
         part numbers by various attributes of a part
         (config code, EEE code, serial number, etc.). 
         """
-        dt = CLIENT.factory.create('ns0:partsLookupRequestType')
-        dt.userSession = SESSION
+        dt = self._make_type("ns0:partsLookupRequestType")
         dt.lookupRequestData = self.data
-        result = CLIENT.service.PartsLookup(dt)
-        return result.parts
+        return self.submit("PartsLookup", dt, "parts")
 
     def repairs(self):
+        """
+        The Repair Lookup API mimics the front-end repair search functionality.
+        It fetches up to 2500 repairs in a given criteria.
+        Subsequently, the extended Repair Status API can be used to retrieve more details of the repair.
+        """
         dt = CLIENT.factory.create('ns6:repairLookupInfoType')
-        dt.serialNumber = self.data['serialNumber']
         request = CLIENT.factory.create('ns1:repairLookupRequestType')
         request.userSession = SESSION
-        request.lookupRequestData = dt
-        result = CLIENT.service.RepairLookup(request)
-        return result.lookupResponseData
+        request.lookupRequestData = self.data
+        return self.submit("RepairLookup", request, "lookupResponseData")
 
 class Diagnostics(GsxObject):
     def fetch(self):
@@ -324,19 +336,20 @@ class Diagnostics(GsxObject):
         diagnostic test details of iOS Devices.
         The ticket is generated within GSX system.
         """
-        if 'alternateDeviceId' in self.data:
-            self.set_type('ns7:fetchIOSDiagnosticRequestDataType')
-            self.set_request('ns3:fetchIOSDiagnosticRequestType', 'lookupRequestData')
-            result = self.submit('FetchIOSDiagnostic')
+        # Using raw XML to avoid TypeNotFound: Type not found: 'toolID' or operationID
+        CLIENT.set_options(retxml=True)
+        if "alternateDeviceId" in self.data:
+            dt = self._make_type("ns3:fetchIOSDiagnosticRequestType")
+            dt.lookupRequestData = self.data
+            result = CLIENT.service.FetchIOSDiagnostic(dt)
+            root = ET.fromstring(result).findall('*//%s' % 'FetchIOSDiagnosticResponse')[0]
         else:
-            # TypeNotFound: Type not found: 'toolID'
-            CLIENT.set_options(retxml=True)
             dt = self._make_type('ns3:fetchRepairDiagnosticRequestType')
-            dt.userSession = SESSION
             dt.lookupRequestData = self.data
             result = CLIENT.service.FetchRepairDiagnostic(dt)
             root = ET.fromstring(result).findall('*//%s' % 'FetchRepairDiagnosticResponse')[0]
-            return GsxResponse.Process(root)
+        
+        return GsxResponse.Process(root)
 
 class Order(GsxObject):
     def __init__(self, type='stocking', *args, **kwargs):
@@ -365,6 +378,7 @@ class Returns(GsxObject):
         The Return Report API returns a list of all parts that are returned 
         or pending for return, based on the search criteria. 
         """
+        pass
 
     def get_label(self, part_number):
         """
@@ -435,20 +449,18 @@ class Escalation(GsxObject):
         The Create General Escalation API allows users to create 
         a general escalation in GSX. The API was earlier known as GSX Help.
         """
-        self.set_type('ns6:createGenEscRequestDataType')
-        self.set_request('ns1:createGenEscRequestType', 'escalationRequest')
-        result = self.submit('CreateGeneralEscalation')
-        return result.escalationConfirmation
+        dt = self._make_type("ns1:createGenEscRequestType")
+        dt.escalationRequest = self.data
+        return self.submit("CreateGeneralEscalation", dt, "escalationConfirmation")
 
     def update(self):
         """
         The Update General Escalation API allows Depot users to 
         update a general escalation in GSX.
         """
-        self.set_type('ns6:updateGeneralEscRequestDataType')
-        self.set_request('ns1:updateGeneralEscRequestType', 'escalationRequest')
-        result = self.submit('UpdateGeneralEscalation')
-        return result.escalationConfirmation
+        dt = self._make_type("ns1:updateGeneralEscRequestType")
+        dt.escalationRequest = self.data
+        return self.submit("UpdateGeneralEscalation", dt, "escalationConfirmation")
 
 class Repair(GsxObject):
     
@@ -477,10 +489,8 @@ class Repair(GsxObject):
         """
         dt = self._make_type('ns2:carryInRequestType')
         dt.repairData = self.data
-
-        result = CLIENT.service.CreateCarryInRepair(dt)
-        return result.repairConfirmation
-
+        return self.submit('CreateCarryInRepair', dt, 'repairConfirmation')
+        
     def create_cnd(self):
         """
         The Create CND Repair API allows Service Providers to create a repair 
@@ -545,12 +555,7 @@ class Repair(GsxObject):
         Subsequently, the extended Repair Status API can be used 
         to retrieve more details of the repair. 
         """
-        for k, v in self.data.items():
-            setattr(self.dt, k, v)
-
-        self.set_request(field='lookupRequestData')
-        results = self.submit('RepairLookup')
-        return results
+        return Lookup(**self.data).repairs()
 
     def mark_complete(self, numbers=None):
         """
@@ -623,19 +628,21 @@ class Product(GsxObject):
     
     dt = 'ns7:unitDetailType'
 
-    def __init__(self, sn):
+    def __init__(self, serialNumber):
         super(Product, self).__init__()
-        self.dt.serialNumber = sn
-        self.sn = sn
-        self.lookup = Lookup(serialNumber=self.sn)
+        self.serialNumber = serialNumber
+        self.dt.serialNumber = serialNumber
+        self.lookup = Lookup(serialNumber=self.serialNumber)
 
     def get_model(self):
         """
         This API allows Service Providers/Carriers to fetch
         Product Model information for the given serial number.
         """
-        self.set_request('ns3:fetchProductModelRequestType', 'productModelRequest')
-        result = self.submit('FetchProductModel')
+        #self.set_request('ns3:fetchProductModelRequestType', 'productModelRequest')
+        dt = self._make_type("ns3:fetchProductModelRequestType")
+        dt.productModelRequest = self.dt
+        result = self.submit('FetchProductModel', dt, "productModelResponse")
         return result
 
     def get_warranty(self, date_received=None, parts=[]):
@@ -646,21 +653,19 @@ class Product(GsxObject):
         If you do not provide the optional part information in the
         warranty status request, the unit level warranty information is returned.
         """
-        self.set_request('ns3:warrantyStatusRequestType', 'unitDetail')
-        result = self.submit('WarrantyStatus')
-        
-        return self._process(result.warrantyDetailInfo)
+        dt = self._make_type("ns3:warrantyStatusRequestType")
+        dt.unitDetail = self.dt
+        result = self.submit("WarrantyStatus", dt, "warrantyDetailInfo")
+        return self._process(result)
 
     def get_activation(self):
         """
         The Fetch iOS Activation Details API is used to 
         fetch activation details of iOS Devices. 
         """
-        dt = CLIENT.factory.create('ns3:fetchIOSActivationDetailsRequestType')
-        dt.serialNumber = self.sn
-        dt.userSession = SESSION
-        result = CLIENT.service.FetchIOSActivationDetails(dt)
-        return result.activationDetailsInfo
+        dt = self._make_type('ns3:fetchIOSActivationDetailsRequestType')
+        dt.serialNumber = self.serialNumber
+        return self.submit('FetchIOSActivationDetails', dt, 'activationDetailsInfo')
 
     def get_parts(self):
         return self.lookup.parts()
@@ -669,7 +674,7 @@ class Product(GsxObject):
         return self.lookup.repairs()
 
     def get_diagnostics(self):
-        diags = Diagnostics(serialNumber=self.sn)
+        diags = Diagnostics(serialNumber=self.serialNumber)
         return diags.fetch()
 
 def init(env='ut', region='emea'):
@@ -686,9 +691,15 @@ def init(env='ut', region='emea'):
 
     CLIENT = Client(url)
 
-def connect(user_id, password, sold_to, 
-            language='en', timezone='CEST', 
-            environment='ut', region='emea', locale=LOCALE):
+def connect(
+        user_id,
+        password,
+        sold_to, 
+        language='en',
+        timezone='CEST', 
+        environment='ut',
+        region='emea',
+        locale=LOCALE):
 
     global SESSION
     global LOCALE
@@ -715,8 +726,8 @@ def logout():
     CLIENT.service.Logout()
 
 if __name__ == '__main__':
-    import json
     import sys
+    import json
     import argparse
     
     parser = argparse.ArgumentParser(description='Communicate with GSX Web Services')
@@ -730,12 +741,20 @@ if __name__ == '__main__':
     parser.add_argument('--region', default='emea')
     args = parser.parse_args()
 
-    connect(**vars(args))
+    #connect(**vars(args))
 
     #f = 'tests/create_carryin_repair.json'
+    #f = 'tests/warranty_status.json'
+    #f = 'tests/fetch_ios_activation.json'
     #f = 'tests/update_escalation.json'
     #fp = open(f, 'r')
     #data = json.load(fp)
+
+    #try:
+    #    print Escalation(**data).update()
+    #except GsxError, e:
+    #    print e.code, e.message
+    
     #data['requestReviewByApple'] = False
     #rep = Repair(dispatchId='')
     #print rep.update_kgb_sn('')

@@ -3,9 +3,9 @@
     "serialNumber": "C3TFJJTNDCP9",
     "symptom": "Does not work",
     "diagnosis": "Does not work",
-    "unitReceivedDate": "02/10/13",
+    "unitReceivedDate": "03/01/13",
     "unitReceivedTime": "12:00 AM",
-    "checkIfOutOfWarrantyCoverage": "N",
+    "checkIfOutOfWarrantyCoverage": "Y",
     "overrideDiagnosticCodeCheck": "Y",
     "poNumber": "Order12341",
     "orderLines": [
