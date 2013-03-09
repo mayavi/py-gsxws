@@ -717,10 +717,12 @@ def connect(
     account.userTimeZone = timezone
     account.serviceAccountNo = sold_to
 
-    result = CLIENT.service.Authenticate(account)
-    SESSION['userSessionId'] = result.userSessionId
-
-    return SESSION
+    try:
+        result = CLIENT.service.Authenticate(account)
+        SESSION['userSessionId'] = result.userSessionId
+        return SESSION
+    except suds.WebFault, e:
+        raise GsxError(code=e.fault.faultcode, message=e.fault.faultstring)
 
 def logout():
     CLIENT.service.Logout()
