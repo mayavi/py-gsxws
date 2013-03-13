@@ -19,6 +19,7 @@ logging.getLogger('suds.client').setLevel(logging.DEBUG)
 CLIENT = None
 SESSION = dict()
 LOCALE = 'en_XXX'
+
 TIMEZONES = (
     ('GMT', 'Greenwich Mean Time'),
     ('PDT', 'Pacific Daylight Time'),
@@ -37,6 +38,21 @@ TIMEZONES = (
     ('ACST', 'Austrailian Central Standard Time'),
     ('ACDT', 'Australian Central Daylight Time'),
     ('NZST', 'New Zealand Standard Time'),
+)
+
+REGIONS = (
+    ('002', 'Asia/Pacific'), 
+    ('003', 'Japan'), 
+    ('004', 'Europe'),
+    ('005', 'United States'),
+    ('006', 'Canadia'),
+    ('007', 'Latin America'),
+)
+    
+ENVIRONMENTS = (
+    ('pr', 'Production'), 
+    ('ut', 'Development'),
+    ('it', 'Testing'),
 )
 
 def validate(value, what=None):
