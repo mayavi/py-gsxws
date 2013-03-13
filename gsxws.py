@@ -5,15 +5,14 @@
 import re
 import os
 import json
-import base64
 import suds
+import base64
 from suds.client import Client
 from datetime import datetime, date, time
 import xml.etree.ElementTree as ET
 
 import logging
-logging.basicConfig(level=logging.INFO)
-
+logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 # Must use a few module-level global variables
