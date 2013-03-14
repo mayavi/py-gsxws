@@ -1,9 +1,13 @@
 py-gsxws
 ======
 
+py-gsxws is a Python library designed to work with Apple's GSX Web Services API.
+The goel is for it to support all the features of the API.
+Currently it supports most of them.
+
 Installation:
 
-  pip install -e git+git://github.com/filipp/py-gsxws.git#egg=gsxws
+    pip install -e git+git://github.com/filipp/py-gsxws.git#egg=gsxws
 
 
 It goes a little something like this:
@@ -20,6 +24,7 @@ It goes a little something like this:
 
 Requirements
 ============
+
 - Python 2.7 or later
 - suds
 

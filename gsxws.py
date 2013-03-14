@@ -9,9 +9,10 @@ import suds
 import base64
 import logging
 from suds.client import Client
-from datetime import datetime, date, time
 import xml.etree.ElementTree as ET
+from datetime import datetime, date, time
 
+logging.basicConfig(level=logging.INFO)
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 # Must use a few module-level global variables
