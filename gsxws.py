@@ -604,9 +604,9 @@ class Repair(GsxObject):
         """
         dt = self._make_type('ns1:markRepairCompleteRequestType')
         dt.repairConfirmationNumbers = [self.data['dispatchId']]
-        result = CLIENT.service.MarkRepairComplete(dt)
 
         try:
+            result = CLIENT.service.MarkRepairComplete(dt)
             return result.repairConfirmationNumbers
         except suds.WebFault, e:
             raise GsxError(fault=e)
