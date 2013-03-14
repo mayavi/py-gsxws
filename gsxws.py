@@ -7,12 +7,11 @@ import os
 import json
 import suds
 import base64
+import logging
 from suds.client import Client
 from datetime import datetime, date, time
 import xml.etree.ElementTree as ET
 
-import logging
-logging.basicConfig(level=logging.INFO)
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 # Must use a few module-level global variables
@@ -21,34 +20,36 @@ SESSION = dict()
 LOCALE = 'en_XXX'
 
 TIMEZONES = (
-    ('GMT', 'Greenwich Mean Time'),
-    ('PDT', 'Pacific Daylight Time'),
-    ('PST', 'Pacific Standard Time'),
-    ('CDT', 'Central Daylight Time'),
-    ('CST', 'Central Standard Time'),
-    ('EDT', 'Eastern Daylight Time'),
-    ('EST', 'Eastern Standard Time'),
-    ('CEST', 'Central European Summer Time'),
-    ('CET', 'Central European Time'),
-    ('JST', 'Japan Standard Time'),
-    ('IST', 'Indian Standard Time'),
-    ('CCT', 'Chinese Coast Time'),
-    ('AEST', 'Australian Eastern Standard Time'),
-    ('AEDT', 'Australian Eastern Daylight Time'),
-    ('ACST', 'Austrailian Central Standard Time'),
-    ('ACDT', 'Australian Central Daylight Time'),
-    ('NZST', 'New Zealand Standard Time'),
+    ('GMT', 'UTC (Greenwich Mean Time)'),
+    ('PDT', 'UTC - 7h (Pacific Daylight Time)'),
+    ('PST', 'UTC - 8h (Pacific Standard Time)'),
+    ('CDT', 'UTC - 5h (Central Daylight Time)'),
+    ('CST', 'UTC - 6h (Central Standard Time)'),
+    ('EDT', 'UTC - 4h (Eastern Daylight Time)'),
+    ('EST', 'UTC - 5h (Eastern Standard Time)'),
+    ('CEST', 'UTC + 2h (Central European Summer Time)'),
+    ('CET', 'UTC + 1h (Central European Time)'),
+    ('JST', 'UTC + 9h (Japan Standard Time)'),
+    ('IST', 'UTC + 5.5h (Indian Standard Time)'),
+    ('CCT', 'UTC + 8h (Chinese Coast Time)'),
+    ('AEST', 'UTC + 10h (Australian Eastern Standard Time)'),
+    ('AEDT', 'UTC + 11h (Australian Eastern Daylight Time)'),
+    ('ACST', 'UTC + 9.5h (Austrailian Central Standard Time)'),
+    ('ACDT', 'UTC + 10.5h (Australian Central Daylight Time)'),
+    ('NZST', 'UTC + 12h (New Zealand Standard Time)'),
 )
 
 REGIONS = (
-    ('002', 'Asia/Pacific'), 
-    ('003', 'Japan'), 
+    ('002', 'Asia/Pacific'),
+    ('003', 'Japan'),
     ('004', 'Europe'),
     ('005', 'United States'),
     ('006', 'Canadia'),
     ('007', 'Latin America'),
 )
-    
+
+REGION_CODES = ('apac', 'am', 'la', 'emea',)
+
 ENVIRONMENTS = (
     ('pr', 'Production'), 
     ('ut', 'Development'),
@@ -712,10 +713,13 @@ class Product(GsxObject):
         return diags.fetch()
 
 def init(env='ut', region='emea'):
-    global CLIENT
+    global CLIENT, REGION_CODES
 
     envs = ('pr', 'it', 'ut',)
     hosts = {'pr': 'ws2', 'it': 'wsit', 'ut': 'wsut'}
+
+    if region not in REGION_CODES:
+        raise ValueError('Region should be one of: %s' % ','.join(REGION_CODES))
 
     if env not in envs:
         raise ValueError('Environment should be one of: %s' % ','.join(envs))
