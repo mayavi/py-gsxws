@@ -138,7 +138,7 @@ class GsxObject(object):
             result = f(data)
             return getattr(result, attr) if attr else result
         except suds.WebFault, e:
-            raise GsxError(code=e.fault.faultcode, message=e.fault.faultstring)
+            raise GsxError(fault=e)
 
     def _make_type(self, new_dt):
         """
@@ -333,7 +333,8 @@ class GsxError(Exception):
         else:
             self.code = code
             self.message = message
-            self.data = (self.code, self.message)
+        
+        self.data = (self.code, self.message)
 
     def __getitem__(self, idx):
         return self.data[idx]
@@ -768,7 +769,7 @@ def connect(
         SESSION['userSessionId'] = result.userSessionId
         return SESSION
     except suds.WebFault, e:
-        raise GsxError(code=e.fault.faultcode, message=e.fault.faultstring)
+        raise GsxError(fault=e)
 
 def logout():
     CLIENT.service.Logout()
