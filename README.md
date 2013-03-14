@@ -7,7 +7,7 @@ Currently it supports most of them.
 
 Installation:
 
-    pip install -e git+git://github.com/filipp/py-gsxws.git#egg=gsxws
+    pip install -U -e git+git://github.com/filipp/py-gsxws.git#egg=gsxws
 
 
 It goes a little something like this:

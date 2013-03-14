@@ -326,10 +326,14 @@ class GsxResponse(dict):
         return nodedict
 
 class GsxError(Exception):
-    def __init__(self, message, code=None):
-        self.code = code
-        self.message = message
-        self.data = (self.code, self.message)
+    def __init__(self, message=None, code=None, fault=None):
+        if isinstance(fault, suds.WebFault):
+            self.code = fault.fault.faultcode
+            self.message=fault.fault.faultstring
+        else:
+            self.code = code
+            self.message = message
+            self.data = (self.code, self.message)
 
     def __getitem__(self, idx):
         return self.data[idx]
@@ -602,7 +606,10 @@ class Repair(GsxObject):
         dt.repairConfirmationNumbers = [self.data['dispatchId']]
         result = CLIENT.service.MarkRepairComplete(dt)
 
-        return result.repairConfirmationNumbers
+        try:
+            return result.repairConfirmationNumbers
+        except suds.WebFault, e:
+            raise GsxError(fault=e)
 
     def delete(self):
         """
