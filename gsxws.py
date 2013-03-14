@@ -12,7 +12,7 @@ from datetime import datetime, date, time
 import xml.etree.ElementTree as ET
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 # Must use a few module-level global variables
