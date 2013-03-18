@@ -338,7 +338,7 @@ class GsxError(Exception):
 
     def __getitem__(self, idx):
         return self.data[idx]
-
+        
     def __repr__(self):
         print self.data
 
@@ -382,12 +382,22 @@ class Diagnostics(GsxObject):
         if "alternateDeviceId" in self.data:
             dt = self._make_type("ns3:fetchIOSDiagnosticRequestType")
             dt.lookupRequestData = self.data
-            result = CLIENT.service.FetchIOSDiagnostic(dt)
+            
+            try:
+                result = CLIENT.service.FetchIOSDiagnostic(dt)
+            except suds.WebFault, e:
+                raise GsxError(fault=e)
+                
             root = ET.fromstring(result).findall('*//%s' % 'FetchIOSDiagnosticResponse')[0]
         else:
             dt = self._make_type('ns3:fetchRepairDiagnosticRequestType')
             dt.lookupRequestData = self.data
-            result = CLIENT.service.FetchRepairDiagnostic(dt)
+            
+            try:
+                result = CLIENT.service.FetchRepairDiagnostic(dt)
+            except suds.WebFault, e:
+                raise GsxError(fault=e)
+
             root = ET.fromstring(result).findall('*//%s' % 'FetchRepairDiagnosticResponse')[0]
         
         return GsxResponse.Process(root)
@@ -530,6 +540,7 @@ class Repair(GsxObject):
         """
         dt = self._make_type('ns2:carryInRequestType')
         dt.repairData = self.data
+
         return self.submit('CreateCarryInRepair', dt, 'repairConfirmation')
         
     def create_cnd(self):
@@ -547,7 +558,7 @@ class Repair(GsxObject):
         """
         pass
 
-    def update_carryin(self):
+    def update_carryin(self, newdata):
         """
         The Update Carry-In Repair API allows the service providers 
         to update the existing  open carry-in repairs. 
@@ -562,7 +573,12 @@ class Repair(GsxObject):
         BEGR    In Repair
         RFPU    Ready for Pickup
         """
-        pass
+        dt = self._make_type('ns1:updateCarryInRequestType')
+        dt.repairData = dict(self.data.items() + newdata.items())
+        result = CLIENT.service.CarryInRepairUpdate(dt)
+        print result
+        return result
+        #return self.submit('CarryInRepairUpdate', dt)
 
     def update_kgb_sn(self, sn):
         """
@@ -788,22 +804,5 @@ if __name__ == '__main__':
     parser.add_argument('--timezone', default='CEST')
     parser.add_argument('--environment', default='pr')
     parser.add_argument('--region', default='emea')
-    args = parser.parse_args()
-
-    #connect(**vars(args))
-
-    #f = 'tests/create_carryin_repair.json'
-    #f = 'tests/warranty_status.json'
-    #f = 'tests/fetch_ios_activation.json'
-    #f = 'tests/update_escalation.json'
-    #fp = open(f, 'r')
-    #data = json.load(fp)
-
-    #try:
-    #    print Escalation(**data).update()
-    #except GsxError, e:
-    #    print e.code, e.message
     
-    #data['requestReviewByApple'] = False
-    #rep = Repair(dispatchId='')
-    #print rep.update_kgb_sn('')
+    args = parser.parse_args()
