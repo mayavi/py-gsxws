@@ -574,11 +574,11 @@ class Repair(GsxObject):
         RFPU    Ready for Pickup
         """
         dt = self._make_type('ns1:updateCarryInRequestType')
+        
+        # Merge old and new data (old data should have Dispatch ID)
         dt.repairData = dict(self.data.items() + newdata.items())
-        result = CLIENT.service.CarryInRepairUpdate(dt)
-        print result
-        return result
-        #return self.submit('CarryInRepairUpdate', dt)
+
+        return self.submit('CarryInRepairUpdate', dt, 'repairConfirmation')
 
     def update_kgb_sn(self, sn):
         """
