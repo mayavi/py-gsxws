@@ -490,8 +490,8 @@ class Returns(GsxObject):
         dt = CLIENT.factory.create('ns1:partsPendingReturnRequestType')
         dt.repairData = self.data
         dt.userSession = SESSION
-        result = CLIENT.service.PartsPendingReturn(dt)
-        return result.partsPendingResponse
+        
+        return self.submit('PartsPendingReturn', dt, 'partsPendingResponse')
 
 class Part(GsxObject):
     def lookup(self):
