@@ -604,8 +604,8 @@ class Repair(GsxObject):
         serial number entry (see KGB serial update).
         """
         dt = self._make_type('ns1:updateSerialNumberRequestType')
+        repairData = {'repairConfirmationNumber': self.data.get('dispatchId')}
         self.data['partInfo'] = parts
-        dt.repairData = self.data
         
         return self.submit('UpdateSerialNumber', dt, 'repairConfirmation')
 
