@@ -605,7 +605,8 @@ class Repair(GsxObject):
         """
         dt = self._make_type('ns1:updateSerialNumberRequestType')
         repairData = {'repairConfirmationNumber': self.data.get('dispatchId')}
-        self.data['partInfo'] = parts
+        repairData['partInfo'] = parts
+        dt.repairData = repairData
         
         return self.submit('UpdateSerialNumber', dt, 'repairConfirmation')
 
