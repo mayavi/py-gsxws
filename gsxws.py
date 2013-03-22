@@ -456,7 +456,11 @@ class Returns(GsxObject):
         dt.partNumber = part_number
         dt.userSession = SESSION
 
-        result = CLIENT.service.ReturnLabel(dt)
+        try:
+            result = CLIENT.service.ReturnLabel(dt)
+        except suds.WebFault, e:
+            raise GsxError(fault=e)
+
         el = ET.fromstring(result).findall('*//%s' % 'returnLabelData')[0]
 
         for r in el.iter():
