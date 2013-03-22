@@ -361,7 +361,8 @@ class Lookup(GsxObject):
         """
         The Repair Lookup API mimics the front-end repair search functionality.
         It fetches up to 2500 repairs in a given criteria.
-        Subsequently, the extended Repair Status API can be used to retrieve more details of the repair.
+        Subsequently, the extended Repair Status API can be used 
+        to retrieve more details of the repair.
         """
         dt = CLIENT.factory.create('ns6:repairLookupInfoType')
         request = CLIENT.factory.create('ns1:repairLookupRequestType')
@@ -592,6 +593,21 @@ class Repair(GsxObject):
         dt.repairData = dict(self.data.items() + newdata.items())
 
         return self.submit('CarryInRepairUpdate', dt, 'repairConfirmation')
+
+    def update_sn(self, parts):
+        """
+        Description
+        The Update Serial Number API allows the service providers to 
+        update the module serial numbers. 
+        Context:
+        The API is not applicable for whole unit replacement 
+        serial number entry (see KGB serial update).
+        """
+        dt = self._make_type('ns1:updateSerialNumberRequestType')
+        self.data['partInfo'] = parts
+        dt.repairData = self.data
+        
+        return self.submit('UpdateSerialNumber', dt, 'repairConfirmation')
 
     def update_kgb_sn(self, sn):
         """
