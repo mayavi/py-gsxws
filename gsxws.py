@@ -433,7 +433,10 @@ class Returns(GsxObject):
         The Return Report API returns a list of all parts that are returned 
         or pending for return, based on the search criteria. 
         """
-        pass
+        dt = self._make_type('ns1:returnReportRequestType')
+        dt.returnRequestData = self.data
+
+        return self.submit('ReturnReport', dt, 'returnResponseData')
 
     def get_label(self, part_number):
         """
@@ -478,6 +481,7 @@ class Returns(GsxObject):
         the proforma label for a given Bulk Return Id.
         You can create a parts bulk return by using the Register Parts for Bulk Return API. 
         """
+        pass
 
     def register_parts(self):
         """
@@ -485,6 +489,7 @@ class Returns(GsxObject):
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
         """
+        pass
 
     def get_pending(self):
         """
@@ -609,7 +614,11 @@ class Repair(GsxObject):
         dt.repairConfirmationNumber = self.data['dispatchId']
         dt.serialNumber = sn
 
-        result = CLIENT.service.KGBSerialNumberUpdate(dt)
+        try:
+            result = CLIENT.service.KGBSerialNumberUpdate(dt)
+        except suds.WebFault, e:
+            raise GsxError(fault=e)
+            
         root = ET.fromstring(result).findall('*//%s' % 'UpdateKGBSerialNumberResponse')
         return GsxResponse.Process(root[0])
 
@@ -771,6 +780,10 @@ def connect(
         environment='ut',
         region='emea',
         locale=LOCALE):
+    """
+    Establishes connection with GSX Web Services.
+    Returns the session ID of the new connection.
+    """
 
     global SESSION
     global LOCALE
