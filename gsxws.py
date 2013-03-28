@@ -212,43 +212,29 @@ class CompTIA:
     def __init__(self):
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
+        self.groups = dict()
+        self.modifiers = dict()
 
     def fetch(self):
-        """
+        '''
         Here we must resort to raw XML parsing since SUDS throws this:
         suds.TypeNotFound: Type not found: 'comptiaDescription'
         when calling CompTIACodes()...
-        """
+        '''
         CLIENT.set_options(retxml=True)
         dt = CLIENT.factory.create('ns3:comptiaCodeLookupRequestType')
         dt.userSession = SESSION
         xml = CLIENT.service.CompTIACodes(dt)
-
         root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
-
-        # Process CompTIA Groups
-        class ComptiaGroup:
-            pass
-
-        class ComptiaModifier:
-            pass
-
-        self.groups = list()
-        self.modifiers = list()
-
+        
         for el in root.findall('.//comptiaGroup'):
-            dt = ComptiaGroup()
+            for i in element.iter():
+                setattr(obj, i.tag, i.text)
             self.groups.append(self.__process(el, dt))
-
+            
         for el in root.findall('.//comptiaModifier'):
-            mod = ComptiaModifier()
-            self.modifiers.append(self.__process(el, mod))
-
-    def __process(self, element, obj):
-        for i in element.iter():
-            setattr(obj, i.tag, i.text)
-
-        return obj
+            descr, code = list(el)
+            self.modifiers[code.text] = descr.text
 
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
