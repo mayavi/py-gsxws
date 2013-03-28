@@ -161,10 +161,10 @@ class GsxObject(object):
                 v = base64.b64decode(v)
             
             if isinstance(v, basestring):
-                # convert dates to native Python
+                # convert dates to native Python types
                 if re.search('^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
-                    v = date(2000+int(y), int(m), int(d)).isoformat()
+                    v = date(2000+int(y), int(m), int(d))
 
                 # strip currency prefix and munge into float
                 if re.search('Price$', k):
@@ -751,6 +751,7 @@ class Product(GsxObject):
         dt.unitDetail = self.dt
         result = self.submit("WarrantyStatus", dt, "warrantyDetailInfo")
         return self._process(result)
+
 
     def get_activation(self):
         """
