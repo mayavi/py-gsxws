@@ -234,12 +234,13 @@ class CompTIA:
 
         for el in root.findall('.//comptiaGroup'):
             comp_id = el[0].text
-            group = {'id': comp_id, 'name': el[1].text}
-            group['codes'] = dict()
-
+            #group = {'id': comp_id, 'name': el[1].text}
+            #group['codes'] = dict()
+            group = {}
             for ci in el.findall('comptiaCodeInfo'):
-                group['codes'][ci[0].text] = ci[1].text
-
+                group[ci[0].text] = ci[1].text
+            
+            # @TODO 
             self.data['symptoms'][comp_id] = group
             
         for el in root.findall('.//comptiaModifier'):
@@ -802,7 +803,7 @@ def connect(
     Establishes connection with GSX Web Services.
     Returns the session ID of the new connection.
     """
-
+    
     global SESSION
     global LOCALE
 
