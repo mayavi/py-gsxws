@@ -246,7 +246,7 @@ class CompTIA:
             descr, code = list(el)
             self.data['modifiers'][code.text] = descr.text
 
-        return self.data['groups']
+        return self.data['symptoms']
 
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
