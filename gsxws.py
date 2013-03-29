@@ -212,14 +212,6 @@ class CompTIA:
     def __init__(self):
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
-        self.groups = dict()
-        self.modifiers = dict()
-
-    def __getattr__(self, name):
-        try:
-            return self.groups[name]
-        except KeyError, e:
-            raise e('Unknown component code: %s' % name)
         
     def fetch(self):
         '''
@@ -248,13 +240,13 @@ class CompTIA:
             for ci in el.findall('comptiaCodeInfo'):
                 group['codes'][ci[0].text] = ci[1].text
 
-            self.groups[comp_id] = group
+            self.data['groups'][comp_id] = group
             
         for el in root.findall('.//comptiaModifier'):
             descr, code = list(el)
-            self.modifiers[code.text] = descr.text
+            self.data['modifiers'][code.text] = descr.text
 
-        return self.groups
+        return self.data['groups']
 
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
