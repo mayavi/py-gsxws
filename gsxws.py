@@ -223,6 +223,8 @@ class CompTIA:
         
     def fetch(self):
         '''
+        The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers. 
+
         Here we must resort to raw XML parsing since SUDS throws this:
         suds.TypeNotFound: Type not found: 'comptiaDescription'
         when calling CompTIACodes()...
@@ -245,12 +247,14 @@ class CompTIA:
 
             for ci in el.findall('comptiaCodeInfo'):
                 group['codes'][ci[0].text] = ci[1].text
-                
+
             self.groups[comp_id] = group
             
         for el in root.findall('.//comptiaModifier'):
             descr, code = list(el)
             self.modifiers[code.text] = descr.text
+
+        return self.groups
 
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
