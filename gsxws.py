@@ -240,7 +240,7 @@ class CompTIA:
             for ci in el.findall('comptiaCodeInfo'):
                 group['codes'][ci[0].text] = ci[1].text
 
-            self.data['groups'][comp_id] = group
+            self.data['symptoms'][comp_id] = group
             
         for el in root.findall('.//comptiaModifier'):
             descr, code = list(el)
