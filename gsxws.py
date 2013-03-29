@@ -206,15 +206,21 @@ class GsxObject(object):
 
 
 class CompTIA:
-    """
+    '''
     Stores and accesses CompTIA codes.
-    """
+    '''
     def __init__(self):
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
         self.groups = dict()
         self.modifiers = dict()
 
+    def __getattr__(self, name):
+        try:
+            return self.groups[name]
+        except KeyError, e:
+            raise e('Unknown component code: %s' % name)
+        
     def fetch(self):
         '''
         Here we must resort to raw XML parsing since SUDS throws this:
@@ -224,13 +230,23 @@ class CompTIA:
         CLIENT.set_options(retxml=True)
         dt = CLIENT.factory.create('ns3:comptiaCodeLookupRequestType')
         dt.userSession = SESSION
-        xml = CLIENT.service.CompTIACodes(dt)
-        root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
+
+        try:
+            xml = CLIENT.service.CompTIACodes(dt)
+        except suds.WebFault, e:
+            raise GsxError(fault=e)
         
+        root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
+
         for el in root.findall('.//comptiaGroup'):
-            for i in element.iter():
-                setattr(obj, i.tag, i.text)
-            self.groups.append(self.__process(el, dt))
+            comp_id = el[0].text
+            group = {'id': comp_id, 'name': el[1].text}
+            group['codes'] = dict()
+
+            for ci in el.findall('comptiaCodeInfo'):
+                group['codes'][ci[0].text] = ci[1].text
+                
+            self.groups[comp_id] = group
             
         for el in root.findall('.//comptiaModifier'):
             descr, code = list(el)
@@ -243,6 +259,7 @@ class CompTIA:
             r = list()
             for k, v in symptoms[component].items():
                 r.append((k, v))
+
             return r
 
         return symptoms
