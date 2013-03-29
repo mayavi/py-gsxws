@@ -251,14 +251,15 @@ class CompTIA:
     def symptoms(self, component=None):
         symptoms = self.data['symptoms']
         
-        if component:
-            r = list()
-            for k, v in symptoms[component].items():
-                r.append((k, v))
+        if component is None:
+            return symptoms
 
-            return r
+        r = list()
 
-        return symptoms
+        for k, v in symptoms[component].items():
+            r.append((k, v))
+
+        return r
 
     def modifiers(self):
         modifiers = list()
