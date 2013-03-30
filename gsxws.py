@@ -209,6 +209,7 @@ class CompTIA(object):
     '''
     Stores and accesses CompTIA codes.
     '''
+    
     MODIFIERS = (
         ("A", "Not Applicable"),
         ("B", "Continuous"),
@@ -237,12 +238,15 @@ class CompTIA(object):
     )
     
     def __init__(self):
+        '''
+        Initialize CompTIA symptoms from JSON file
+        '''
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
         
     def fetch(self):
         '''
-        The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers. 
+        "The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers."
 
         Here we must resort to raw XML parsing since SUDS throws this:
         suds.TypeNotFound: Type not found: 'comptiaDescription'
@@ -262,10 +266,6 @@ class CompTIA(object):
         for el in root.findall('.//comptiaGroup'):
             group = {}
             comp_id = el[0].text
-            # @TODO - it would be nice to put the name of the group
-            # somewhere...
-            #group = {'id': comp_id, 'name': el[1].text}
-            #group['codes'] = dict()
             
             for ci in el.findall('comptiaCodeInfo'):
                 group[ci[0].text] = ci[1].text
@@ -279,26 +279,14 @@ class CompTIA(object):
         Returns all known CompTIA symptom codes or just the ones
         belonging to the given component code.
         '''
-        group = {}
+        r = dict()
         
-        if component is None:
-            return self.data
-        
-        '''
-        Bundle the requested symptom codes as a Django-friendly
-        list of two-tuples.
-        '''
-        r = list()
-        
-        try:
-            group = self.data[component]
-        except Exception:
-            raise ValueError('Unknown component: %s' % component)
-        
-        for k, v in group.items():
-            r.append((k, v))
+        for g, codes in self.data.items():
+            r[g] = list()
+            for k, v in codes.items():
+                r[g].append((k, v,))
             
-        return r
+        return r[component] if component else r
 
 class GsxResponse(dict):
     """

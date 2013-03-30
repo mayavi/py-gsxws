@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gsxws",
-    version="0.2",
+    version="0.3",
     description="Apple GSX integration.",
     install_requires = ['suds'],
     classifiers=[
