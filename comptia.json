@@ -1,14 +1,4 @@
 {
-  "modifiers": {
-        "A": "Not Applicable",
-        "B": "Continuous",
-        "C": "Intermittent",
-        "D": "Fails After Warm Up",
-        "E": "Environmental",
-        "F": "Configuration: Peripheral",
-        "G": "Damaged"
-  },
-  "symptoms": {
     "E": {
           "E01": "Repairable accidental damage (OOW) - Customer Satisfaction codes",
           "E02": "Controls not responding (wheel-button-touch screen)",
@@ -304,5 +294,4 @@
          "Z21": "Bottom Case Delamination",
          "Z22": "Bottom Case Delamination multiple issues"
     }
-  }
 }

@@ -209,6 +209,33 @@ class CompTIA(object):
     '''
     Stores and accesses CompTIA codes.
     '''
+    MODIFIERS = (
+        ("A", "Not Applicable"),
+        ("B", "Continuous"),
+        ("C", "Intermittent"),
+        ("D", "Fails After Warm Up"),
+        ("E", "Environmental"),
+        ("F", "Configuration: Peripheral"),
+        ("G", "Damaged"),
+    )
+    
+    GROUPS = (
+        ('0', 'General'),
+        ('1', 'Visual'),
+        ('2', 'Displays'),
+        ('3', 'Mass Storage'),
+        ('4', 'Input Devices'),
+        ('5', 'Boards'),
+        ('6', 'Power'),
+        ('7', 'Printer'),
+        ('8', 'Multi-function Device'),
+        ('9', 'Communication Devices'),
+        ('A', 'Share'),
+        ('B', 'iPhone'),
+        ('E', 'iPod'),
+        ('F', 'iPad'),
+    )
+    
     def __init__(self):
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
@@ -243,13 +270,9 @@ class CompTIA(object):
             for ci in el.findall('comptiaCodeInfo'):
                 group[ci[0].text] = ci[1].text
             
-            self.data['symptoms'][comp_id] = group
-            
-        for el in root.findall('.//comptiaModifier'):
-            descr, code = list(el)
-            self.data['modifiers'][code.text] = descr.text
+            self.data[comp_id] = group
 
-        return self.data['symptoms']
+        return self.data
 
     def symptoms(self, component=None):
         '''
@@ -257,10 +280,9 @@ class CompTIA(object):
         belonging to the given component code.
         '''
         group = {}
-        symptoms = self.data['symptoms']
         
         if component is None:
-            return symptoms
+            return self.data
         
         '''
         Bundle the requested symptom codes as a Django-friendly
@@ -269,7 +291,7 @@ class CompTIA(object):
         r = list()
         
         try:
-            group = symptoms[component]
+            group = self.data[component]
         except Exception:
             raise ValueError('Unknown component: %s' % component)
         
@@ -277,14 +299,6 @@ class CompTIA(object):
             r.append((k, v))
             
         return r
-
-    def modifiers(self):
-        modifiers = list()
-
-        for k, v in self.data['modifiers'].items():
-            modifiers.append((k, v))
-
-        return modifiers
 
 class GsxResponse(dict):
     """
