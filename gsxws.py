@@ -205,7 +205,7 @@ class GsxObject(object):
         return rd
 
 
-class CompTIA:
+class CompTIA(object):
     '''
     Stores and accesses CompTIA codes.
     '''
@@ -233,14 +233,16 @@ class CompTIA:
         root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
 
         for el in root.findall('.//comptiaGroup'):
+            group = {}
             comp_id = el[0].text
+            # @TODO - it would be nice to put the name of the group
+            # somewhere...
             #group = {'id': comp_id, 'name': el[1].text}
             #group['codes'] = dict()
-            group = {}
+            
             for ci in el.findall('comptiaCodeInfo'):
                 group[ci[0].text] = ci[1].text
             
-            # @TODO 
             self.data['symptoms'][comp_id] = group
             
         for el in root.findall('.//comptiaModifier'):
@@ -250,16 +252,30 @@ class CompTIA:
         return self.data['symptoms']
 
     def symptoms(self, component=None):
+        '''
+        Returns all known CompTIA symptom codes or just the ones
+        belonging to the given component code.
+        '''
+        group = {}
         symptoms = self.data['symptoms']
         
         if component is None:
             return symptoms
-
+        
+        '''
+        Bundle the requested symptom codes as a Django-friendly
+        list of two-tuples.
+        '''
         r = list()
-
-        for k, v in symptoms[component].items():
+        
+        try:
+            group = symptoms[component]
+        except Exception:
+            raise ValueError('Unknown component: %s' % component)
+        
+        for k, v in group.items():
             r.append((k, v))
-
+            
         return r
 
     def modifiers(self):
