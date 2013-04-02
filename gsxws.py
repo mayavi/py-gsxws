@@ -471,7 +471,7 @@ class Returns(GsxObject):
     def get_label(self, part_number):
         """
         The Return Label API retrieves the Return Label for a given Return Order Number.
-        This is another example where SUDS doesn't play nice with GSX WS (Type not found: 'comptiaCode')
+        (Type not found: 'comptiaCode')
         so we're parsing the raw SOAP response and creating a "fake" return object from that.
         """
         if not validate(part_number, 'partNumber'):
@@ -817,6 +817,7 @@ def init(env='ut', region='emea'):
     url = url.format(env=hosts[env], region=region)
 
     CLIENT = Client(url)
+    CLIENT.options.cache.setduration(weeks=2)
 
 def connect(
         user_id,
