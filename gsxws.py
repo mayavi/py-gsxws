@@ -574,10 +574,8 @@ class Part(GsxObject):
         if self.partNumber is None:
             raise GsxError('Cannot fetch part image without part number')
 
-        url = 'https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s_350_350.gif' % self.partNumber
-        p = urlparse.urlparse(url)
-        filename = p.query.split('=')[1]
-
+        image = '%s_350_350.gif' % self.partNumber
+        url = 'https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s' % image
         tmpfile = tempfile.NamedTemporaryFile(suffix=filename)
 
         try:
