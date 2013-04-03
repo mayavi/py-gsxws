@@ -576,7 +576,7 @@ class Part(GsxObject):
 
         image = '%s_350_350.gif' % self.partNumber
         url = 'https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s' % image
-        tmpfile = tempfile.NamedTemporaryFile(suffix=filename)
+        tmpfile = tempfile.NamedTemporaryFile(suffix=image)
 
         try:
             result = urllib.urlretrieve(url, tmpfile.name)
