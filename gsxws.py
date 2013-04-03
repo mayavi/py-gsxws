@@ -577,6 +577,7 @@ class Part(GsxObject):
         url = 'https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s_350_350.gif' % self.partNumber
         p = urlparse.urlparse(url)
         filename = p.query.split('=')[1]
+
         tmpfile = tempfile.NamedTemporaryFile(suffix=filename)
 
         try:
@@ -799,8 +800,8 @@ class Product(GsxObject):
     
     dt = 'ns7:unitDetailType'
 
-    def __init__(self, serialNumber):
-        super(Product, self).__init__()
+    def __init__(self, serialNumber, *args, **kwargs):
+        super(Product, self).__init__(*args, **kwargs)
         self.serialNumber = serialNumber
         self.dt.serialNumber = serialNumber
         self.lookup = Lookup(serialNumber=self.serialNumber)
