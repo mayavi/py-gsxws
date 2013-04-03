@@ -860,7 +860,7 @@ class Product(GsxObject):
             urllib.urlretrieve(self.imageURL)
             return result[0]
         except Exception, e:
-            raise GsxError('Failed to fetch product image')
+            raise GsxError('Failed to fetch product image: %s' % e)
 
 def init(env='ut', region='emea'):
     global CLIENT, REGION_CODES
