@@ -576,11 +576,10 @@ class Part(GsxObject):
 
         image = '%s_350_350.gif' % self.partNumber
         url = 'https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s' % image
-        tmpfile = tempfile.NamedTemporaryFile(suffix=image)
+        tmpfile = tempfile.mkstemp(suffix=image)
 
         try:
-            result = urllib.urlretrieve(url, tmpfile.name)
-            return result[0]
+            return urllib.urlretrieve(url, tmpfile[1])[0]
         except Exception, e:
             raise GsxError('Failed to fetch part image: %s' % e)
 
