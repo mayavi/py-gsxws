@@ -125,8 +125,20 @@ class GsxObject(object):
     method      = 'Authenticate'                  # The SOAP method to call on the GSX server
 
     def __init__(self, *args, **kwargs):
-        self.data = kwargs
         
+        formats = get_format()
+
+        # native types are not welcome here :)
+        for k, v in kwargs.items():
+            if isinstance(v, date):
+                kwargs[k] = v.strftime(formats['df'])
+            if isinstance(v, time):
+                kwargs[k] = v.strftime(formats['tf'])
+            if isinstance(v, bool):
+                kwargs[k] = 'Y' if v else 'N'
+        
+        self.data = kwargs
+
         if CLIENT is not None:
             self.dt = CLIENT.factory.create(self.dt)
             self.request_dt = CLIENT.factory.create(self.request_dt)
@@ -150,7 +162,7 @@ class GsxObject(object):
         """
         Sets the field of this object's request datatype to the new value
         """
-        if new_dt:
+        if new_dt is not None:
             self.request_dt = self._make_type(new_dt)
 
         setattr(self.request_dt, field, self.dt)
@@ -239,10 +251,12 @@ class Content(GsxObject):
         '''
         The Fetch Image API allows users to get the image file from GSX, 
         for the content articles, using the image URL. 
-        The image URLs will be obtained from the image html tags in the data from all content APIs. 
+        The image URLs will be obtained from the image html tags 
+        in the data from all content APIs. 
         '''
         dt = self._make_type('ns3:fetchImageRequestType')
         dt.imageRequest = {'imageUrl': url}
+
         return self.submit('FetchImage', dt, 'contentResponse')
 
 class CompTIA(object):
@@ -286,7 +300,7 @@ class CompTIA(object):
         
     def fetch(self):
         '''
-        "The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers."
+        The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers.
 
         Here we must resort to raw XML parsing since SUDS throws this:
         suds.TypeNotFound: Type not found: 'comptiaDescription'
@@ -405,6 +419,11 @@ class GsxError(Exception):
         return self.data[1]
 
 class Lookup(GsxObject):
+    def lookup(self, dt, method):
+        dt = self._make_type(dt)
+        dt.lookupRequestData = self.data
+        return self.submit(method, dt, "lookupResponseData")
+
     def parts(self):
         """
         The Parts Lookup API allows users to access part and part pricing data prior to 
@@ -429,6 +448,25 @@ class Lookup(GsxObject):
         request.lookupRequestData = self.data
         return self.submit("RepairLookup", request, "lookupResponseData")
 
+    def invoices(self):
+        """
+        The Invoice ID Lookup API allows AASP users 
+        to fetch the invoice generated for last 24 hrs
+        """
+        return self.lookup('ns1:invoiceIDLookupRequestType', 'InvoiceIDLookup')
+
+    def invoice_details(self):
+        """
+        The Invoice Details Lookup API allows AASP users 
+        to download invoice for a given invoice id.
+        """
+        result = self.lookup('ns1:invoiceDetailsLookupRequestType', 'InvoiceDetailsLookup')
+        pdf = base64.b64decode(result.invoiceData)
+        outfile = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+        outfile.write(pdf)
+        result.invoiceData = outfile.name
+        return result
+
 class Diagnostics(GsxObject):
     def fetch(self):
         """
@@ -437,8 +475,10 @@ class Diagnostics(GsxObject):
         diagnostic test details of iOS Devices.
         The ticket is generated within GSX system.
         """
+
         # Using raw XML to avoid TypeNotFound: Type not found: 'toolID' or operationID
         CLIENT.set_options(retxml=True)
+
         if "alternateDeviceId" in self.data:
             dt = self._make_type("ns3:fetchIOSDiagnosticRequestType")
             dt.lookupRequestData = self.data
@@ -500,7 +540,8 @@ class Returns(GsxObject):
 
     def get_label(self, part_number):
         """
-        The Return Label API retrieves the Return Label for a given Return Order Number.
+        The Return Label API retrieves the Return Label 
+        for a given Return Order Number.
         (Type not found: 'comptiaCode')
         so we're parsing the raw SOAP response and creating a "fake" return object from that.
         """
@@ -539,7 +580,8 @@ class Returns(GsxObject):
         """
         The View Bulk Return Proforma API allows you to view 
         the proforma label for a given Bulk Return Id.
-        You can create a parts bulk return by using the Register Parts for Bulk Return API. 
+        You can create a parts bulk return 
+        by using the Register Parts for Bulk Return API. 
         """
         pass
 
@@ -606,21 +648,6 @@ class Repair(GsxObject):
     
     dt = 'ns6:repairLookupInfoType'
     request_dt = 'ns1:repairLookupRequestType'
-
-    def __init__(self, *args, **kwargs):
-        super(Repair, self).__init__(*args, **kwargs)
-        formats = get_format()
-
-        # native types are not welcome here :)
-        for k, v in kwargs.items():
-            if isinstance(v, date):
-                kwargs[k] = v.strftime(formats['df'])
-            if isinstance(v, time):
-                kwargs[k] = v.strftime(formats['tf'])
-            if isinstance(v, bool):
-                kwargs[k] = 'Y' if v else 'N'
-        
-        self.data = kwargs
 
     def create_carryin(self):
         """
