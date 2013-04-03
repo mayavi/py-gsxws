@@ -584,7 +584,7 @@ class Part(GsxObject):
             result = urllib.urlretrieve(url, tmpfile.name)
             return result[0]
         except Exception, e:
-            GsxError('Failed to fetch part image')
+            raise GsxError('Failed to fetch part image: %s' % e)
 
 class Escalation(GsxObject):
     def create(self):
