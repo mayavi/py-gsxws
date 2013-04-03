@@ -857,7 +857,7 @@ class Product(GsxObject):
             raise GsxError('Cannot fetch product image with image URL')
 
         try:
-            urllib.urlretrieve(self.imageURL)
+            result = urllib.urlretrieve(self.imageURL)
             return result[0]
         except Exception, e:
             raise GsxError('Failed to fetch product image: %s' % e)
