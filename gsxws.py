@@ -803,8 +803,10 @@ class Product(GsxObject):
     def __init__(self, serialNumber, *args, **kwargs):
         super(Product, self).__init__(*args, **kwargs)
         self.serialNumber = serialNumber
-        self.dt.serialNumber = serialNumber
-        self.lookup = Lookup(serialNumber=self.serialNumber)
+        
+        if SESSION:
+            self.dt.serialNumber = serialNumber
+            self.lookup = Lookup(serialNumber=self.serialNumber)
 
     def get_model(self):
         """
