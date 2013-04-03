@@ -2,18 +2,42 @@
 
 #coding=utf-8
 
+"""
+Copyright (c) 2012, Filipp Lepalaan All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, 
+this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
+AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+
 import re
 import os
 import json
 import suds
 import base64
 import logging
+import urllib
+import urlparse
+import tempfile
+
 from suds.client import Client
 import xml.etree.ElementTree as ET
 from datetime import datetime, date, time
-
-logging.basicConfig(level=logging.INFO)
-logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 # Must use a few module-level global variables
 CLIENT = None
@@ -203,6 +227,9 @@ class GsxObject(object):
             setattr(rd, k, v)
 
         return rd
+
+    def __getattr__(self, name):
+        return self.data[name]
 
 class Content(GsxObject):
     def fetch_image(self, url):
@@ -537,6 +564,24 @@ class Part(GsxObject):
         lookup = Lookup(**self.data)
         return lookup.parts()
 
+    def fetch_image(self):
+        """
+        Tries the fetch the product image for this service part
+        """
+        if self.partNumber is None:
+            raise GsxError('Cannot fetch part image without part number')
+
+        url = 'https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s_350_350.gif' % self.partNumber
+        p = urlparse.urlparse(url)
+        filename = p.query.split('=')[1]
+        tmpfile = tempfile.NamedTemporaryFile(suffix=filename)
+
+        try:
+            result = urllib.urlretrieve(url, tmpfile.name)
+            return result[0]
+        except Exception, e:
+            GsxError('Failed to fetch part image')
+
 class Escalation(GsxObject):
     def create(self):
         """
@@ -800,6 +845,16 @@ class Product(GsxObject):
     def get_diagnostics(self):
         diags = Diagnostics(serialNumber=self.serialNumber)
         return diags.fetch()
+
+    def fetch_image(self):
+        if not self.imageURL:
+            raise GsxError('Cannot fetch product image with image URL')
+
+        try:
+            urllib.urlretrieve(self.imageURL)
+            return result[0]
+        except Exception, e:
+            raise GsxError('Failed to fetch product image')
 
 def init(env='ut', region='emea'):
     global CLIENT, REGION_CODES
