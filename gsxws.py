@@ -294,20 +294,20 @@ class CompTIA(object):
     )
     
     def __init__(self):
-        '''
+        """
         Initialize CompTIA symptoms from JSON file
-        '''
+        """
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
         
     def fetch(self):
-        '''
+        """
         The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers.
 
         Here we must resort to raw XML parsing since SUDS throws this:
         suds.TypeNotFound: Type not found: 'comptiaDescription'
         when calling CompTIACodes()...
-        '''
+        """
         CLIENT.set_options(retxml=True)
         dt = CLIENT.factory.create('ns3:comptiaCodeLookupRequestType')
         dt.userSession = SESSION
@@ -331,10 +331,10 @@ class CompTIA(object):
         return self.data
 
     def symptoms(self, component=None):
-        '''
+        """
         Returns all known CompTIA symptom codes or just the ones
         belonging to the given component code.
-        '''
+        """
         r = dict()
         
         for g, codes in self.data.items():
@@ -528,7 +528,19 @@ class Order(GsxObject):
 class Returns(GsxObject):
     def __init__(self, order_number=None, *args, **kwargs):
         super(Returns, self).__init__(*args, **kwargs)
-        self.dt.returnOrderNumber = order_number
+        
+        if order_number is not None:
+            self.data['returnOrderNumber'] = order_number
+
+    def get_pending(self):
+        """
+        The Parts Pending Return API returns a list of all parts that 
+        are pending for return, based on the search criteria. 
+        """
+        dt = self._make_type('ns1:partsPendingReturnRequestType')
+        dt.repairData = self.data
+        
+        return self.submit('PartsPendingReturn', dt, 'partsPendingResponse')
 
     def get_report(self):
         """
@@ -542,8 +554,7 @@ class Returns(GsxObject):
 
     def get_label(self, part_number):
         """
-        The Return Label API retrieves the Return Label 
-        for a given Return Order Number.
+        The Return Label API retrieves the Return Label for a given Return Order Number.
         (Type not found: 'comptiaCode')
         so we're parsing the raw SOAP response and creating a "fake" return object from that.
         """
@@ -593,18 +604,9 @@ class Returns(GsxObject):
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
         """
-        pass
-
-    def get_pending(self):
-        """
-        The Parts Pending Return API returns a list of all parts that 
-        are pending for return, based on the search criteria. 
-        """
-        dt = CLIENT.factory.create('ns1:partsPendingReturnRequestType')
-        dt.repairData = self.data
-        dt.userSession = SESSION
-        
-        return self.submit('PartsPendingReturn', dt, 'partsPendingResponse')
+        dt = self._make_type('ns1:registerPartsForBulkReturnRequestType')
+        dt.bulkPartsRegistrationRequest = self.data
+        return self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationResponse')
 
 class Part(GsxObject):
     def lookup(self):
@@ -651,6 +653,12 @@ class Repair(GsxObject):
     dt = 'ns6:repairLookupInfoType'
     request_dt = 'ns1:repairLookupRequestType'
 
+    def __init__(self, number=None, *args, **kwargs):
+        super(Repair, self).__init__(*args, **kwargs)
+        
+        if number is not None:
+            self.data['repairConfirmationNumber'] = number
+
     def create_carryin(self):
         """
         GSX validates the information and if all of the validations go through,
@@ -678,6 +686,7 @@ class Repair(GsxObject):
 
     def update_carryin(self, newdata):
         """
+        Description
         The Update Carry-In Repair API allows the service providers 
         to update the existing  open carry-in repairs. 
         This API assists in addition/deletion of parts and addition of notes 
@@ -722,7 +731,8 @@ class Repair(GsxObject):
         This API allows users to provide the KGB serial number for the 
         whole unit exchange repairs. It also checks for the privilege 
         to create/ update whole unit exchange repairs 
-        before updating the whole unit exchange repair. 
+        before updating the whole unit exchange repair.
+
         Context:
         The API is to be used on whole unit repairs that are in a released state. 
         This API can be invoked only after carry-in repair creation API.
@@ -928,12 +938,13 @@ def connect(
     LOCALE = LOCALE
 
     md5 = hashlib.md5()
-    md5.update(user_id + str(sold_to))
+    md5.update(user_id + str(sold_to) + environment)
     cache_key = md5.hexdigest()
 
     if CACHE.get(cache_key) is not None:
         SESSION = CACHE.get(cache_key)
         init(environment, region)
+
         return SESSION
 
     init(environment, region)
