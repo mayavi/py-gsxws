@@ -928,7 +928,8 @@ def connect(
     LOCALE = LOCALE
 
     md5 = hashlib.md5()
-    cache_key = md5.update(user_id + str(sold_to)).hexdigest()
+    md5.update(user_id + str(sold_to))
+    cache_key = md5.hexdigest()
 
     if CACHE.get(cache_key) is not None:
         SESSION = CACHE.get(cache_key)
