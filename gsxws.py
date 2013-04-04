@@ -28,6 +28,7 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMA
 
 import re
 import os
+import md5
 import json
 import suds
 import base64
@@ -37,6 +38,7 @@ import urlparse
 import tempfile
 
 from suds.client import Client
+from suds.cache import ObjectCache
 import xml.etree.ElementTree as ET
 from datetime import datetime, date, time
 
@@ -44,6 +46,7 @@ from datetime import datetime, date, time
 CLIENT = None
 SESSION = dict()
 LOCALE = 'en_XXX'
+CACHE = ObjectCache(minutes=20)
 
 TIMEZONES = (
     ('GMT', 'UTC (Greenwich Mean Time)'),
@@ -918,11 +921,19 @@ def connect(
     Returns the session ID of the new connection.
     """
     
-    global SESSION
+    global CACHE
     global LOCALE
+    global SESSION
 
     SESSION = {}
     LOCALE = LOCALE
+
+    cache_key = md5.new(user_id + sold_to).hexdigest()
+
+    if CACHE.get(cache_key) is not None:
+        SESSION = CACHE.get(cache_key)
+        init(environment, region)
+        return SESSION
 
     init(environment, region)
 
@@ -937,6 +948,7 @@ def connect(
     try:
         result = CLIENT.service.Authenticate(account)
         SESSION['userSessionId'] = result.userSessionId
+        CACHE.put(cache_key, SESSION)
         return SESSION
     except suds.WebFault, e:
         raise GsxError(fault=e)
