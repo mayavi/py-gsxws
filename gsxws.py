@@ -28,13 +28,12 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMA
 
 import re
 import os
-import md5
 import json
 import suds
 import base64
-import logging
 import urllib
 import urlparse
+import hashlib
 import tempfile
 
 from suds.client import Client
@@ -928,7 +927,8 @@ def connect(
     SESSION = {}
     LOCALE = LOCALE
 
-    cache_key = md5.new(user_id + str(sold_to)).hexdigest()
+    md5 = hashlib.md5()
+    cache_key = md5.update(user_id + str(sold_to)).hexdigest()
 
     if CACHE.get(cache_key) is not None:
         SESSION = CACHE.get(cache_key)
