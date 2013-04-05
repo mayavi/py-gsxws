@@ -598,13 +598,14 @@ class Returns(GsxObject):
         """
         pass
 
-    def register_parts(self):
+    def register_parts(self, parts):
         """
         The Register Parts for Bulk Return API creates a bulk return for 
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
         """
         dt = self._make_type('ns1:registerPartsForBulkReturnRequestType')
+        self.data['bulkReturnOrder'] = parts
         dt.bulkPartsRegistrationRequest = self.data
         return self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationResponse')
 
