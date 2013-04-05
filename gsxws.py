@@ -569,7 +569,7 @@ class Returns(GsxObject):
         CLIENT.set_options(retxml=True)
 
         dt = CLIENT.factory.create('ns1:returnLabelRequestType')
-        dt.returnOrderNumber = self.dt.returnOrderNumber
+        dt.returnOrderNumber = self.data['returnOrderNumber']
         dt.partNumber = part_number
         dt.userSession = SESSION
 
