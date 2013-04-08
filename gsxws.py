@@ -607,7 +607,8 @@ class Returns(GsxObject):
         dt = self._make_type('ns1:registerPartsForBulkReturnRequestType')
         self.data['bulkReturnOrder'] = parts
         dt.bulkPartsRegistrationRequest = self.data
-        return self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationResponse')
+        
+        return self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationData')
 
 class Part(GsxObject):
     def lookup(self):
