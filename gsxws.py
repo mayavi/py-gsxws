@@ -607,8 +607,16 @@ class Returns(GsxObject):
         dt = self._make_type('ns1:registerPartsForBulkReturnRequestType')
         self.data['bulkReturnOrder'] = parts
         dt.bulkPartsRegistrationRequest = self.data
+
+        result = self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationData')
+
+        pdf = base64.b64decode(result.packingList)
+        of = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+        of.write(pdf)
         
-        return self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationData')
+        result.packingList = of.name
+
+        return result
 
 class Part(GsxObject):
     def lookup(self):
