@@ -48,40 +48,40 @@ LOCALE = 'en_XXX'
 CACHE = ObjectCache(minutes=20)
 
 TIMEZONES = (
-    ('GMT', 'UTC (Greenwich Mean Time)'),
-    ('PDT', 'UTC - 7h (Pacific Daylight Time)'),
-    ('PST', 'UTC - 8h (Pacific Standard Time)'),
-    ('CDT', 'UTC - 5h (Central Daylight Time)'),
-    ('CST', 'UTC - 6h (Central Standard Time)'),
-    ('EDT', 'UTC - 4h (Eastern Daylight Time)'),
-    ('EST', 'UTC - 5h (Eastern Standard Time)'),
-    ('CEST', 'UTC + 2h (Central European Summer Time)'),
-    ('CET', 'UTC + 1h (Central European Time)'),
-    ('JST', 'UTC + 9h (Japan Standard Time)'),
-    ('IST', 'UTC + 5.5h (Indian Standard Time)'),
-    ('CCT', 'UTC + 8h (Chinese Coast Time)'),
-    ('AEST', 'UTC + 10h (Australian Eastern Standard Time)'),
-    ('AEDT', 'UTC + 11h (Australian Eastern Daylight Time)'),
-    ('ACST', 'UTC + 9.5h (Austrailian Central Standard Time)'),
-    ('ACDT', 'UTC + 10.5h (Australian Central Daylight Time)'),
-    ('NZST', 'UTC + 12h (New Zealand Standard Time)'),
+    ('GMT', "UTC (Greenwich Mean Time)"),
+    ('PDT', "UTC - 7h (Pacific Daylight Time)"),
+    ('PST', "UTC - 8h (Pacific Standard Time)"),
+    ('CDT', "UTC - 5h (Central Daylight Time)"),
+    ('CST', "UTC - 6h (Central Standard Time)"),
+    ('EDT', "UTC - 4h (Eastern Daylight Time)"),
+    ('EST', "UTC - 5h (Eastern Standard Time)"),
+    ('CEST', "UTC + 2h (Central European Summer Time)"),
+    ('CET', "UTC + 1h (Central European Time)"),
+    ('JST', "UTC + 9h (Japan Standard Time)"),
+    ('IST', "UTC + 5.5h (Indian Standard Time)"),
+    ('CCT', "UTC + 8h (Chinese Coast Time)"),
+    ('AEST', "UTC + 10h (Australian Eastern Standard Time)"),
+    ('AEDT', "UTC + 11h (Australian Eastern Daylight Time)"),
+    ('ACST', "UTC + 9.5h (Austrailian Central Standard Time)"),
+    ('ACDT', "UTC + 10.5h (Australian Central Daylight Time)"),
+    ('NZST', "UTC + 12h (New Zealand Standard Time)"),
 )
 
 REGIONS = (
-    ('002', 'Asia/Pacific'),
-    ('003', 'Japan'),
-    ('004', 'Europe'),
-    ('005', 'United States'),
-    ('006', 'Canadia'),
-    ('007', 'Latin America'),
+    ('002', "Asia/Pacific"),
+    ('003', "Japan"),
+    ('004', "Europe"),
+    ('005', "United States"),
+    ('006', "Canadia"),
+    ('007', "Latin America"),
 )
 
 REGION_CODES = ('apac', 'am', 'la', 'emea',)
 
 ENVIRONMENTS = (
-    ('pr', 'Production'), 
-    ('ut', 'Development'),
-    ('it', 'Testing'),
+    ('pr', "Production"),
+    ('ut', "Development"),
+    ('it', "Testing"),
 )
 
 def validate(value, what=None):
@@ -613,7 +613,6 @@ class Returns(GsxObject):
         pdf = base64.b64decode(result.packingList)
         of = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
         of.write(pdf)
-        
         result.packingList = of.name
 
         return result
@@ -765,6 +764,7 @@ class Repair(GsxObject):
 
     def lookup(self):
         """
+        Description:
         The Repair Lookup API mimics the front-end repair search functionality.
         It fetches up to 2500 repairs in a given criteria.
         Subsequently, the extended Repair Status API can be used 
@@ -909,6 +909,10 @@ class Product(GsxObject):
             raise GsxError('Failed to fetch product image: %s' % e)
 
 def init(env='ut', region='emea'):
+    """
+    Initialize the SOAP client
+    """
+
     global CLIENT, REGION_CODES
 
     envs = ('pr', 'it', 'ut',)
@@ -924,7 +928,8 @@ def init(env='ut', region='emea'):
     url = url.format(env=hosts[env], region=region)
 
     CLIENT = Client(url)
-    CLIENT.options.cache.setduration(weeks=2)
+    cache = CLIENT.options.cache
+    cache.setduration(weeks=1)
 
 def connect(
         user_id,
