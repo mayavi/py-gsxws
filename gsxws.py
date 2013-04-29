@@ -5,24 +5,24 @@
 """
 Copyright (c) 2013, Filipp Lepalaan All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification, 
+Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-- Redistributions of source code must retain the above copyright notice, 
+- Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
-- Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
+- Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
 and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES 
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
@@ -32,7 +32,6 @@ import json
 import suds
 import base64
 import urllib
-import urlparse
 import hashlib
 import tempfile
 
@@ -84,6 +83,7 @@ ENVIRONMENTS = (
     ('it', "Testing"),
 )
 
+
 def validate(value, what=None):
     """
     Tries to guess the meaning of value or validate that
@@ -95,28 +95,30 @@ def validate(value, what=None):
         raise ValueError('%s is not valid input')
 
     rex = {
-        'partNumber'        : r'^([A-Z]{1,2})?\d{3}\-?(\d{4}|[A-Z]{2})(/[A-Z])?$',
-        'serialNumber'      : r'^[A-Z0-9]{11,12}$',
-        'eeeCode'           : r'^[A-Z0-9]{3,4}$',
-        'returnOrder'       : r'^7\d{9}$',
-        'repairNumber'      : r'^\d{12}$',
-        'dispatchId'        : r'^G\d{9}$',
-        'alternateDeviceId' : r'^\d{15}$',
+        'partNumber':       r'^([A-Z]{1,2})?\d{3}\-?(\d{4}|[A-Z]{2})(/[A-Z])?$',
+        'serialNumber':     r'^[A-Z0-9]{11,12}$',
+        'eeeCode':          r'^[A-Z0-9]{3,4}$',
+        'returnOrder':      r'^7\d{9}$',
+        'repairNumber':     r'^\d{12}$',
+        'dispatchId':       r'^G\d{9}$',
+        'alternateDeviceId': r'^\d{15}$',
         'diagnosticEventNumber': r'^\d{23}$',
-        'productName'       : r'^i?Mac',
+        'productName':      r'^i?Mac',
     }
-    
+
     for k, v in rex.items():
         if re.match(v, value):
             result = k
 
     return (result == what) if what else result
 
+
 def get_format(locale=LOCALE):
     df = open(os.path.join(os.path.dirname(__file__), 'langs.json'), 'r')
     data = json.load(df)
 
     return data[locale]
+
 
 class GsxObject(object):
     """
@@ -127,7 +129,7 @@ class GsxObject(object):
     method      = 'Authenticate'                  # The SOAP method to call on the GSX server
 
     def __init__(self, *args, **kwargs):
-        
+
         formats = get_format()
 
         # native types are not welcome here :)
@@ -138,7 +140,7 @@ class GsxObject(object):
                 kwargs[k] = v.strftime(formats['tf'])
             if isinstance(v, bool):
                 kwargs[k] = 'Y' if v else 'N'
-        
+
         self.data = kwargs
 
         if CLIENT is not None:
@@ -489,20 +491,21 @@ class Diagnostics(GsxObject):
                 result = CLIENT.service.FetchIOSDiagnostic(dt)
             except suds.WebFault, e:
                 raise GsxError(fault=e)
-                
+
             root = ET.fromstring(result).findall('*//%s' % 'FetchIOSDiagnosticResponse')[0]
         else:
             dt = self._make_type('ns3:fetchRepairDiagnosticRequestType')
             dt.lookupRequestData = self.data
-            
+
             try:
                 result = CLIENT.service.FetchRepairDiagnostic(dt)
             except suds.WebFault, e:
                 raise GsxError(fault=e)
 
             root = ET.fromstring(result).findall('*//%s' % 'FetchRepairDiagnosticResponse')[0]
-        
+
         return GsxResponse.Process(root)
+
 
 class Order(GsxObject):
     def __init__(self, type='stocking', *args, **kwargs):
@@ -512,7 +515,7 @@ class Order(GsxObject):
     def add_part(self, part_number, quantity):
         self.data['orderLines'].append({
             'partNumber': part_number, 'quantity': quantity
-            })
+        })
 
     def submit(self):
         dt = CLIENT.factory.create('ns1:createStockingOrderRequestType')
@@ -525,27 +528,28 @@ class Order(GsxObject):
         except suds.WebFault, e:
             raise GsxError(fault=e)
 
+
 class Returns(GsxObject):
     def __init__(self, order_number=None, *args, **kwargs):
         super(Returns, self).__init__(*args, **kwargs)
-        
+
         if order_number is not None:
             self.data['returnOrderNumber'] = order_number
 
     def get_pending(self):
         """
-        The Parts Pending Return API returns a list of all parts that 
-        are pending for return, based on the search criteria. 
+        The Parts Pending Return API returns a list of all parts that
+        are pending for return, based on the search criteria.
         """
         dt = self._make_type('ns1:partsPendingReturnRequestType')
         dt.repairData = self.data
-        
+
         return self.submit('PartsPendingReturn', dt, 'partsPendingResponse')
 
     def get_report(self):
         """
-        The Return Report API returns a list of all parts that are returned 
-        or pending for return, based on the search criteria. 
+        The Return Report API returns a list of all parts that are returned
+        or pending for return, based on the search criteria.
         """
         dt = self._make_type('ns1:returnReportRequestType')
         dt.returnRequestData = self.data
@@ -581,9 +585,14 @@ class Returns(GsxObject):
         el = ET.fromstring(result).findall('*//%s' % 'returnLabelData')[0]
 
         for r in el.iter():
+
             k, v = r.tag, r.text
+
             if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
                 v = base64.b64decode(v)
+                of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+                of.write(v)
+                v = of.name
 
             setattr(rd, k, v)
 
@@ -591,31 +600,32 @@ class Returns(GsxObject):
 
     def get_proforma(self):
         """
-        The View Bulk Return Proforma API allows you to view 
+        The View Bulk Return Proforma API allows you to view
         the proforma label for a given Bulk Return Id.
-        You can create a parts bulk return 
-        by using the Register Parts for Bulk Return API. 
+        You can create a parts bulk return
+        by using the Register Parts for Bulk Return API.
         """
         pass
 
     def register_parts(self, parts):
         """
-        The Register Parts for Bulk Return API creates a bulk return for 
+        The Register Parts for Bulk Return API creates a bulk return for
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
         """
-        dt = self._make_type('ns1:registerPartsForBulkReturnRequestType')
+        dt = self._make_type("ns1:registerPartsForBulkReturnRequestType")
         self.data['bulkReturnOrder'] = parts
         dt.bulkPartsRegistrationRequest = self.data
 
-        result = self.submit('RegisterPartsForBulkReturn', dt, 'bulkPartsRegistrationData')
+        result = self.submit("RegisterPartsForBulkReturn", dt, "bulkPartsRegistrationData")
 
         pdf = base64.b64decode(result.packingList)
-        of = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+        of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         of.write(pdf)
         result.packingList = of.name
 
         return result
+
 
 class Part(GsxObject):
     def lookup(self):
@@ -638,6 +648,7 @@ class Part(GsxObject):
         except Exception, e:
             raise GsxError('Failed to fetch part image: %s' % e)
 
+
 class Escalation(GsxObject):
     def create(self):
         """
@@ -657,14 +668,15 @@ class Escalation(GsxObject):
         dt.escalationRequest = self.data
         return self.submit("UpdateGeneralEscalation", dt, "escalationConfirmation")
 
+
 class Repair(GsxObject):
-    
+
     dt = 'ns6:repairLookupInfoType'
     request_dt = 'ns1:repairLookupRequestType'
 
     def __init__(self, number=None, *args, **kwargs):
         super(Repair, self).__init__(*args, **kwargs)
-        
+
         if number is not None:
             self.data['repairConfirmationNumber'] = number
 
@@ -677,11 +689,11 @@ class Repair(GsxObject):
         dt.repairData = self.data
 
         return self.submit('CreateCarryInRepair', dt, 'repairConfirmation')
-        
+
     def create_cnd(self):
         """
-        The Create CND Repair API allows Service Providers to create a repair 
-        whenever the reported issue cannot be duplicated, and the repair 
+        The Create CND Repair API allows Service Providers to create a repair
+        whenever the reported issue cannot be duplicated, and the repair
         requires no parts replacement.
         N01 Unable to Replicate
         N02 Software Update/Issue
@@ -696,10 +708,10 @@ class Repair(GsxObject):
     def update_carryin(self, newdata):
         """
         Description
-        The Update Carry-In Repair API allows the service providers 
-        to update the existing  open carry-in repairs. 
-        This API assists in addition/deletion of parts and addition of notes 
-        to a repair. On successful update, the repair confirmation number and 
+        The Update Carry-In Repair API allows the service providers
+        to update the existing  open carry-in repairs.
+        This API assists in addition/deletion of parts and addition of notes
+        to a repair. On successful update, the repair confirmation number and
         quote for any newly added parts  would be returned.
         In case of any validation error or unsuccessful update, a fault code is issued.
 
@@ -710,7 +722,7 @@ class Repair(GsxObject):
         RFPU    Ready for Pickup
         """
         dt = self._make_type('ns1:updateCarryInRequestType')
-        
+
         # Merge old and new data (old data should have Dispatch ID)
         dt.repairData = dict(self.data.items() + newdata.items())
 
@@ -719,31 +731,31 @@ class Repair(GsxObject):
     def update_sn(self, parts):
         """
         Description
-        The Update Serial Number API allows the service providers to 
-        update the module serial numbers. 
+        The Update Serial Number API allows the service providers to
+        update the module serial numbers.
         Context:
-        The API is not applicable for whole unit replacement 
+        The API is not applicable for whole unit replacement
         serial number entry (see KGB serial update).
         """
         dt = self._make_type('ns1:updateSerialNumberRequestType')
         repairData = {'repairConfirmationNumber': self.data.get('dispatchId')}
         repairData['partInfo'] = parts
         dt.repairData = repairData
-        
+
         return self.submit('UpdateSerialNumber', dt, 'repairConfirmation')
 
     def update_kgb_sn(self, sn):
         """
         Description:
-        The KGB Serial Number Update API is always to be used on 
-        whole unit repairs that are in a released state. 
-        This API allows users to provide the KGB serial number for the 
-        whole unit exchange repairs. It also checks for the privilege 
-        to create/ update whole unit exchange repairs 
+        The KGB Serial Number Update API is always to be used on
+        whole unit repairs that are in a released state.
+        This API allows users to provide the KGB serial number for the
+        whole unit exchange repairs. It also checks for the privilege
+        to create/ update whole unit exchange repairs
         before updating the whole unit exchange repair.
 
         Context:
-        The API is to be used on whole unit repairs that are in a released state. 
+        The API is to be used on whole unit repairs that are in a released state.
         This API can be invoked only after carry-in repair creation API.
         """
 
@@ -758,7 +770,7 @@ class Repair(GsxObject):
             result = CLIENT.service.KGBSerialNumberUpdate(dt)
         except suds.WebFault, e:
             raise GsxError(fault=e)
-            
+
         root = ET.fromstring(result).findall('*//%s' % 'UpdateKGBSerialNumberResponse')
         return GsxResponse.Process(root[0])
 
@@ -767,14 +779,14 @@ class Repair(GsxObject):
         Description:
         The Repair Lookup API mimics the front-end repair search functionality.
         It fetches up to 2500 repairs in a given criteria.
-        Subsequently, the extended Repair Status API can be used 
-        to retrieve more details of the repair. 
+        Subsequently, the extended Repair Status API can be used
+        to retrieve more details of the repair.
         """
         return Lookup(**self.data).repairs()
 
     def mark_complete(self, numbers=None):
         """
-        The Mark Repair Complete API allows a single or an array of 
+        The Mark Repair Complete API allows a single or an array of
         repair confirmation numbers to be submitted to GSX to be marked as complete.
         """
         dt = self._make_type('ns1:markRepairCompleteRequestType')
@@ -788,9 +800,9 @@ class Repair(GsxObject):
 
     def delete(self):
         """
-        The Delete Repair API allows the service providers to delete 
-        the existing GSX Initiated Carry-In, Return Before Replace & Onsite repairs 
-        which are in Declined-Rejected By TSPS Approver state, 
+        The Delete Repair API allows the service providers to delete
+        the existing GSX Initiated Carry-In, Return Before Replace & Onsite repairs
+        which are in Declined-Rejected By TSPS Approver state,
         that do not have an active repair id.
         """
         pass
@@ -811,8 +823,8 @@ class Repair(GsxObject):
 
     def get_details(self):
         """
-        The Repair Details API includes the shipment information 
-        similar to the Repair Lookup API. 
+        The Repair Details API includes the shipment information
+        similar to the Repair Lookup API.
         """
         dt = self._make_type('ns0:repairDetailsRequestType')
         dt.dispatchId = self.data['dispatchId']
@@ -824,32 +836,34 @@ class Repair(GsxObject):
             try:
                 url = re.sub('<<TRKNO>>', p.deliveryTrackingNumber, p.carrierURL)
                 details.partsInfo[i].carrierURL = url
-            except AttributeError, e:
+            except AttributeError:
                 pass
 
         return details
+
 
 class Communication(GsxObject):
     def get_content():
         """
         The Fetch Communication Content API allows the service providers/depot/carriers
-        to fetch the communication content by article ID from the service news channel. 
+        to fetch the communication content by article ID from the service news channel.
         """
 
     def get_articles():
         """
         The Fetch Communication Articles API allows the service partners
-        to fetch all the active communication message IDs. 
+        to fetch all the active communication message IDs.
         """
 
+
 class Product(GsxObject):
-    
+
     dt = 'ns7:unitDetailType'
 
     def __init__(self, serialNumber, *args, **kwargs):
         super(Product, self).__init__(*args, **kwargs)
         self.serialNumber = serialNumber
-        
+
         if SESSION:
             self.dt.serialNumber = serialNumber
             self.lookup = Lookup(serialNumber=self.serialNumber)
@@ -878,11 +892,10 @@ class Product(GsxObject):
         result = self.submit("WarrantyStatus", dt, "warrantyDetailInfo")
         return self._process(result)
 
-
     def get_activation(self):
         """
-        The Fetch iOS Activation Details API is used to 
-        fetch activation details of iOS Devices. 
+        The Fetch iOS Activation Details API is used to
+        fetch activation details of iOS Devices.
         """
         dt = self._make_type('ns3:fetchIOSActivationDetailsRequestType')
         dt.serialNumber = self.serialNumber
@@ -908,6 +921,7 @@ class Product(GsxObject):
         except Exception, e:
             raise GsxError('Failed to fetch product image: %s' % e)
 
+
 def init(env='ut', region='emea'):
     """
     Initialize the SOAP client
@@ -931,12 +945,13 @@ def init(env='ut', region='emea'):
     cache = CLIENT.options.cache
     cache.setduration(weeks=1)
 
+
 def connect(
         user_id,
         password,
-        sold_to, 
+        sold_to,
         language='en',
-        timezone='CEST', 
+        timezone='CEST',
         environment='ut',
         region='emea',
         locale=LOCALE):
@@ -944,7 +959,7 @@ def connect(
     Establishes connection with GSX Web Services.
     Returns the session ID of the new connection.
     """
-    
+
     global CACHE
     global LOCALE
     global SESSION
@@ -980,6 +995,7 @@ def connect(
     except suds.WebFault, e:
         raise GsxError(fault=e)
 
+
 def logout():
     CLIENT.service.Logout()
 
@@ -987,7 +1003,7 @@ if __name__ == '__main__':
     import sys
     import json
     import argparse
-    
+
     parser = argparse.ArgumentParser(description='Communicate with GSX Web Services')
 
     parser.add_argument('user_id')
@@ -997,5 +1013,5 @@ if __name__ == '__main__':
     parser.add_argument('--timezone', default='CEST')
     parser.add_argument('--environment', default='pr')
     parser.add_argument('--region', default='emea')
-    
+
     args = parser.parse_args()
