@@ -2,14 +2,27 @@
 gsxws/repairs.py
 """
 import sys
-from gsxws import connect, SESSION
+from gsxws import connect
 
 
 class GsxObject(object):
-    data = dict()
+
+    data = {}
+
     def __init__(self, **kwargs):
         self.data = kwargs
 
+    def _make_type(self, new_dt):
+        """
+        Creates the top-level datatype for the API call
+        """
+        from gsxws import CLIENT, SESSION
+        dt = CLIENT.factory.create(new_dt)
+
+        if SESSION:
+            dt.userSession = SESSION
+
+        return dt
 
 class Customer(GsxObject):
     """
@@ -38,7 +51,9 @@ class RepairOrderLine(GsxObject):
 
 
 class Repair(GsxObject):
-    """docstring for Repair"""
+    """
+    Abstract base class for the different GSX Repair types
+    """
     customerAddress = None
     symptom = ""
     diagnosis = ""
@@ -71,10 +86,16 @@ class CarryInRepair(Repair):
     fileName = ""
     fileData = ""
     diagnosedByTechId = ""
-        
+
 
 class IndirectOnsiteRepair(Repair):
-    """docstring for IndirectOnsiteRepair"""
+    """
+    The Create Indirect Onsite Repair API is designed to create the indirect onsite repairs.
+    When a service provider travels to the customer location to perform repair
+    on a unit eligible for onsite service, they create an indirect repair.
+    Once the repair is submitted, it is assigned a confirmation number,
+    which is a reference number to identify the repair.
+    """
     pass
 
 

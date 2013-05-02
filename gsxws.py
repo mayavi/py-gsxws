@@ -952,7 +952,7 @@ def connect(
         sold_to,
         language='en',
         timezone='CEST',
-        environment='ut',
+        environment='pr',
         region='emea',
         locale=LOCALE):
     """
