@@ -16,6 +16,7 @@ class GsxRequest(object):
         except suds.WebFault, e:
             raise GsxError(fault=e)
 
+
 class Product(GsxObject, GsxRequest):
     """Something serviceable that Apple makes
     """

@@ -859,46 +859,79 @@ class Communication(GsxObject):
 class Product(GsxObject):
 
     dt = 'ns7:unitDetailType'
+    serialNumber = ""
+    alternateDeviceId = ""
 
     def __init__(self, serialNumber, *args, **kwargs):
         super(Product, self).__init__(*args, **kwargs)
-        self.serialNumber = serialNumber
+
+        dt = {'serialNumber': serialNumber}
+
+        if validate(serialNumber, 'alternateDeviceId'):
+            self.alternateDeviceId = serialNumber
+            dt = {'alternateDeviceId': serialNumber}
+        else:
+            self.serialNumber = serialNumber
 
         if SESSION:
-            self.dt.serialNumber = serialNumber
-            self.lookup = Lookup(serialNumber=self.serialNumber)
+            self.dt = dt
+            self.lookup = Lookup(**dt)
 
     def get_model(self):
-        """
-        This API allows Service Providers/Carriers to fetch
+        """This API allows Service Providers/Carriers to fetch
         Product Model information for the given serial number.
+
+        >>> Product('W874939YX92').get_model().configDescription
+        MacBook Pro (15-inch 2.4/2.2GHz)
         """
         #self.set_request('ns3:fetchProductModelRequestType', 'productModelRequest')
         dt = self._make_type("ns3:fetchProductModelRequestType")
         dt.productModelRequest = self.dt
         result = self.submit('FetchProductModel', dt, "productModelResponse")
-        return result
+        return result[0]
 
     def get_warranty(self, date_received=None, parts=[]):
-        """
-        The Warranty Status API retrieves the same warranty details
+        """The Warranty Status API retrieves the same warranty details
         displayed on the GSX Coverage screen.
         If part information is provided, the part warranty information is returned.
         If you do not provide the optional part information in the
         warranty status request, the unit level warranty information is returned.
+
+        >>> Product('013348005376007').get_warranty().warrantyStatus
+        Apple Limited Warranty
+        >>> Product('W874939YX92').get_warranty().warrantyStatus
+        Out Of Warranty (No Coverage)
         """
         dt = self._make_type("ns3:warrantyStatusRequestType")
+
+        if not self.serialNumber:
+            activation = self.get_activation()
+            self.serialNumber = activation.serialNumber
+            self.dt = {'serialNumber': self.serialNumber}
+
         dt.unitDetail = self.dt
+
         result = self.submit("WarrantyStatus", dt, "warrantyDetailInfo")
         return self._process(result)
 
     def get_activation(self):
-        """
-        The Fetch iOS Activation Details API is used to
+        """The Fetch iOS Activation Details API is used to
         fetch activation details of iOS Devices.
+
+        >>> Product('013348005376007').get_activation().unlocked
+        true
+        >>> Product('W874939YX92').get_activation().unlocked
+        Traceback (most recent call last):
+        ...
+        GsxError: Provided serial number does not belong to an iOS Device.Please Enter an ios serial number.
         """
         dt = self._make_type('ns3:fetchIOSActivationDetailsRequestType')
-        dt.serialNumber = self.serialNumber
+
+        if self.serialNumber:
+            dt.serialNumber = self.serialNumber
+        else:
+            dt.alternateDeviceId = self.alternateDeviceId
+
         return self.submit('FetchIOSActivationDetails', dt, 'activationDetailsInfo')
 
     def get_parts(self):
@@ -1000,8 +1033,7 @@ def logout():
     CLIENT.service.Logout()
 
 if __name__ == '__main__':
-    import sys
-    import json
+    import doctest
     import argparse
 
     parser = argparse.ArgumentParser(description='Communicate with GSX Web Services')
@@ -1015,3 +1047,5 @@ if __name__ == '__main__':
     parser.add_argument('--region', default='emea')
 
     args = parser.parse_args()
+    connect(args.user_id, args.password, args.sold_to)
+    doctest.testmod()

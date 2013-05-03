@@ -24,6 +24,7 @@ class GsxObject(object):
 
         return dt
 
+
 class Customer(GsxObject):
     """
     Customer address for GSX
@@ -41,7 +42,7 @@ class Customer(GsxObject):
     state = "ZZ"
     zipCode = ""
     emailAddress = ""
-        
+
 
 class RepairOrderLine(GsxObject):
     partNumber = ""
