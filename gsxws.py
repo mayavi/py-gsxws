@@ -530,6 +530,14 @@ class Order(GsxObject):
 
 
 class Returns(GsxObject):
+
+    RETURN_TYPES = (
+        (1, "Dead On Arrival"),
+        (2, "Good Part Return"),
+        (3, "Convert To Stock"),
+        (4, "Transfer to Out of Warranty"),
+    )
+
     def __init__(self, order_number=None, *args, **kwargs):
         super(Returns, self).__init__(*args, **kwargs)
 
@@ -537,9 +545,10 @@ class Returns(GsxObject):
             self.data['returnOrderNumber'] = order_number
 
     def get_pending(self):
-        """
-        The Parts Pending Return API returns a list of all parts that
+        """The Parts Pending Return API returns a list of all parts that
         are pending for return, based on the search criteria.
+
+        >>> Returns(repairType='CA').get_pending()  # doctest: +SKIP
         """
         dt = self._make_type('ns1:partsPendingReturnRequestType')
         dt.repairData = self.data
@@ -547,8 +556,7 @@ class Returns(GsxObject):
         return self.submit('PartsPendingReturn', dt, 'partsPendingResponse')
 
     def get_report(self):
-        """
-        The Return Report API returns a list of all parts that are returned
+        """The Return Report API returns a list of all parts that are returned
         or pending for return, based on the search criteria.
         """
         dt = self._make_type('ns1:returnReportRequestType')
@@ -557,8 +565,7 @@ class Returns(GsxObject):
         return self.submit('ReturnReport', dt, 'returnResponseData')
 
     def get_label(self, part_number):
-        """
-        The Return Label API retrieves the Return Label for a given Return Order Number.
+        """The Return Label API retrieves the Return Label for a given Return Order Number.
         (Type not found: 'comptiaCode')
         so we're parsing the raw SOAP response and creating a "fake" return object from that.
         """
@@ -599,17 +606,14 @@ class Returns(GsxObject):
         return rd
 
     def get_proforma(self):
-        """
-        The View Bulk Return Proforma API allows you to view
-        the proforma label for a given Bulk Return Id.
-        You can create a parts bulk return
+        """The View Bulk Return Proforma API allows you to view the proforma label
+        for a given Bulk Return Id. You can create a parts bulk return
         by using the Register Parts for Bulk Return API.
         """
         pass
 
     def register_parts(self, parts):
-        """
-        The Register Parts for Bulk Return API creates a bulk return for
+        """The Register Parts for Bulk Return API creates a bulk return for
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
         """
@@ -624,6 +628,28 @@ class Returns(GsxObject):
         of.write(pdf)
         result.packingList = of.name
 
+        return result
+
+    def update_parts(self, confirmation, parts):
+        """
+        The Parts Return Update API allows you to mark a part
+        with the status GPR(2), DOA(1), CTS(3), or TOW(4).
+        The API can be used only by ASP.
+
+        >>> Returns().update_parts('G135877430',\
+        [{'partNumber': '661-5174',\
+        'comptiaCode': 'Z29',\
+        'comptiaModifier': 'A',\
+        'returnType': 2}])
+        """
+        dt = self._make_type("ns1:partsReturnUpdateRequestType")
+        repairData = {
+            'repairConfirmationNumber': confirmation,
+            'orderLines': parts
+        }
+        dt.repairData = repairData
+        result = self.submit("PartsReturnUpdate", dt)
+        print result
         return result
 
 
@@ -652,7 +678,7 @@ class Part(GsxObject):
 class Escalation(GsxObject):
     def create(self):
         """
-        The Create General Escalation API allows users to create 
+        The Create General Escalation API allows users to create
         a general escalation in GSX. The API was earlier known as GSX Help.
         """
         dt = self._make_type("ns1:createGenEscRequestType")
@@ -661,7 +687,7 @@ class Escalation(GsxObject):
 
     def update(self):
         """
-        The Update General Escalation API allows Depot users to 
+        The Update General Escalation API allows Depot users to
         update a general escalation in GSX.
         """
         dt = self._make_type("ns1:updateGeneralEscRequestType")
@@ -678,6 +704,7 @@ class Repair(GsxObject):
         super(Repair, self).__init__(*args, **kwargs)
 
         if number is not None:
+            self.data['dispatchId'] = number
             self.data['repairConfirmationNumber'] = number
 
     def create_carryin(self):
@@ -781,6 +808,8 @@ class Repair(GsxObject):
         It fetches up to 2500 repairs in a given criteria.
         Subsequently, the extended Repair Status API can be used
         to retrieve more details of the repair.
+
+        >>> Repair(repairStatus='Open').lookup()
         """
         return Lookup(**self.data).repairs()
 
@@ -825,6 +854,9 @@ class Repair(GsxObject):
         """
         The Repair Details API includes the shipment information
         similar to the Repair Lookup API.
+
+        >>> Repair('G135773004').get_details()
+        asd
         """
         dt = self._make_type('ns0:repairDetailsRequestType')
         dt.dispatchId = self.data['dispatchId']
@@ -878,7 +910,8 @@ class Product(GsxObject):
             self.lookup = Lookup(**dt)
 
     def get_model(self):
-        """This API allows Service Providers/Carriers to fetch
+        """
+        This API allows Service Providers/Carriers to fetch
         Product Model information for the given serial number.
 
         >>> Product('W874939YX92').get_model().configDescription
@@ -915,7 +948,8 @@ class Product(GsxObject):
         return self._process(result)
 
     def get_activation(self):
-        """The Fetch iOS Activation Details API is used to
+        """
+        The Fetch iOS Activation Details API is used to
         fetch activation details of iOS Devices.
 
         >>> Product('013348005376007').get_activation().unlocked
@@ -985,7 +1019,7 @@ def connect(
         sold_to,
         language='en',
         timezone='CEST',
-        environment='pr',
+        environment='ut',
         region='emea',
         locale=LOCALE):
     """
