@@ -43,8 +43,9 @@ from datetime import datetime, date, time
 # Must use a few module-level global variables
 CLIENT = None
 SESSION = dict()
-LOCALE = 'en_XXX'
+LOCALE = "en_XXX"
 CACHE = ObjectCache(minutes=20)
+COMPTIA_CACHE = ObjectCache(months=1)
 
 TIMEZONES = (
     ('GMT', "UTC (Greenwich Mean Time)"),
@@ -309,27 +310,35 @@ class CompTIA(object):
         Here we must resort to raw XML parsing since SUDS throws this:
         suds.TypeNotFound: Type not found: 'comptiaDescription'
         when calling CompTIACodes()...
+
+        >>> CompTIA().fetch()
+        {'A': {'972': 'iPod not recognized',...
         """
+        global COMPTIA_CACHE
+        if COMPTIA_CACHE.get("comptia"):
+            return COMPTIA_CACHE.get("comptia")
+
         CLIENT.set_options(retxml=True)
-        dt = CLIENT.factory.create('ns3:comptiaCodeLookupRequestType')
+        dt = CLIENT.factory.create("ns3:comptiaCodeLookupRequestType")
         dt.userSession = SESSION
 
         try:
             xml = CLIENT.service.CompTIACodes(dt)
         except suds.WebFault, e:
             raise GsxError(fault=e)
-        
+
         root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
 
-        for el in root.findall('.//comptiaGroup'):
+        for el in root.findall(".//comptiaGroup"):
             group = {}
             comp_id = el[0].text
-            
+
             for ci in el.findall('comptiaCodeInfo'):
                 group[ci[0].text] = ci[1].text
             
             self.data[comp_id] = group
 
+        COMPTIA_CACHE.put("comptia", self.data)
         return self.data
 
     def symptoms(self, component=None):
@@ -924,7 +933,8 @@ class Product(GsxObject):
         return result[0]
 
     def get_warranty(self, date_received=None, parts=[]):
-        """The Warranty Status API retrieves the same warranty details
+        """
+        The Warranty Status API retrieves the same warranty details
         displayed on the GSX Coverage screen.
         If part information is provided, the part warranty information is returned.
         If you do not provide the optional part information in the
@@ -957,9 +967,10 @@ class Product(GsxObject):
         >>> Product('W874939YX92').get_activation().unlocked
         Traceback (most recent call last):
         ...
-        GsxError: Provided serial number does not belong to an iOS Device.Please Enter an ios serial number.
+        GsxError: Provided serial number does not belong to an iOS Device.
+        ...
         """
-        dt = self._make_type('ns3:fetchIOSActivationDetailsRequestType')
+        dt = self._make_type("ns3:fetchIOSActivationDetailsRequestType")
 
         if self.serialNumber:
             dt.serialNumber = self.serialNumber
@@ -1005,7 +1016,7 @@ def init(env='ut', region='emea'):
     if env not in envs:
         raise ValueError('Environment should be one of: %s' % ','.join(envs))
 
-    url = 'https://gsx{env}.apple.com/wsdl/{region}Asp/gsx-{region}Asp.wsdl'
+    url = "https://gsx{env}.apple.com/wsdl/{region}Asp/gsx-{region}Asp.wsdl"
     url = url.format(env=hosts[env], region=region)
 
     CLIENT = Client(url)
