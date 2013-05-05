@@ -203,7 +203,7 @@ class GsxObject(object):
             # decode binary data
             if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
                 v = base64.b64decode(v)
-            
+
             if isinstance(v, basestring):
                 # convert dates to native Python types
                 if re.search('^\d{2}/\d{2}/\d{2}$', v):
@@ -238,7 +238,7 @@ class GsxObject(object):
             pass
 
         rd = ReturnData()
-        
+
         for r in xml_el.iter():
             k, v = r.tag, r.text
             if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
@@ -251,24 +251,26 @@ class GsxObject(object):
     def __getattr__(self, name):
         return self.data[name]
 
+
 class Content(GsxObject):
     def fetch_image(self, url):
-        '''
-        The Fetch Image API allows users to get the image file from GSX, 
-        for the content articles, using the image URL. 
-        The image URLs will be obtained from the image html tags 
-        in the data from all content APIs. 
-        '''
+        """
+        The Fetch Image API allows users to get the image file from GSX,
+        for the content articles, using the image URL.
+        The image URLs will be obtained from the image html tags
+        in the data from all content APIs.
+        """
         dt = self._make_type('ns3:fetchImageRequestType')
         dt.imageRequest = {'imageUrl': url}
 
         return self.submit('FetchImage', dt, 'contentResponse')
 
+
 class CompTIA(object):
     '''
     Stores and accesses CompTIA codes.
     '''
-    
+
     MODIFIERS = (
         ("A", "Not Applicable"),
         ("B", "Continuous"),
@@ -278,7 +280,7 @@ class CompTIA(object):
         ("F", "Configuration: Peripheral"),
         ("G", "Damaged"),
     )
-    
+
     GROUPS = (
         ('0', 'General'),
         ('1', 'Visual'),
@@ -295,14 +297,14 @@ class CompTIA(object):
         ('E', 'iPod'),
         ('F', 'iPad'),
     )
-    
+
     def __init__(self):
         """
         Initialize CompTIA symptoms from JSON file
         """
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
         self.data = json.load(df)
-        
+
     def fetch(self):
         """
         The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers.
@@ -335,7 +337,7 @@ class CompTIA(object):
 
             for ci in el.findall('comptiaCodeInfo'):
                 group[ci[0].text] = ci[1].text
-            
+
             self.data[comp_id] = group
 
         COMPTIA_CACHE.put("comptia", self.data)
@@ -347,13 +349,14 @@ class CompTIA(object):
         belonging to the given component code.
         """
         r = dict()
-        
+
         for g, codes in self.data.items():
             r[g] = list()
             for k, v in codes.items():
                 r[g].append((k, v,))
-            
+
         return r[component] if component else r
+
 
 class GsxResponse(dict):
     """
@@ -368,7 +371,7 @@ class GsxResponse(dict):
     @classmethod
     def Process(cls, node):
         nodedict = cls()
-        
+
         for child in node:
             k, v = child.tag, child.text
             newitem = cls.Process(child)
