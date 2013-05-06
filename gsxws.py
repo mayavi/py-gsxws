@@ -442,10 +442,10 @@ class Lookup(GsxObject):
 
     def parts(self):
         """
-        The Parts Lookup API allows users to access part and part pricing data prior to 
-        creating a repair or order. Parts lookup is also a good way to search for 
+        The Parts Lookup API allows users to access part and part pricing data prior to
+        creating a repair or order. Parts lookup is also a good way to search for
         part numbers by various attributes of a part
-        (config code, EEE code, serial number, etc.). 
+        (config code, EEE code, serial number, etc.).
         """
         dt = self._make_type("ns0:partsLookupRequestType")
         dt.lookupRequestData = self.data
@@ -455,7 +455,7 @@ class Lookup(GsxObject):
         """
         The Repair Lookup API mimics the front-end repair search functionality.
         It fetches up to 2500 repairs in a given criteria.
-        Subsequently, the extended Repair Status API can be used 
+        Subsequently, the extended Repair Status API can be used
         to retrieve more details of the repair.
         """
         dt = CLIENT.factory.create('ns6:repairLookupInfoType')
@@ -466,15 +466,15 @@ class Lookup(GsxObject):
 
     def invoices(self):
         """
-        The Invoice ID Lookup API allows AASP users 
+        The Invoice ID Lookup API allows AASP users
         to fetch the invoice generated for last 24 hrs
         """
         return self.lookup('ns1:invoiceIDLookupRequestType', 'InvoiceIDLookup')
 
     def invoice_details(self):
         """
-        The Invoice Details Lookup API allows AASP users 
-        to download invoice for a given invoice id.
+        The Invoice Details Lookup API allows AASP users to
+        download invoice for a given invoice id.
         """
         result = self.lookup('ns1:invoiceDetailsLookupRequestType', 'InvoiceDetailsLookup')
         pdf = base64.b64decode(result.invoiceData)
@@ -483,30 +483,32 @@ class Lookup(GsxObject):
         result.invoiceData = outfile.name
         return result
 
+
 class Diagnostics(GsxObject):
     def fetch(self):
         """
-        The Fetch Repair Diagnostics API allows the service providers/depot/carriers 
-        to fetch MRI/CPU diagnostic details from the Apple Diagnostic Repository OR 
+        The Fetch Repair Diagnostics API allows the service providers/depot/carriers
+        to fetch MRI/CPU diagnostic details from the Apple Diagnostic Repository OR
         diagnostic test details of iOS Devices.
         The ticket is generated within GSX system.
-        """
 
+        >>> Diagnostics(diagnosticEventNumber='12942008007242012052919').fetch()
+        """
         # Using raw XML to avoid TypeNotFound: Type not found: 'toolID' or operationID
         CLIENT.set_options(retxml=True)
 
         if "alternateDeviceId" in self.data:
             dt = self._make_type("ns3:fetchIOSDiagnosticRequestType")
             dt.lookupRequestData = self.data
-            
+
             try:
                 result = CLIENT.service.FetchIOSDiagnostic(dt)
             except suds.WebFault, e:
                 raise GsxError(fault=e)
 
-            root = ET.fromstring(result).findall('*//%s' % 'FetchIOSDiagnosticResponse')[0]
+            root = ET.fromstring(result).findall("*//FetchIOSDiagnosticResponse")[0]
         else:
-            dt = self._make_type('ns3:fetchRepairDiagnosticRequestType')
+            dt = self._make_type("ns3:fetchRepairDiagnosticRequestType")
             dt.lookupRequestData = self.data
 
             try:
@@ -514,9 +516,19 @@ class Diagnostics(GsxObject):
             except suds.WebFault, e:
                 raise GsxError(fault=e)
 
-            root = ET.fromstring(result).findall('*//%s' % 'FetchRepairDiagnosticResponse')[0]
+            root = ET.fromstring(result).findall("*//FetchRepairDiagnosticResponse")[0]
 
         return GsxResponse.Process(root)
+
+    def events(self):
+        """
+        The Fetch Diagnostic Event Numbers API allows users to retrieve all
+        diagnostic event numbers associated with provided input
+        (serial number or alternate device ID).
+        """
+        dt = self._make_type("ns3:fetchDiagnosticEventNumbersRequestType")
+        dt.lookupRequestData = self.data
+        pass
 
 
 class Order(GsxObject):
@@ -1095,5 +1107,6 @@ if __name__ == '__main__':
     parser.add_argument('--region', default='emea')
 
     args = parser.parse_args()
-    connect(args.user_id, args.password, args.sold_to)
+    connect(**vars(args))
+    #connect(args.user_id, args.password, args.sold_to. args.environment)
     doctest.testmod()
