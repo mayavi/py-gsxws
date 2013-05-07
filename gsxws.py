@@ -33,6 +33,7 @@ import suds
 import base64
 import urllib
 import hashlib
+import logging
 import tempfile
 
 from suds.client import Client
@@ -177,7 +178,7 @@ class GsxObject(object):
         Submits the SOAP envelope
         """
         f = getattr(CLIENT.service, method)
-        
+
         try:
             result = f(data)
             return getattr(result, attr) if attr else result
@@ -206,12 +207,12 @@ class GsxObject(object):
 
             if isinstance(v, basestring):
                 # convert dates to native Python types
-                if re.search('^\d{2}/\d{2}/\d{2}$', v):
+                if re.search(r'^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
                     v = date(2000+int(y), int(m), int(d))
 
                 # strip currency prefix and munge into float
-                if re.search('Price$', k):
+                if re.search(r'Price$', k):
                     v = float(re.sub('[A-Z ,]', '', v))
 
             setattr(data, k, v)
@@ -267,9 +268,9 @@ class Content(GsxObject):
 
 
 class CompTIA(object):
-    '''
+    """
     Stores and accesses CompTIA codes.
-    '''
+    """
 
     MODIFIERS = (
         ("A", "Not Applicable"),
@@ -414,25 +415,27 @@ class GsxResponse(dict):
 
         return nodedict
 
+
 class GsxError(Exception):
     def __init__(self, message=None, code=None, fault=None):
         if isinstance(fault, suds.WebFault):
             self.code = fault.fault.faultcode
-            self.message=fault.fault.faultstring
+            self.message = fault.fault.faultstring
         else:
             self.code = code
             self.message = message
-        
+
         self.data = (self.code, self.message)
 
     def __getitem__(self, idx):
         return self.data[idx]
-        
+
     def __repr__(self):
         print self.data
 
     def __str__(self):
         return self.data[1]
+
 
 class Lookup(GsxObject):
     def lookup(self, dt, method):
@@ -468,8 +471,11 @@ class Lookup(GsxObject):
         """
         The Invoice ID Lookup API allows AASP users
         to fetch the invoice generated for last 24 hrs
+
+        >>> Lookup(shipTo=677592, invoiceDate='02/06/12').invoices()
         """
-        return self.lookup('ns1:invoiceIDLookupRequestType', 'InvoiceIDLookup')
+        result = self.lookup('ns1:invoiceIDLookupRequestType', 'InvoiceIDLookup')
+        return result.invoiceID  # This is actually a list of Invoice ID's...
 
     def invoice_details(self):
         """
