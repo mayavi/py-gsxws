@@ -68,6 +68,15 @@ class Repair(GsxObject):
 
     orderLines = []
 
+    TYPES = (
+        ('CA', "Carry-In/Non-Replinished"),
+        ('NE', "Return Before Replace"),
+        ('NT', "No Trouble Found"),
+        ('ON', "Onsite (Indirect/Direct)"),
+        ('RR', "Repair Or Replace/Whole Unit Mail-In"),
+        ('WH', "Mail-In"),
+    )
+
     def get_data(self):
         return {'repairData': self.data}
 

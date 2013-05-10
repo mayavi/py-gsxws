@@ -268,9 +268,7 @@ class Content(GsxObject):
 
 
 class CompTIA(object):
-    """
-    Stores and accesses CompTIA codes.
-    """
+    "Stores and accesses CompTIA codes."
 
     MODIFIERS = (
         ("A", "Not Applicable"),
