@@ -37,5 +37,11 @@
     "ja_XXX": {"df": "YYYY/MM/DD", "tf": "HH:MM"},
     "ko_XXX": {"df": "MM/DD/YY", "tf": "HH:MM A"},
     "zf_XXX": {"df": "MM/DD/YY", "tf": "HH:MM A"},
-    "zh_XXX": {"df": "DD-MM-YY", "tf": "HH:MM A"}
+    "zh_XXX": {"df": "DD-MM-YY", "tf": "HH:MM A"},
+    "pt_BR": {"df": "DD/MM/YY", "tf": "HH:MM A"},
+    "pt_XXX": {"df": "DD.MM.YYYY", "tf": "HH:MM A"},
+    "tr_TR": {"df": "DD.MM.YYYY", "tf": "HH:MM"},
+    "tr_XXX": {"df": "DD.MM.YYYY", "tf": "HH:MM"},
+    "ru_RU": {"df": "DD.MM.YYYY", "tf": "HH:MM"},
+    "ru_XXX": {"df": "DD.MM.YYYY", "tf": "HH:MM"}
 }
