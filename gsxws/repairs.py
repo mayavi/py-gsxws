@@ -14,16 +14,16 @@ class Customer(GsxObject):
     >>> Customer(adressLine1='blaa')._data
     {'adressLine1': 'blaa'}
     """
-    adressLine1 = ""
     city = ""
-    country = ""
-    firstName = ""
-    lastName = ""
-    primaryPhone = ""
     region = ""
+    country = ""
     state = "ZZ"
     zipCode = ""
+    lastName = ""
+    firstName = ""
+    adressLine1 = ""
     emailAddress = ""
+    primaryPhone = ""
 
 
 class RepairOrderLine(GsxObject):
@@ -34,29 +34,20 @@ class RepairOrderLine(GsxObject):
 
 
 class Repair(GsxObject):
-    """
-    Base class for the different GSX Repair types
-
-    >>> Repair(repairStatus='Open').lookup() #doctest: +ELLIPSIS
-    [<core.GsxObject object at ...
-    >>> Repair('G135773004').details() #doctest: +ELLIPSIS
-    <core.GsxObject object at ...
-    >>> Repair('G135773004').status().repairStatus
-    'Closed and Completed'
-    """
-    customerAddress = None
+    "Base class for the different GSX Repair types"
+    notes = ""
     symptom = ""
     diagnosis = ""
-    notes = ""
-    purchaseOrderNumber = ""
-    referenceNumber = ""
-    requestReview = False
     serialNumber = ""
+    referenceNumber = ""
     unitReceivedDate = ""
     unitReceivedTime = ""
+    requestReview = False
+    customerAddress = None
+    purchaseOrderNumber = ""
     orderLines = []
 
-    _namespace = "core:"
+    _namespace = "asp:"
 
     TYPES = (
         ('CA', "Carry-In/Non-Replinished"),
@@ -83,8 +74,6 @@ class Repair(GsxObject):
         The API is not applicable for whole unit replacement
         serial number entry (see KGB serial update).
         """
-        self._namespace = "asp:"
-
         self.partInfo = parts
         if hasattr(self, "dispatchId"):
             self.repairConfirmationNumber = self.dispatchId
@@ -106,8 +95,6 @@ class Repair(GsxObject):
         The API is to be used on whole unit repairs that are in a released state.
         This API can be invoked only after carry-in repair creation API.
         """
-        self._namespace = "asp:"
-
         self.serialNumber = sn
         self.repairConfirmationNumber = self.dispatchId
 
@@ -123,7 +110,11 @@ class Repair(GsxObject):
         It fetches up to 2500 repairs in a given criteria.
         Subsequently, the extended Repair Status API can be used
         to retrieve more details of the repair.
+
+        >>> Repair(repairStatus='Open').lookup() #doctest: +ELLIPSIS
+        [<core.GsxObject object at ...
         """
+        self._namespace = "core:"
         return Lookup(**self._data).repairs()
 
     def delete(self):
@@ -140,7 +131,6 @@ class Repair(GsxObject):
         The Mark Repair Complete API allows a single or an array of
         repair confirmation numbers to be submitted to GSX to be marked as complete.
         """
-        self._namespace = "asp:"
         self.repairConfirmationNumbers = numbers or self.dispatchId
         self._submit("MarkRepairCompleteRequest", "MarkRepairComplete",
                      "MarkRepairCompleteResponse")
@@ -150,8 +140,10 @@ class Repair(GsxObject):
         """
         The Repair Status API retrieves the status
         for the submitted repair confirmation number(s).
+
+        >>> Repair('G135773004').status().repairStatus
+        'Closed and Completed'
         """
-        self._namespace = "asp:"
         self.repairConfirmationNumbers = self.dispatchId
         status = self._submit("RepairStatusRequest", "RepairStatus", "repairStatus")[0]
         self.repairStatus = status.repairStatus
@@ -162,7 +154,11 @@ class Repair(GsxObject):
         """
         The Repair Details API includes the shipment information
         similar to the Repair Lookup API.
+
+        >>> Repair('G135773004').details() #doctest: +ELLIPSIS
+        <core.GsxObject object at ...
         """
+        self._namespace = "core:"
         details = self._submit("RepairDetailsRequest", "RepairDetails", "lookupResponseData")
 
         # fix tracking URL if available
@@ -209,10 +205,7 @@ class CarryInRepair(Repair):
         GSX validates the information and if all of the validations go through,
         it obtains a quote for the repair and creates the carry-in repair.
         """
-        dt = self._make_type('ns2:carryInRequestType')
-        dt.repairData = self.data
-
-        return self.submit('CreateCarryInRepair', dt, 'repairConfirmation')
+        return self._submit("repairData", "CreateCarryIn", "repairConfirmation")
 
     def update(self, newdata):
         """
@@ -230,12 +223,9 @@ class CarryInRepair(Repair):
         BEGR    In Repair
         RFPU    Ready for Pickup
         """
-        dt = self._make_type('ns1:updateCarryInRequestType')
-
         # Merge old and new data (old data should have Dispatch ID)
-        dt.repairData = dict(self.data.items() + newdata.items())
-
-        return self.submit('CarryInRepairUpdate', dt, 'repairConfirmation')
+        self._data.update(newdata)
+        return self._submit("repairData", "CarryInRepairUpdate", "repairConfirmation")
 
 
 class IndirectOnsiteRepair(Repair):

@@ -23,3 +23,11 @@ class Part(GsxObject):
             return urllib.urlretrieve(url, tmpfile[1])[0]
         except Exception, e:
             raise GsxError('Failed to fetch part image: %s' % e)
+
+
+if __name__ == '__main__':
+    import doctest
+    from core import connect
+    logging.basicConfig(level=logging.DEBUG)
+    connect(*sys.argv[1:4])
+    doctest.testmod()

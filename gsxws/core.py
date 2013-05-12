@@ -39,8 +39,8 @@ from datetime import date, time, datetime, timedelta
 GSX_ENV =       "it"
 GSX_LANG =      "en"
 GSX_REGION =    "emea"
-GSX_SESSION =   None
 GSX_LOCALE =    "en_XXX"
+GSX_SESSION =   None
 
 GSX_TIMEZONES = (
     ('GMT', "UTC (Greenwich Mean Time)"),
@@ -199,6 +199,7 @@ class GsxRequest(object):
         self.env.set("xmlns:core", "http://gsxws.apple.com/elements/core")
         self.env.set("xmlns:glob", "http://gsxws.apple.com/elements/global")
         self.env.set("xmlns:asp", "http://gsxws.apple.com/elements/core/asp")
+        self.env.set("xmlns:am", "http://gsxws.apple.com/elements/core/asp/am")
         self.env.set("xmlns:soapenv", "http://schemas.xmlsoap.org/soap/envelope/")
 
         ET.SubElement(self.env, "soapenv:Header")
