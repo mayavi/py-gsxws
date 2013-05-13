@@ -319,7 +319,10 @@ class GsxObject(object):
         """
         Returns this object as an XML Element
 
-        >>> GsxObject(spam='eggs', spices=['salt', 'pepper'])
+        >>> GsxObject(spam='eggs', spices=[{'salt': 'pepper'}]) #doctest: +ELLIPSIS
+        <__main__.GsxObject object at 0x...
+        >>> GsxObject(spam='eggs', spices=[{'salt': 'pepper'}]).to_xml('blaa') #doctest: +ELLIPSIS
+        <Element 'blaa' at 0x...
         """
         root = ET.Element(root)
         for k, v in self._data.items():
@@ -332,7 +335,10 @@ class GsxObject(object):
                 el.append(v.to_xml(k))
             if isinstance(v, list):
                 for e in v:
-                    el.append(e)
+                    if isinstance(v, GsxObject):
+                        el.append(e.to_xml(k))
+                    else:  # assuming it's a dict...
+                        el.append(GsxObject(**e).to_xml(k))
 
         return root
 

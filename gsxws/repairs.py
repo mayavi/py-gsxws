@@ -45,6 +45,7 @@ class Repair(GsxObject):
     requestReview = False
     customerAddress = None
     purchaseOrderNumber = ""
+
     orderLines = []
 
     _namespace = "asp:"
