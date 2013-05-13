@@ -40,9 +40,10 @@ class CompTIA(GsxObject):
         """
         Initialize CompTIA symptoms from the local JSON file
         """
+        self._comptia = {}
         self._cache = GsxCache("comptia")
-        #df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
-        #self._data = json.load(df)
+        df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
+        self._comptia = json.load(df)
 
     def fetch(self):
         """
@@ -57,7 +58,7 @@ class CompTIA(GsxObject):
         in order to create or update repairs.
 
         >>> CompTIA().fetch() # doctest: +ELLIPSIS
-        {'A': {'989': 'Remote Inoperable', ...
+        {u'A': {'989': u'Remote Inoperable', ...
         """
         self._submit("ComptiaCodeLookupRequest", "ComptiaCodeLookup", "comptiaInfo", True)
 
@@ -68,27 +69,27 @@ class CompTIA(GsxObject):
 
         for el in root.findall(".//comptiaGroup"):
             group = {}
-            comp_id = el[0].text
+            comp_id = unicode(el[0].text)
 
-            for ci in el.findall('comptiaCodeInfo'):
-                group[ci[0].text] = ci[1].text
+            for ci in el.findall("comptiaCodeInfo"):
+                group[ci[0].text] = unicode(ci[1].text)
 
-            self._data[comp_id] = group
+            self._comptia[comp_id] = group
 
-        self._cache.set(self._data)
-        return self._data
+        self._cache.set(self._comptia)
+        return self._comptia
 
     def symptoms(self, component=None):
         """
         Returns all known CompTIA symptom codes or just the ones
         belonging to the given component code.
 
-        >>> CompTIA().fetch() # doctest: +ELLIPSIS
-        {'A': {'989': 'Remote Inoperable', ...
+        >>> CompTIA().symptoms(0) # doctest: +ELLIPSIS
+        {u'B': [(u'B0A', u'Any Camera issue'), ...
         """
         r = dict()
 
-        for g, codes in self._data.items():
+        for g, codes in self._comptia.items():
             r[g] = list()
             for k, v in codes.items():
                 r[g].append((k, v,))
