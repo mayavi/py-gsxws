@@ -292,14 +292,23 @@ class GsxObject(object):
             super(GsxObject, self).__setattr__(name, value)
             return
 
+        if isinstance(value, file):
+            if not hasattr(self, "fileName"):
+                super(GsxObject, self).__setattr__("fileName", value.name)
+            value = base64.b64encode(value.read())
+
         if isinstance(value, int):
             value = str(value)
+
         if isinstance(value, date):
             value = value.strftime(self._formats['df'])
+
         if isinstance(value, time):
             value = value.strftime(self._formats['tf'])
+
         if isinstance(value, bool):
             value = "Y" if value else "N"
+
         if isinstance(value, date):
             value = value.strftime(self._formats['df'])
 
@@ -330,20 +339,12 @@ class GsxObject(object):
             el = ET.SubElement(root, k)
             if isinstance(v, basestring):
                 el.text = v
-            if isinstance(v, dict):
-                for a, b in v.items():
-                    i = ET.SubElement(el, a)
-                    i.text = b
             if isinstance(v, GsxObject):
                 el.append(v.to_xml(k))
             if isinstance(v, list):
                 for e in v:
                     if isinstance(e, GsxObject):
                         el.append(e.to_xml(k))
-                    else:  # Assuming dict. @TODO: yuck...
-                        for a, b in e.items():
-                            i = ET.SubElement(el, a)
-                            i.text = b
 
         return root
 
