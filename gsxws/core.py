@@ -292,9 +292,11 @@ class GsxObject(object):
             super(GsxObject, self).__setattr__(name, value)
             return
 
+        # Kind of a lame way to identify files, but it's the best
+        # we have for Django's File class right now...
         if hasattr(value, "fileno"):
             if not hasattr(self, "fileName"):
-                super(GsxObject, self).__setattr__("fileName", value.name)
+                self.fileName = value.name
 
             value = base64.b64encode(value.read())
 
