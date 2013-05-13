@@ -123,6 +123,7 @@ class GsxError(Exception):
             raise ValueError(message)
 
         if xml is not None:
+            logging.debug(xml)
             el = ET.fromstring(xml)
             self.code = el.findtext("*//faultcode")
 
