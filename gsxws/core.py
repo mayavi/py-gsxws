@@ -110,7 +110,7 @@ def validate(value, what=None):
     return (result == what) if what else result
 
 
-def get_formats(locale=GSX_LOCALE):
+def get_format(locale=GSX_LOCALE):
     filepath = os.path.join(os.path.dirname(__file__), 'langs.json')
     df = open(filepath, 'r')
     return json.load(df).get(locale)
@@ -274,7 +274,7 @@ class GsxObject(object):
 
     def __init__(self, *args, **kwargs):
         self._data = {}
-        self._formats = get_formats()
+        self._formats = get_format()
 
         for a in args:
             k = validate(a)
