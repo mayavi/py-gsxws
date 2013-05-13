@@ -83,7 +83,7 @@ class Product(GsxObject):
         The Fetch iOS Activation Details API is used to
         fetch activation details of iOS Devices.
 
-        >>> Product('013348005376007').get_activation().unlocked
+        >>> Product('013348005376007').activation().unlocked
         'true'
         >>> Product('W874939YX92').get_activation().unlocked # doctest: +ELLIPSIS
         Traceback (most recent call last):

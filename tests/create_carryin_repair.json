@@ -16,6 +16,14 @@
             "abused": "Y",
             "outOfWarrantyFlag": "N",
             "diagnosticCode": ""
+        },
+        {
+            "partNumber": "076-1080",
+            "comptiaCode": "660",
+            "comptiaModifier": "A",
+            "abused": "Y",
+            "outOfWarrantyFlag": "N",
+            "diagnosticCode": ""
         }
     ],
     "customerAddress": {

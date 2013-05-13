@@ -336,15 +336,17 @@ class GsxObject(object):
         """
         root = ET.Element(root)
         for k, v in self._data.items():
-            el = ET.SubElement(root, k)
-            if isinstance(v, basestring):
-                el.text = v
-            if isinstance(v, GsxObject):
-                el.append(v.to_xml(k))
             if isinstance(v, list):
                 for e in v:
                     if isinstance(e, GsxObject):
-                        el.append(e.to_xml(k))
+                        i = ET.SubElement(root, k)
+                        i.extend(e.to_xml(k))
+            else:
+                el = ET.SubElement(root, k)
+                if isinstance(v, basestring):
+                    el.text = v
+                if isinstance(v, GsxObject):
+                    el.extend(v.to_xml(k))
 
         return root
 

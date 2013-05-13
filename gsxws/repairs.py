@@ -6,6 +6,15 @@ import logging
 from core import GsxObject
 from lookups import Lookup
 
+REPAIR_TYPES = (
+    ('CA', "Carry-In/Non-Replinished"),
+    ('NE', "Return Before Replace"),
+    ('NT', "No Trouble Found"),
+    ('ON', "Onsite (Indirect/Direct)"),
+    ('RR', "Repair Or Replace/Whole Unit Mail-In"),
+    ('WH', "Mail-In"),
+)
+
 
 class Customer(GsxObject):
     """
@@ -35,29 +44,7 @@ class RepairOrderLine(GsxObject):
 
 class Repair(GsxObject):
     "Base class for the different GSX Repair types"
-    notes = ""
-    symptom = ""
-    diagnosis = ""
-    serialNumber = ""
-    referenceNumber = ""
-    unitReceivedDate = ""
-    unitReceivedTime = ""
-    requestReview = False
-    customerAddress = None
-    purchaseOrderNumber = ""
-
-    orderLines = []
-
     _namespace = "asp:"
-
-    TYPES = (
-        ('CA', "Carry-In/Non-Replinished"),
-        ('NE', "Return Before Replace"),
-        ('NT', "No Trouble Found"),
-        ('ON', "Onsite (Indirect/Direct)"),
-        ('RR', "Repair Or Replace/Whole Unit Mail-In"),
-        ('WH', "Mail-In"),
-    )
 
     def __init__(self, number=None, **kwargs):
         super(Repair, self).__init__(**kwargs)
@@ -143,7 +130,7 @@ class Repair(GsxObject):
         for the submitted repair confirmation number(s).
 
         >>> Repair('G135773004').status().repairStatus
-        'Closed and Completed'
+        u'Closed and Completed'
         """
         self.repairConfirmationNumbers = self.dispatchId
         status = self._submit("RepairStatusRequest", "RepairStatus", "repairStatus")[0]
