@@ -82,10 +82,13 @@ class CompTIA(GsxObject):
         """
         Returns all known CompTIA symptom codes or just the ones
         belonging to the given component code.
+
+        >>> CompTIA().fetch() # doctest: +ELLIPSIS
+        {'A': {'989': 'Remote Inoperable', ...
         """
         r = dict()
 
-        for g, codes in self.data.items():
+        for g, codes in self._data.items():
             r[g] = list()
             for k, v in codes.items():
                 r[g].append((k, v,))
