@@ -213,6 +213,7 @@ class GsxRequest(object):
             self._response = k.replace("Request", "Response")
 
     def _send(self, url, method, xmldata):
+        "Send the final SOAP message"
         parsed = urlparse(url)
 
         ws = httplib.HTTPSConnection(parsed.netloc)
@@ -227,7 +228,7 @@ class GsxRequest(object):
         return ws.getresponse()
 
     def _submit(self, method, response=None, raw=False):
-        "Construct and submit the final SOAP message"
+        "Constructs the final SOAP message"
         global GSX_ENV, GSX_REGION, GSX_SESSION
 
         root = ET.SubElement(self.body, self.obj._namespace + method)
@@ -285,6 +286,7 @@ class GsxObject(object):
             self.__setattr__(k, v)
 
     def __setattr__(self, name, value):
+
         if name.startswith("_"):
             super(GsxObject, self).__setattr__(name, value)
             return
@@ -296,7 +298,7 @@ class GsxObject(object):
         if isinstance(value, time):
             value = value.strftime(self._formats['tf'])
         if isinstance(value, bool):
-            value = 'Y' if value else 'N'
+            value = "Y" if value else "N"
         if isinstance(value, date):
             value = value.strftime(self._formats['df'])
 
@@ -314,16 +316,29 @@ class GsxObject(object):
         return result if len(result) > 1 else result[0]
 
     def to_xml(self, root):
-        "Returns this object as an XML element"
+        """
+        Returns this object as an XML Element
+
+        >>> GsxObject(spam='eggs', spices=['salt', 'pepper'])
+        """
         root = ET.Element(root)
         for k, v in self._data.items():
             el = ET.SubElement(root, k)
-            el.text = v
+            if isinstance(v, basestring):
+                el.text = v
+            if isinstance(v, dict):
+                v = GsxObject(**v)
+            if isinstance(v, GsxObject):
+                el.append(v.to_xml(k))
+            if isinstance(v, list):
+                for e in v:
+                    el.append(e)
 
         return root
 
     @classmethod
     def from_xml(cls, el):
+        "Constructs a GsxObject from XML Element"
         obj = GsxObject()
 
         for r in el:
@@ -380,6 +395,9 @@ class GsxObject(object):
 
         return obj
 
+    def __unicode__(self):
+        return ET.tostring(self.to_xml())
+
 
 class GsxSession(GsxObject):
     userId = ""
@@ -421,7 +439,6 @@ class GsxSession(GsxObject):
         if not self._cache.get() is None:
             GSX_SESSION = self._cache.get()
         else:
-            #result = self._submit("AuthenticateRequest", "Authenticated")
             self._req = GsxRequest(AuthenticateRequest=self)
             result = self._req._submit("Authenticate")
             self._session_id = result[0].userSessionId
@@ -437,7 +454,7 @@ class GsxSession(GsxObject):
 def connect(user_id, password, sold_to,
             environment=GSX_ENV,
             language=GSX_LANG,
-            timezone='CEST',
+            timezone="CEST",
             region=GSX_REGION,
             locale=GSX_LOCALE):
     """
@@ -462,15 +479,15 @@ if __name__ == '__main__':
     import doctest
     import argparse
 
-    parser = argparse.ArgumentParser(description='Communicate with GSX Web Services')
+    parser = argparse.ArgumentParser(description="Communicate with GSX Web Services")
 
-    parser.add_argument('user_id')
-    parser.add_argument('password')
-    parser.add_argument('sold_to')
-    parser.add_argument('--language', default='en')
-    parser.add_argument('--timezone', default='CEST')
-    parser.add_argument('--environment', default='pr')
-    parser.add_argument('--region', default='emea')
+    parser.add_argument("user_id")
+    parser.add_argument("password")
+    parser.add_argument("sold_to")
+    parser.add_argument("--language", default='en')
+    parser.add_argument("--timezone", default='CEST')
+    parser.add_argument("--environment", default='it')
+    parser.add_argument("--region", default='emea')
 
     args = parser.parse_args()
     logging.basicConfig(level=logging.DEBUG)
