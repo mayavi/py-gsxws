@@ -36,11 +36,21 @@ import xml.etree.ElementTree as ET
 
 from datetime import date, time, datetime, timedelta
 
-GSX_ENV =       "it"
-GSX_LANG =      "en"
-GSX_REGION =    "emea"
-GSX_LOCALE =    "en_XXX"
-GSX_SESSION =   None
+GSX_ENV = "it"
+GSX_LANG = "en"
+GSX_REGION = "emea"
+GSX_LOCALE = "en_XXX"
+
+GSX_SESSION = None
+
+GSX_REGIONS = (
+    ('002', "Asia/Pacific"),
+    ('003', "Japan"),
+    ('004', "Europe"),
+    ('005', "United States"),
+    ('006', "Canadia"),
+    ('007', "Latin America"),
+)
 
 GSX_TIMEZONES = (
     ('GMT', "UTC (Greenwich Mean Time)"),
@@ -60,15 +70,6 @@ GSX_TIMEZONES = (
     ('ACST', "UTC + 9.5h (Austrailian Central Standard Time)"),
     ('ACDT', "UTC + 10.5h (Australian Central Daylight Time)"),
     ('NZST', "UTC + 12h (New Zealand Standard Time)"),
-)
-
-GSX_REGIONS = (
-    ('002', "Asia/Pacific"),
-    ('003', "Japan"),
-    ('004', "Europe"),
-    ('005', "United States"),
-    ('006', "Canadia"),
-    ('007', "Latin America"),
 )
 
 REGION_CODES = ('apac', 'am', 'la', 'emea',)
@@ -144,11 +145,11 @@ class GsxCache(object):
     """
     shelf = None
     tmpdir = tempfile.gettempdir()
-    expires = timedelta(minutes=20)
     filename = os.path.join(tmpdir, "gsxws.tmp")
 
-    def __init__(self, key):
+    def __init__(self, key, expires=timedelta(minutes=20)):
         self.key = key
+        self.expires = expires
         self.shelf = shelve.open(self.filename, protocol=-1)
         self.now = datetime.now()
 

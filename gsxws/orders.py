@@ -1,6 +1,9 @@
-class Order(GsxObject):
+from core import GsxObject
+
+
+class StockingOrder(GsxObject):
     def __init__(self, type='stocking', *args, **kwargs):
-        super(Order, self).__init__(*args, **kwargs)
+        super(StockingOrder, self).__init__(*args, **kwargs)
         self.data['orderLines'] = list()
 
     def add_part(self, part_number, quantity):

@@ -1,3 +1,8 @@
+import os
+import json
+
+from core import GsxObject, GsxError, GsxCache
+
 MODIFIERS = (
     ("A", "Not Applicable"),
     ("B", "Continuous"),
@@ -9,32 +14,31 @@ MODIFIERS = (
 )
 
 GROUPS = (
-    ('0', 'General'),
-    ('1', 'Visual'),
-    ('2', 'Displays'),
-    ('3', 'Mass Storage'),
-    ('4', 'Input Devices'),
-    ('5', 'Boards'),
-    ('6', 'Power'),
-    ('7', 'Printer'),
-    ('8', 'Multi-function Device'),
-    ('9', 'Communication Devices'),
-    ('A', 'Share'),
-    ('B', 'iPhone'),
-    ('E', 'iPod'),
-    ('F', 'iPad'),
+    ('0', "General"),
+    ('1', "Visual"),
+    ('2', "Displays"),
+    ('3', "Mass Storage"),
+    ('4', "Input Devices"),
+    ('5', "Boards"),
+    ('6', "Power"),
+    ('7', "Printer"),
+    ('8', "Multi-function Device"),
+    ('9', "Communication Devices"),
+    ('A', "Share"),
+    ('B', "iPhone"),
+    ('E', "iPod"),
+    ('F', "iPad"),
 )
 
 
-class CompTIA(object):
+class CompTIA(GsxObject):
     "Stores and accesses CompTIA codes."
-
     def __init__(self):
         """
         Initialize CompTIA symptoms from JSON file
         """
         df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
-        self.data = json.load(df)
+        self._data = json.load(df)
 
     def fetch(self):
         """

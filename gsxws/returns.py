@@ -1,4 +1,6 @@
-from gsxws import GsxObject
+import base64
+
+from core import GsxObject, validate
 
 RETURN_TYPES = (
     (1, "Dead On Arrival"),
@@ -38,9 +40,10 @@ CARRIERS = (
     ('XYMT',    "YAMATO"),
 )
 
+
 class Return(GsxObject):
     def __init__(self, order_number=None, *args, **kwargs):
-        super(Returns, self).__init__(*args, **kwargs)
+        super(Return, self).__init__(*args, **kwargs)
 
         if order_number is not None:
             self.data['returnOrderNumber'] = order_number
