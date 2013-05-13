@@ -186,11 +186,6 @@ class CarryInRepair(Repair):
 
     _namespace = "emea:"
 
-    shipTo = ""
-    fileName = ""
-    fileData = ""
-    diagnosedByTechId = ""
-
     def create(self):
         """
         GSX validates the information and if all of the validations go through,
