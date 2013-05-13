@@ -292,9 +292,10 @@ class GsxObject(object):
             super(GsxObject, self).__setattr__(name, value)
             return
 
-        if isinstance(value, file):
+        if hasattr(value, "fileno"):
             if not hasattr(self, "fileName"):
                 super(GsxObject, self).__setattr__("fileName", value.name)
+
             value = base64.b64encode(value.read())
 
         if isinstance(value, int):
@@ -414,6 +415,7 @@ class GsxObject(object):
 
 
 class GsxSession(GsxObject):
+
     userId = ""
     password = ""
     languageCode = ""
@@ -442,9 +444,8 @@ class GsxSession(GsxObject):
 
     def get_session(self):
         session = ET.Element("userSession")
-        session_id = ET.Element("userSessionId")
+        session_id = ET.SubElement(session, "userSessionId")
         session_id.text = self._session_id
-        session.append(session_id)
         return session
 
     def login(self):
