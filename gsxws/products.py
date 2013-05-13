@@ -19,7 +19,7 @@ class Product(GsxObject):
         """
         Returns the model description of this Product
 
-        >>> Product(serialNumber='DGKFL06JDHJP').model().configDescription
+        >>> Product('DGKFL06JDHJP').model().configDescription
         'iMac (27-inch, Mid 2011)'
         """
         result = self._submit("productModelRequest", "FetchProductModel")
@@ -78,7 +78,7 @@ class Product(GsxObject):
         except Exception, e:
             raise GsxError("Failed to fetch product image: %s" % e)
 
-    def get_activation(self):
+    def activation(self):
         """
         The Fetch iOS Activation Details API is used to
         fetch activation details of iOS Devices.
