@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 
 from core import GsxObject, GsxError, GsxCache
 
@@ -33,38 +34,37 @@ GROUPS = (
 
 class CompTIA(GsxObject):
     "Stores and accesses CompTIA codes."
+    _namespace = "glob:"
+
     def __init__(self):
         """
-        Initialize CompTIA symptoms from JSON file
+        Initialize CompTIA symptoms from the local JSON file
         """
-        df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
-        self._data = json.load(df)
+        self._cache = GsxCache("comptia")
+        #df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
+        #self._data = json.load(df)
 
     def fetch(self):
         """
+        Description:
         The CompTIA Codes Lookup API retrieves a list of CompTIA groups and modifiers.
 
-        Here we must resort to raw XML parsing since SUDS throws this:
-        suds.TypeNotFound: Type not found: 'comptiaDescription'
-        when calling CompTIACodes()...
+        Context:
+        The CompTIA Codes (Symptom Codes) are the current available selections based on
+        the component group code for parts.
+        The API can be executed only after valid Authentication.
+        Users can use the API at any point to retrieve the CompTIA code and modifier details,
+        in order to create or update repairs.
 
-        >>> CompTIA().fetch()
-        {'A': {'972': 'iPod not recognized',...
+        >>> CompTIA().fetch() # doctest: +ELLIPSIS
+        {'A': {'989': 'Remote Inoperable', ...
         """
-        global COMPTIA_CACHE
-        if COMPTIA_CACHE.get("comptia"):
-            return COMPTIA_CACHE.get("comptia")
+        self._submit("ComptiaCodeLookupRequest", "ComptiaCodeLookup", "comptiaInfo", True)
 
-        CLIENT.set_options(retxml=True)
-        dt = CLIENT.factory.create("ns3:comptiaCodeLookupRequestType")
-        dt.userSession = SESSION
+        if self._cache.get():
+            return self._cache.get()
 
-        try:
-            xml = CLIENT.service.CompTIACodes(dt)
-        except suds.WebFault, e:
-            raise GsxError(fault=e)
-
-        root = ET.fromstring(xml).findall('.//%s' % 'comptiaInfo')[0]
+        root = self._req.objects[0]
 
         for el in root.findall(".//comptiaGroup"):
             group = {}
@@ -73,10 +73,10 @@ class CompTIA(GsxObject):
             for ci in el.findall('comptiaCodeInfo'):
                 group[ci[0].text] = ci[1].text
 
-            self.data[comp_id] = group
+            self._data[comp_id] = group
 
-        COMPTIA_CACHE.put("comptia", self.data)
-        return self.data
+        self._cache.set(self._data)
+        return self._data
 
     def symptoms(self, component=None):
         """
@@ -91,3 +91,11 @@ class CompTIA(GsxObject):
                 r[g].append((k, v,))
 
         return r[component] if component else r
+
+if __name__ == '__main__':
+    import sys
+    import doctest
+    from core import connect
+    logging.basicConfig(level=logging.DEBUG)
+    connect(*sys.argv[1:4])
+    doctest.testmod()

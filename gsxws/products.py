@@ -20,7 +20,7 @@ class Product(GsxObject):
         Returns the model description of this Product
 
         >>> Product('DGKFL06JDHJP').model().configDescription
-        'iMac (27-inch, Mid 2011)'
+        u'iMac (27-inch, Mid 2011)'
         """
         result = self._submit("productModelRequest", "FetchProductModel")
 
@@ -38,7 +38,7 @@ class Product(GsxObject):
         warranty status request, the unit level warranty information is returned.
 
         >>> Product('DGKFL06JDHJP').warranty().warrantyStatus
-        'Out Of Warranty (No Coverage)'
+        u'Out Of Warranty (No Coverage)'
         """
         self._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._req.objects[0]

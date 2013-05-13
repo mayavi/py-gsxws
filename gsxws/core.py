@@ -212,7 +212,21 @@ class GsxRequest(object):
             self.data = v.to_xml(self._request)
             self._response = k.replace("Request", "Response")
 
-    def _submit(self, method, response=None):
+    def _send(self, url, method, xmldata):
+        parsed = urlparse(url)
+
+        ws = httplib.HTTPSConnection(parsed.netloc)
+        ws.putrequest("POST", parsed.path)
+        ws.putheader("User-Agent", "py-gsxws 0.9")
+        ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
+        ws.putheader("Content-length", "%d" % len(xmldata))
+        ws.putheader("SOAPAction", '"%s"' % method)
+        ws.endheaders()
+        ws.send(xmldata)
+
+        return ws.getresponse()
+
+    def _submit(self, method, response=None, raw=False):
         "Construct and submit the final SOAP message"
         global GSX_ENV, GSX_REGION, GSX_SESSION
 
@@ -227,7 +241,7 @@ class GsxRequest(object):
             request.append(GSX_SESSION)
 
             if self._request == request_name:
-                "Some requests don't have a top-level container."
+                "Some requests don't have a top-level container"
                 self.data = list(self.data)[0]
 
             request.append(self.data)
@@ -235,18 +249,7 @@ class GsxRequest(object):
         data = ET.tostring(self.env, "UTF-8")
         logging.debug(data)
 
-        parsed = urlparse(url)
-
-        ws = httplib.HTTPSConnection(parsed.netloc)
-        ws.putrequest("POST", parsed.path)
-        ws.putheader("User-Agent", "py-gsxws 0.9")
-        ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
-        ws.putheader("Content-length", "%d" % len(data))
-        ws.putheader("SOAPAction", '"%s"' % method)
-        ws.endheaders()
-        ws.send(data)
-
-        res = ws.getresponse()
+        res = self._send(url, method, data)
         xml = res.read()
 
         if res.status > 200:
@@ -256,7 +259,8 @@ class GsxRequest(object):
         response = response or self._response
 
         for r in ET.fromstring(xml).findall("*//%s" % response):
-            self.objects.append(GsxObject.from_xml(r))
+            o = r if raw else GsxObject.from_xml(r)
+            self.objects.append(o)
 
         return self.objects
 
@@ -304,9 +308,9 @@ class GsxObject(object):
         except KeyError:
             raise AttributeError("Invalid attribute: %s" % name)
 
-    def _submit(self, arg, method, ret=None):
+    def _submit(self, arg, method, ret=None, raw=False):
         self._req = GsxRequest(**{arg: self})
-        result = self._req._submit(method, ret)
+        result = self._req._submit(method, ret, raw)
         return result if len(result) > 1 else result[0]
 
     def to_xml(self, root):
