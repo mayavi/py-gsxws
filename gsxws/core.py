@@ -327,10 +327,8 @@ class GsxObject(object):
             k, v = r.tag, r.text
 
             if hasattr(obj, k):
-
                 # found duplicate tag %s" % k
                 attr = obj.__getattr__(k)
-
                 if isinstance(attr, list):
                     # append to existing list
                     newattr = attr.append(newitem)
@@ -353,6 +351,9 @@ class GsxObject(object):
                 v = base64.b64decode(v)
 
             if isinstance(v, basestring):
+
+                v = unicode(v)  # "must be unicode, not str"
+
                 # convert dates to native Python type
                 if re.search('^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
