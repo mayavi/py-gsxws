@@ -1,3 +1,6 @@
+from core import GsxObject
+
+
 class Communication(GsxObject):
     def get_content():
         """
@@ -10,4 +13,3 @@ class Communication(GsxObject):
         The Fetch Communication Articles API allows the service partners
         to fetch all the active communication message IDs.
         """
-        
