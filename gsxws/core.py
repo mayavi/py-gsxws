@@ -352,7 +352,7 @@ class GsxObject(object):
 
     @classmethod
     def from_xml(cls, el):
-        "Constructs a GsxObject from XML Element"
+        "Constructs a GsxObject from an XML Element"
         obj = GsxObject()
 
         for r in el:
@@ -388,21 +388,21 @@ class GsxObject(object):
                 v = unicode(v)  # "must be unicode, not str"
 
                 # convert dates to native Python type
-                if re.search('^\d{2}/\d{2}/\d{2}$', v):
+                if re.search(r'^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
                     v = date(2000+int(y), int(m), int(d)).isoformat()
 
                 # strip currency prefix and munge into float
-                if re.search('Price$', k):
-                    v = float(re.sub('[A-Z ,]', '', v))
+                if re.search(r'Price$', k):
+                    v = float(re.sub(r'[A-Z ,]', '', v))
 
                 # Convert timestamps to native Python type
                 # 18-Jan-13 14:38:04
-                if re.search('TimeStamp$', k):
+                if re.search(r'TimeStamp$', k):
                     v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
 
                 # convert Y and N to corresponding boolean
-                if re.search('^[YN]$', k):
+                if re.search(r'^[YN]$', k):
                     v = (v == 'Y')
 
                 setattr(obj, k, v)

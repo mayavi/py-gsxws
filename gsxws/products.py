@@ -39,6 +39,8 @@ class Product(GsxObject):
 
         >>> Product('DGKFL06JDHJP').warranty().warrantyStatus
         u'Out Of Warranty (No Coverage)'
+        >>> Product('DGKFL06JDHJP').warranty().estimatedPurchaseDate
+        '2011-06-02'
         """
         self._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._req.objects[0]
