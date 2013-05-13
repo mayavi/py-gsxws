@@ -409,9 +409,6 @@ class GsxObject(object):
 
         return obj
 
-    def __unicode__(self):
-        return ET.tostring(self.to_xml())
-
 
 class GsxSession(GsxObject):
 
