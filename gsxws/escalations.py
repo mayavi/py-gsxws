@@ -1,3 +1,6 @@
+from core import GsxObject
+
+
 class Escalation(GsxObject):
     def create(self):
         """
