@@ -300,6 +300,9 @@ class GsxObject(object):
 
             value = base64.b64encode(value.read())
 
+        if isinstance(value, bool):
+            value = "Y" if value else "N"
+
         if isinstance(value, int):
             value = str(value)
 
@@ -308,12 +311,6 @@ class GsxObject(object):
 
         if isinstance(value, time):
             value = value.strftime(self._formats['tf'])
-
-        if isinstance(value, bool):
-            value = "Y" if value else "N"
-
-        if isinstance(value, date):
-            value = value.strftime(self._formats['df'])
 
         self._data[name] = value
 

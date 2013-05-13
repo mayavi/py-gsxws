@@ -181,7 +181,8 @@ class CarryInRepair(Repair):
     GSX validates the information and if all of the validations go through,
     it obtains a quote for the repair and creates the carry-in repair
 
-    >>> CarryInRepair(customerAddress=Customer(firstName='Filipp'))._data
+    >>> CarryInRepair(requestReviewByApple=True).requestReviewByApple
+    'Y'
     """
 
     _namespace = "emea:"
