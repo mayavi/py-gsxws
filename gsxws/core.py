@@ -331,14 +331,16 @@ class GsxObject(object):
             if isinstance(v, basestring):
                 el.text = v
             if isinstance(v, dict):
-                v = GsxObject(**v)
+                for a, b in v.items():
+                    i = ET.SubElement(el, a)
+                    i.text = b
             if isinstance(v, GsxObject):
                 el.append(v.to_xml(k))
             if isinstance(v, list):
                 for e in v:
                     if isinstance(e, GsxObject):
                         el.append(e.to_xml(k))
-                    else:  # assuming it's a dict... @TODO: make this nicer
+                    else:  # Assuming dict. @TODO: yuck...
                         for a, b in e.items():
                             i = ET.SubElement(el, a)
                             i.text = b
