@@ -394,6 +394,8 @@ class GsxSession(GsxObject):
     _namespace = "glob:"
 
     def __init__(self, user_id, password, sold_to, language, timezone):
+        global GSX_ENV
+
         self.userId = user_id
         self.password = password
         self.languageCode = language
@@ -401,7 +403,7 @@ class GsxSession(GsxObject):
         self.serviceAccountNo = str(sold_to)
 
         md5 = hashlib.md5()
-        md5.update(user_id + self.serviceAccountNo)
+        md5.update(user_id + self.serviceAccountNo + GSX_ENV)
 
         self._cache_key = md5.hexdigest()
         self._cache = GsxCache(self._cache_key)
@@ -433,11 +435,11 @@ class GsxSession(GsxObject):
 
 
 def connect(user_id, password, sold_to,
-            environment='it',
-            language='en',
+            environment=GSX_ENV,
+            language=GSX_LANG,
             timezone='CEST',
-            region='emea',
-            locale='en_XXX'):
+            region=GSX_REGION,
+            locale=GSX_LOCALE):
     """
     Establishes connection with GSX Web Services.
     Returns the session ID of the new connection.
