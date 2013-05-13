@@ -196,6 +196,9 @@ class CarryInRepair(Repair):
 
     >>> CarryInRepair(customerAddress=Customer(firstName='Filipp'))._data
     """
+
+    _namespace = "emea:"
+
     shipTo = ""
     fileName = ""
     fileData = ""

@@ -200,8 +200,8 @@ class GsxRequest(object):
         self.env.set("xmlns:core", "http://gsxws.apple.com/elements/core")
         self.env.set("xmlns:glob", "http://gsxws.apple.com/elements/global")
         self.env.set("xmlns:asp", "http://gsxws.apple.com/elements/core/asp")
-        self.env.set("xmlns:am", "http://gsxws.apple.com/elements/core/asp/am")
         self.env.set("xmlns:soapenv", "http://schemas.xmlsoap.org/soap/envelope/")
+        self.env.set("xmlns:emea", "http://gsxws.apple.com/elements/core/asp/emea")
 
         ET.SubElement(self.env, "soapenv:Header")
         self.body = ET.SubElement(self.env, "soapenv:Body")
