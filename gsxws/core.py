@@ -80,6 +80,9 @@ ENVIRONMENTS = (
     ('it', "Testing"),
 )
 
+GSX_HOSTS = {'pr': 'ws2', 'it': 'wsit', 'ut': 'wsut'}
+GSX_URL = "https://gsx{env}.apple.com/gsx-ws/services/{region}/asp"
+
 
 def validate(value, what=None):
     """
@@ -117,12 +120,13 @@ def get_format(locale=GSX_LOCALE):
 
 
 class GsxError(Exception):
-    def __init__(self, message=None, xml=None):
-
+    def __init__(self, message=None, xml=None, url=None):
+        global GSX_ENV
         if message is not None:
             raise ValueError(message)
 
         if xml is not None:
+            logging.debug(url)
             logging.debug(xml)
             el = ET.fromstring(xml)
             self.code = el.findtext("*//faultcode")
@@ -188,12 +192,6 @@ class GsxRequest(object):
     _request = ""
     _response = ""
 
-    envs = ('pr', 'it', 'ut',)
-    REGION_CODES = ('apac', 'am', 'la', 'emea',)
-
-    hosts = {'pr': 'ws2', 'it': 'wsit', 'ut': 'wsut'}
-    url = "https://gsx{env}.apple.com/gsx-ws/services/{region}/asp"
-
     def __init__(self, **kwargs):
         "Construct the SOAP envelope"
         self.objects = []
@@ -213,9 +211,12 @@ class GsxRequest(object):
             self.data = v.to_xml(self._request)
             self._response = k.replace("Request", "Response")
 
-    def _send(self, url, method, xmldata):
+    def _send(self, method, xmldata):
         "Send the final SOAP message"
-        parsed = urlparse(url)
+        global GSX_ENV, GSX_REGION, GSX_HOSTS, GSX_URL
+
+        self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
+        parsed = urlparse(self._url)
 
         ws = httplib.HTTPSConnection(parsed.netloc)
         ws.putrequest("POST", parsed.path)
@@ -230,10 +231,9 @@ class GsxRequest(object):
 
     def _submit(self, method, response=None, raw=False):
         "Constructs the final SOAP message"
-        global GSX_ENV, GSX_REGION, GSX_SESSION
+        global GSX_SESSION
 
         root = ET.SubElement(self.body, self.obj._namespace + method)
-        url = self.url.format(env=self.hosts[GSX_ENV], region=GSX_REGION)
 
         if method is "Authenticate":
             root.append(self.data)
@@ -251,11 +251,11 @@ class GsxRequest(object):
         data = ET.tostring(self.env, "UTF-8")
         logging.debug(data)
 
-        res = self._send(url, method, data)
+        res = self._send(method, data)
         xml = res.read()
 
         if res.status > 200:
-            raise GsxError(xml=xml)
+            raise GsxError(xml=xml, url=self._url)
 
         logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
         response = response or self._response

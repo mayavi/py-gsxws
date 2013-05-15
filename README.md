@@ -16,10 +16,10 @@ It goes a little something like this:
     import gsxws
     gsxws.connect(apple_id, password, sold_to)
     mac = gsxws.Product('70033CDFA4S')
-    mac.get_warranty()
+    mac.warranty()
 
     # get available parts for this machine
-    mac.get_parts()
+    mac.parts()
 
 
 Requirements
