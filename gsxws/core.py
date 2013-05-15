@@ -357,6 +357,7 @@ class GsxObject(object):
         obj = GsxObject()
 
         for r in el:
+
             newitem = cls.from_xml(r)
             k, v = r.tag, r.text
 
@@ -385,6 +386,9 @@ class GsxObject(object):
                 v = base64.b64decode(v)
 
             if isinstance(v, basestring):
+
+                if v == "":
+                    continue  # Don't set empty values at all...
 
                 v = unicode(v)  # "must be unicode, not str"
 

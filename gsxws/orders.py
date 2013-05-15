@@ -34,7 +34,8 @@ class StockingOrder(GsxObject):
         self.orderLines = list()
 
     def add_part(self, part_number, quantity):
-        self.orderLines.append(OrderLine(partNumber=part_number, quantity=quantity))
+        part = OrderLine(partNumber=part_number, quantity=quantity)
+        self.orderLines.append(part)
         return self
 
     def submit(self):
