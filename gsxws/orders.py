@@ -7,7 +7,22 @@ class OrderLine(GsxObject):
 
 
 class APPOrder(GsxObject):
-    pass
+    """
+    Description:
+    The Create APP Order API is designed to create
+    an AppleCare Protection Plan (APP) enrollment.
+    Creation of an APP enrollment requires serial number of the unit
+    for which service agreement is being ordered, customer information
+    and the billing and ship-to information.
+    On successful submission, GSX assigns an AppleCare Protection Plan
+    agreement number immediately.
+    This agreement is valid as soon as it is sold to the customer.
+    A quote is obtained for an APP and sent as part of the response.
+
+    Context:
+    The API can be invoked only after valid authentication.
+    Authentication generates a session ID that needs to be passed while using this API.
+    """
 
 
 class StockingOrder(GsxObject):

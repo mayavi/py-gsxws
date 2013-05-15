@@ -387,9 +387,6 @@ class GsxObject(object):
 
             if isinstance(v, basestring):
 
-                if v == "":
-                    continue  # Don't set empty values at all...
-
                 v = unicode(v)  # "must be unicode, not str"
 
                 # convert dates to native Python type
