@@ -218,6 +218,9 @@ class GsxRequest(object):
         self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
         parsed = urlparse(self._url)
 
+        logging.debug(self._url)
+        logging.debug(xmldata)
+
         ws = httplib.HTTPSConnection(parsed.netloc)
         ws.putrequest("POST", parsed.path)
         ws.putheader("User-Agent", "py-gsxws 0.9")
@@ -249,8 +252,6 @@ class GsxRequest(object):
             request.append(self.data)
 
         data = ET.tostring(self.env, "UTF-8")
-        logging.debug(data)
-
         res = self._send(method, data)
         xml = res.read()
 
