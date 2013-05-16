@@ -259,3 +259,5 @@ SERVER:
 
 OTHER:
     name: Other Products
+    models:
+        - Unknown Product
