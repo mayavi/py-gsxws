@@ -5,10 +5,18 @@ https://gsxwsut.apple.com/apidocs/ut/html/WSAPIChangeLog.html?user=asp
 import sys
 import urllib
 
-import logging
 from lookups import Lookup
 from diagnostics import Diagnostics
 from core import GsxObject, GsxError
+
+
+def models():
+    """
+    >>> models() # doctest: +ELLIPSIS
+    {'iPad': {'models': 'iPad iPad (3rd gen)...
+    """
+    import yaml
+    return yaml.load(open("products.yaml"))
 
 
 class Product(GsxObject):
@@ -50,8 +58,13 @@ class Product(GsxObject):
         """
         >>> Product('DGKFL06JDHJP').parts() # doctest: +ELLIPSIS
         [<core.GsxObject object at ...
+        >>> Product(productName='MacBook Pro (17-inch, Mid 2009)').parts() # doctest: +ELLIPSIS
+        [<core.GsxObject object at ...
         """
-        return Lookup(serialNumber=self.serialNumber).parts()
+        if hasattr(self, "serialNumber"):
+            return Lookup(serialNumber=self.serialNumber).parts()
+        else:
+            return Lookup(productName=self.productName).parts()
 
     def repairs(self):
         """
@@ -93,13 +106,15 @@ class Product(GsxObject):
         GsxError: Provided serial number does not belong to an iOS Device...
         """
         self._namespace = "glob:"
-        act = self._submit("FetchIOSActivationDetailsRequest", "FetchIOSActivationDetails")
+        act = self._submit("FetchIOSActivationDetailsRequest",
+                           "FetchIOSActivationDetails")
         return act
 
 
 if __name__ == '__main__':
     import doctest
+    import logging
     from core import connect
     logging.basicConfig(level=logging.DEBUG)
-    connect(*sys.argv[1:4])
+    connect(*sys.argv[1:])
     doctest.testmod()
