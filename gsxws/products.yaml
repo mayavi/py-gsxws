@@ -1,11 +1,11 @@
-appletv:
+APPLETV:
     name: Apple TV
     models:
         - Apple TV
         - Apple TV (2nd generation)
         - Apple TV (3rd generation)
 
-display:
+DISPLAY:
     name: Displays
     models:
         - Cinema Display (20-inch DVI Early 2007)
@@ -18,7 +18,7 @@ display:
         - ~VIN,Cinema Disply (20-in DVI Late 2005)
         - ~VIN,Cinema Disply (23-in DVI Late 2005)
 
-imac:
+IMAC:
     name: iMac
     models:
         - iMac (17-inch Late 2006 CD)
@@ -49,7 +49,7 @@ imac:
         - ~VIN,iMac G5 (17-inch iSight)
         - ~VIN,iMac G5 (20-inch iSight)
 
-ipad:
+IPAD:
     name: iPad
     models:
         - iPad
@@ -67,7 +67,7 @@ ipad:
         - iPad mini Wi-Fi, Cellular
         - iPad mini Wi-Fi, Cellular (MM)
 
-iphone:
+IPHONE:
     name: iPhone
     models:
         - iPhone
@@ -83,12 +83,12 @@ iphone:
         - iPhone 4S
         - iPhone 5
 
-iphone_acc:
+IPHONE_ACC:
     name: iPhone Accessory
     models:
-        Bluetooth Headset
+        - Bluetooth Headset
 
-ipod_classic:
+IPOD_CLASSIC:
     name: iPod Classic
     models:
         - iPod 5th Generation (Late 2006)
@@ -100,7 +100,7 @@ ipod_classic:
         - ~VIN,iPod 5th Generation Harry Potter
         - ~VIN,iPod 5th Generation U2
 
-ipod_nano:
+IPOD_NANO:
     name: iPod nano
     models:
         - iPod nano
@@ -111,7 +111,7 @@ ipod_nano:
         - iPod nano 3rd Generation
         - ~VIN,IPOD NANO 2ND GENERATION
 
-ipod_shuffle:
+IPOD_SHUFFLE:
     name: iPod Shuffle
     models:
         - iPod shuffle (2nd Generation)
@@ -124,7 +124,7 @@ ipod_shuffle:
         - ~VIN,IPOD SHUFFLE 2ND GENERATION
         - ~VIN,iPod shuffle
 
-ipod_touch:
+IPOD_TOUCH:
     name: iPod Touch
     models:
         - iPod touch
@@ -134,7 +134,7 @@ ipod_touch:
         - iPod touch (4th generation)
         - iPod touch (5th generation)
 
-mac_accessory:
+MAC_ACC:
     name: Mac Accessory
     models:
         - AirPort Card
@@ -157,7 +157,7 @@ mac_accessory:
         - ~VIN,AirPort Extreme Base Station
         - ~VIN,iSight
 
-macmini:
+MACMINI:
     name: Mac mini
     models:
         - Mac mini (Early 2009)
@@ -173,7 +173,7 @@ macmini:
         - ~VIN,Mac mini (Early 2006)
         - ~VIN,Mac mini (Late 2005)
 
-macpro:
+MACPRO:
     name: Mac Pro
     models:
         - Mac Pro
@@ -184,7 +184,7 @@ macpro:
         - Mac Pro Server (Mid 2010)
         - Mac Pro Server (Mid 2012)
 
-macbook:
+MACBOOK:
     name: MacBook
     models:
         - MacBook (13-inch Early 2008)
@@ -199,7 +199,7 @@ macbook:
         - ~VIN,MacBook (13-inch Late 2006)
         - ~VIN,MacBook (13-inch)
 
-macbookair:
+MACBOOKAIR:
     name: MacBook Air
     models:
         - MacBook Air
@@ -212,7 +212,7 @@ macbookair:
         - MacBook Air (Late 2008)
         - MacBook Air (Mid 2009)
 
-macbookpro:
+MACBOOKPRO:
     name: MacBook Pro
     models:
         - MacBook Pro (13-inch, Early 2011)
@@ -248,7 +248,7 @@ macbookpro:
         - ~VIN,MacBook Pro (17-inch Core 2 Duo)
         - ~VIN,MacBook Pro (17-inch)
 
-server:
+SERVER:
     name: Servers
     models:
         - XSERVE (EARLY 2009)
@@ -256,3 +256,6 @@ server:
         - Xserve (Early 2009)
         - Xserve (Late 2006)
         - ~VIN,Xserve G5 (January 2005)
+
+OTHER:
+    name: Other Products
