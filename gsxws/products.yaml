@@ -118,7 +118,6 @@ IPOD_SHUFFLE:
         - iPod shuffle (3rd generation)
         - iPod shuffle (4th generation late 2012)
         - iPod shuffle (4th generation)
-        - iPod shuffle 2nd Generation
         - iPod shuffle 2nd Generation (Late 2007)
         - iPod shuffle 2nd generation (Late 2008)
         - ~VIN,IPOD SHUFFLE 2ND GENERATION
@@ -129,7 +128,6 @@ IPOD_TOUCH:
     models:
         - iPod touch
         - iPod touch (2nd Generation)
-        - iPod touch (2nd generation)
         - iPod touch (3rd generation)
         - iPod touch (4th generation)
         - iPod touch (5th generation)
@@ -146,8 +144,7 @@ MAC_ACC:
         - AirPort Extreme 802.11n (4th Gen)
         - AirPort Extreme 802.11n (5th Gen)
         - AirPort Extreme Card
-        - LCD Display Adapter (DVI-&gt;ADC)
-        - MacBook (13-inch, Mid 2010)
+        - LCD Display Adapter (DVI->ADC)
         - Time Capsule 802.11n (1st Gen)
         - Time Capsule 802.11n (2nd Gen)
         - Time Capsule 802.11n (3rd Gen)
