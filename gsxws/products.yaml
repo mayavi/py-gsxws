@@ -67,7 +67,7 @@ ipad:
         iPad mini Wi-Fi, Cellular
         iPad mini Wi-Fi, Cellular (MM)
 
-phone:
+iphone:
     name: iPhone
     models:
         iPhone

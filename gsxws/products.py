@@ -1,8 +1,6 @@
 """
 https://gsxwsut.apple.com/apidocs/ut/html/WSAPIChangeLog.html?user=asp
 """
-
-import sys
 import urllib
 
 from lookups import Lookup
@@ -13,10 +11,12 @@ from core import GsxObject, GsxError
 def models():
     """
     >>> models() # doctest: +ELLIPSIS
-    {'iPad': {'models': 'iPad iPad (3rd gen)...
+    {'iphone_acc': {'models': 'Bluetooth Headset',...
     """
+    import os
     import yaml
-    return yaml.load(open("products.yaml"))
+    filepath = os.path.join(os.path.dirname(__file__), "products.yaml")
+    return yaml.load(open(filepath, 'r'))
 
 
 class Product(GsxObject):
@@ -112,6 +112,7 @@ class Product(GsxObject):
 
 
 if __name__ == '__main__':
+    import sys
     import doctest
     import logging
     from core import connect
