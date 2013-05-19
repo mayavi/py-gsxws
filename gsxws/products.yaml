@@ -6,7 +6,7 @@ APPLETV:
         - Apple TV (3rd generation)
 
 DISPLAY:
-    name: Displays
+    name: Display
     models:
         - Cinema Display (20-inch DVI Early 2007)
         - Cinema Display (23-inch DVI Early 2007)
@@ -149,10 +149,8 @@ MAC_ACC:
         - Time Capsule 802.11n (2nd Gen)
         - Time Capsule 802.11n (3rd Gen)
         - Time Capsule 802.11n (4th Gen)
-        - Xserve RAID (SFP Late 2004)
         - ~VIN,AIRPORT EXTREME 802.11N (1ST GEN)
         - ~VIN,AirPort Extreme Base Station
-        - ~VIN,iSight
 
 MACMINI:
     name: Mac mini
@@ -246,7 +244,7 @@ MACBOOKPRO:
         - ~VIN,MacBook Pro (17-inch)
 
 SERVER:
-    name: Servers
+    name: Server
     models:
         - XSERVE (EARLY 2009)
         - Xserve (Early 2008)
