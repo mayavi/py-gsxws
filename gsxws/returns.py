@@ -42,11 +42,14 @@ CARRIERS = (
 
 
 class Return(GsxObject):
+
+    _namespace = "asp:"
+
     def __init__(self, order_number=None, *args, **kwargs):
         super(Return, self).__init__(*args, **kwargs)
 
         if order_number is not None:
-            self.data['returnOrderNumber'] = order_number
+            self.returnOrderNumber = order_number
 
     def get_pending(self):
         """
@@ -77,38 +80,10 @@ class Return(GsxObject):
         so we're parsing the raw SOAP response and creating a "fake" return object from that.
         """
         if not validate(part_number, 'partNumber'):
-            raise ValueError('%s is not a valid part number' % part_number)
+            raise ValueError("%s is not a valid part number" % part_number)
 
-        class ReturnData(dict):
-            pass
-
-        rd = ReturnData()
-
-        CLIENT.set_options(retxml=True)
-
-        dt = CLIENT.factory.create('ns1:returnLabelRequestType')
-        dt.returnOrderNumber = self.data['returnOrderNumber']
-        dt.partNumber = part_number
-        dt.userSession = SESSION
-
-        try:
-            result = CLIENT.service.ReturnLabel(dt)
-        except suds.WebFault, e:
-            raise GsxError(fault=e)
-
-        el = ET.fromstring(result).findall('*//%s' % 'returnLabelData')[0]
-
-        for r in el.iter():
-            k, v = r.tag, r.text
-            if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
-                v = base64.b64decode(v)
-                of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-                of.write(v)
-                v = of.name
-
-            setattr(rd, k, v)
-
-        return rd
+        self._submit("ReturnLabelRequest", "ReturnLabel", "returnLabelData")
+        return self._req.objects[0]
 
     def get_proforma(self):
         """

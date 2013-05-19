@@ -384,6 +384,9 @@ class GsxObject(object):
 
             if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
                 v = base64.b64decode(v)
+                of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+                of.write(v)
+                v = of.name
 
             if isinstance(v, basestring):
 
