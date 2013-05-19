@@ -247,9 +247,10 @@ class GsxRequest(object):
 
             if self._request == request_name:
                 "Some requests don't have a top-level container"
-                self.data = list(self.data)[0]
-
-            request.append(self.data)
+                #self.data = list(self.data)[0]
+                request.extend(self.data)
+            else:
+                request.append(self.data)
 
         data = ET.tostring(self.env, "UTF-8")
         res = self._send(method, data)
@@ -322,6 +323,7 @@ class GsxObject(object):
             raise AttributeError("Invalid attribute: %s" % name)
 
     def _submit(self, arg, method, ret=None, raw=False):
+        "Shortcut for submitting a GsxObject"
         self._req = GsxRequest(**{arg: self})
         result = self._req._submit(method, ret, raw)
         return result if len(result) > 1 else result[0]

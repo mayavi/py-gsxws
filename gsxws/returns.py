@@ -56,12 +56,12 @@ class Return(GsxObject):
         The Parts Pending Return API returns a list of all parts that
         are pending for return, based on the search criteria.
 
-        >>> Returns(repairType='CA').get_pending()  # doctest: +SKIP
+        >>> Return(repairType='CA').get_pending()  # doctest: +SKIP
         """
         dt = self._make_type('ns1:partsPendingReturnRequestType')
         dt.repairData = self.data
 
-        return self.submit('PartsPendingReturn', dt, 'partsPendingResponse')
+        return self._submit('PartsPendingReturn', dt, 'partsPendingResponse')
 
     def get_report(self):
         """
@@ -76,12 +76,13 @@ class Return(GsxObject):
     def get_label(self, part_number):
         """
         The Return Label API retrieves the Return Label for a given Return Order Number.
-        (Type not found: 'comptiaCode')
-        so we're parsing the raw SOAP response and creating a "fake" return object from that.
+
+        >>> Return('7458231326').get_label('661-5852')
         """
         if not validate(part_number, 'partNumber'):
             raise ValueError("%s is not a valid part number" % part_number)
 
+        self.partNumber = part_number
         self._submit("ReturnLabelRequest", "ReturnLabel", "returnLabelData")
         return self._req.objects[0]
 
@@ -118,7 +119,7 @@ class Return(GsxObject):
         with the status GPR(2), DOA(1), CTS(3), or TOW(4).
         The API can be used only by ASP.
 
-        >>> Returns().update_parts('G135877430',\
+        >>> Return().update_parts('G135877430',\    # doctest: +SKIP
         [{'partNumber': '661-5174',\
         'comptiaCode': 'Z29',\
         'comptiaModifier': 'A',\
@@ -132,3 +133,12 @@ class Return(GsxObject):
         dt.repairData = repairData
         result = self.submit("PartsReturnUpdate", dt)
         return result
+
+if __name__ == '__main__':
+    import sys
+    import doctest
+    import logging
+    from core import connect
+    logging.basicConfig(level=logging.DEBUG)
+    connect(*sys.argv[1:])
+    doctest.testmod()
