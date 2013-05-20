@@ -1,6 +1,5 @@
-import base64
-
 from core import GsxObject, validate
+from repairs import ServicePart
 
 RETURN_TYPES = (
     (1, "Dead On Arrival"),
@@ -99,9 +98,11 @@ class Return(GsxObject):
         The Register Parts for Bulk Return API creates a bulk return for
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
+
+        >>> Return(shipToCode=123456).register_parts([ServicePart('661-5852')])
         """
         self.bulkReturnOrder = parts
-        self._submit("RegisterPartsForBulkReturnRequest", "RegisterPartsForBulkReturn",
+        self._submit("bulkPartsRegistrationRequest", "RegisterPartsForBulkReturn",
                      "bulkPartsRegistrationData")
         return self._req.objects[0]
 
