@@ -3,7 +3,7 @@ import re
 import sys
 import logging
 
-from core import GsxObject
+from core import GsxObject, validate
 from lookups import Lookup
 
 REPAIR_TYPES = (
@@ -42,6 +42,17 @@ class RepairOrderLine(GsxObject):
     comptiaModifier = ""
 
 
+class ServicePart(GsxObject):
+    "A generic service part (for PartInfo and whatnot)"
+    def __init__(self, number, *args, **kwargs):
+        super(ServicePart, self).__init__(*args, **kwargs)
+
+        if not validate(number, "partNumber"):
+            raise ValueError("Invalid part number: %s" % number)
+
+        self.partNumber = number
+
+
 class Repair(GsxObject):
     "Base class for the different GSX Repair types"
     _namespace = "asp:"
@@ -61,6 +72,8 @@ class Repair(GsxObject):
         Context:
         The API is not applicable for whole unit replacement
         serial number entry (see KGB serial update).
+
+        >>> Repair('G135762375').update_sn(ServicePart('661-4964', oldSerialNumber='W882300FK22YA'))
         """
         self.partInfo = parts
         if hasattr(self, "dispatchId"):
@@ -230,5 +243,5 @@ if __name__ == '__main__':
     import doctest
     from core import connect
     logging.basicConfig(level=logging.DEBUG)
-    connect(*sys.argv[1:4])
+    connect(*sys.argv[1:])
     doctest.testmod()
