@@ -100,18 +100,10 @@ class Return(GsxObject):
         the registered parts.
         The API returns the Bulk Return Id with the packing list.
         """
-        dt = self._make_type("ns1:registerPartsForBulkReturnRequestType")
-        self.data['bulkReturnOrder'] = parts
-        dt.bulkPartsRegistrationRequest = self.data
-
-        result = self.submit("RegisterPartsForBulkReturn", dt, "bulkPartsRegistrationData")
-
-        pdf = base64.b64decode(result.packingList)
-        of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        of.write(pdf)
-        result.packingList = of.name
-
-        return result
+        self.bulkReturnOrder = parts
+        self._submit("RegisterPartsForBulkReturnRequest", "RegisterPartsForBulkReturn",
+                     "bulkPartsRegistrationData")
+        return self._req.objects[0]
 
     def update_parts(self, confirmation, parts):
         """
