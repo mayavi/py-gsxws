@@ -394,6 +394,14 @@ class GsxObject(object):
 
                 v = unicode(v)  # "must be unicode, not str"
 
+                # strip currency prefix and munge into float
+                if re.search(r'Price$', k):
+                    v = float(re.sub(r'[A-Z ,]', '', v))
+
+                # convert Y and N to boolean
+                if re.search(r'^[YN]$', k):
+                    v = (v == 'Y')
+
                 # convert dates to native Python type ("mm/dd/yy")
                 if re.search(r'^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
@@ -404,18 +412,10 @@ class GsxObject(object):
                     y, m, d = v.split('-')
                     v = date(int(y), int(m), int(d))
 
-                # strip currency prefix and munge into float
-                if re.search(r'Price$', k):
-                    v = float(re.sub(r'[A-Z ,]', '', v))
-
                 # Convert timestamps to native Python type
                 # 18-Jan-13 14:38:04
                 if re.search(r'TimeStamp$', k):
                     v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
-
-                # convert Y and N to boolean
-                if re.search(r'^[YN]$', k):
-                    v = (v == 'Y')
 
                 setattr(obj, k, v)
 
