@@ -399,6 +399,11 @@ class GsxObject(object):
                     m, d, y = v.split('/')
                     v = date(2000+int(y), int(m), int(d)).isoformat()
 
+                # seems that some dates are in the format "yyyy-mm-dd"
+                if re.search(r'^\d{4}-\d{2}-\d{2}$', v):
+                    y, m, d = v.split('-')
+                    v = date(int(y), int(m), int(d)).isoformat()
+
                 # strip currency prefix and munge into float
                 if re.search(r'Price$', k):
                     v = float(re.sub(r'[A-Z ,]', '', v))
@@ -408,7 +413,7 @@ class GsxObject(object):
                 if re.search(r'TimeStamp$', k):
                     v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
 
-                # convert Y and N to corresponding boolean
+                # convert Y and N to boolean
                 if re.search(r'^[YN]$', k):
                     v = (v == 'Y')
 
