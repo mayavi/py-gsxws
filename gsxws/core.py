@@ -394,15 +394,15 @@ class GsxObject(object):
 
                 v = unicode(v)  # "must be unicode, not str"
 
-                # convert dates to native Python type
+                # convert dates to native Python type ("mm/dd/yy")
                 if re.search(r'^\d{2}/\d{2}/\d{2}$', v):
                     m, d, y = v.split('/')
-                    v = date(2000+int(y), int(m), int(d)).isoformat()
+                    v = date(2000+int(y), int(m), int(d))
 
                 # seems that some dates are in the format "yyyy-mm-dd"
                 if re.search(r'^\d{4}-\d{2}-\d{2}$', v):
                     y, m, d = v.split('-')
-                    v = date(int(y), int(m), int(d)).isoformat()
+                    v = date(int(y), int(m), int(d))
 
                 # strip currency prefix and munge into float
                 if re.search(r'Price$', k):
