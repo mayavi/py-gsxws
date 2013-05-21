@@ -194,7 +194,7 @@ MACBOOK:
         - ~VIN,MacBook (13-inch Late 2006)
         - ~VIN,MacBook (13-inch)
 
-MACBOOKAIR:
+MACBOOK_AIR:
     name: MacBook Air
     models:
         - MacBook Air
@@ -207,7 +207,7 @@ MACBOOKAIR:
         - MacBook Air (Late 2008)
         - MacBook Air (Mid 2009)
 
-MACBOOKPRO:
+MACBOOK_PRO:
     name: MacBook Pro
     models:
         - MacBook Pro (13-inch, Early 2011)
