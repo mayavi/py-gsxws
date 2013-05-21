@@ -394,32 +394,44 @@ class GsxObject(object):
 
                 v = unicode(v)  # "must be unicode, not str"
 
+                # convert Y and N to boolean
+                if re.search(r'^[YN]$', v):
+                    v = (v == 'Y')
+
                 # strip currency prefix and munge into float
                 if re.search(r'Price$', k):
                     v = float(re.sub(r'[A-Z ,]', '', v))
-
-                # convert Y and N to boolean
-                if re.search(r'^[YN]$', k):
-                    v = (v == 'Y')
-
-                # convert dates to native Python type ("mm/dd/yy")
-                if re.search(r'^\d{2}/\d{2}/\d{2}$', v):
-                    m, d, y = v.split('/')
-                    v = date(2000+int(y), int(m), int(d))
-
-                # seems that some dates are in the format "yyyy-mm-dd"
-                if re.search(r'^\d{4}-\d{2}-\d{2}$', v):
-                    y, m, d = v.split('-')
-                    v = date(int(y), int(m), int(d))
 
                 # Convert timestamps to native Python type
                 # 18-Jan-13 14:38:04
                 if re.search(r'TimeStamp$', k):
                     v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
 
+                if re.search(r'Date$', k):
+                    # looks like some sort of date, let's try to convert
+                    # @TODO: return actual native dates, not isoformat()
+                    try:
+                        # standard GSX format: "mm/dd/yy"
+                        dt = datetime.strptime(v, "%m/%d/%y")
+                        v = dt.date().isoformat()
+                    except ValueError:
+                        pass
+
+                    try:
+                        # some dates are formatted as "yyyy-mm-dd"
+                        dt = datetime.strptime(v, "%Y-%m-%d")
+                        v = dt.date().isoformat()
+                    except (ValueError, TypeError):
+                        pass
+
                 setattr(obj, k, v)
 
         return obj
+
+
+class GsxRequestObject(GsxObject):
+    "The GSX-friendly representation of this GsxObject"
+    pass
 
 
 class GsxSession(GsxObject):

@@ -100,7 +100,7 @@ class Product(GsxObject):
 
         >>> Product('013348005376007').activation().unlocked
         'true'
-        >>> Product('W874939YX92').get_activation().unlocked # doctest: +ELLIPSIS
+        >>> Product('W874939YX92').activation().unlocked # doctest: +ELLIPSIS
         Traceback (most recent call last):
         ...
         GsxError: Provided serial number does not belong to an iOS Device...
