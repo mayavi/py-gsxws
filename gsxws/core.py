@@ -436,15 +436,7 @@ class GsxRequestObject(GsxObject):
 
 class GsxSession(GsxObject):
 
-    userId = ""
-    password = ""
-    languageCode = ""
-    userTimeZone = ""
-    serviceAccountNo = ""
-
     _cache = None
-    _cache_key = ""
-    _session_id = ""
     _namespace = "glob:"
 
     def __init__(self, user_id, password, sold_to, language, timezone):
@@ -455,6 +447,8 @@ class GsxSession(GsxObject):
         self.languageCode = language
         self.userTimeZone = timezone
         self.serviceAccountNo = str(sold_to)
+
+        self._session_id = ""
 
         md5 = hashlib.md5()
         md5.update(user_id + self.serviceAccountNo + GSX_ENV)
