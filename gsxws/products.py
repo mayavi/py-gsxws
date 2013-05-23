@@ -99,7 +99,7 @@ class Product(GsxObject):
         fetch activation details of iOS Devices.
 
         >>> Product('013348005376007').activation().unlocked
-        'true'
+        True
         >>> Product('W874939YX92').activation().unlocked # doctest: +ELLIPSIS
         Traceback (most recent call last):
         ...
@@ -107,7 +107,8 @@ class Product(GsxObject):
         """
         self._namespace = "glob:"
         act = self._submit("FetchIOSActivationDetailsRequest",
-                           "FetchIOSActivationDetails")
+                           "FetchIOSActivationDetails",
+                           "activationDetailsInfo")
         return act
 
 

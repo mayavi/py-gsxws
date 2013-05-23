@@ -102,8 +102,10 @@ class Return(GsxObject):
         >>> Return(shipToCode=123456).register_parts([ServicePart('661-5852')])
         """
         self.bulkReturnOrder = parts
-        self._submit("bulkPartsRegistrationRequest", "RegisterPartsForBulkReturn",
+        self._submit("bulkPartsRegistrationRequest",
+                     "RegisterPartsForBulkReturn",
                      "bulkPartsRegistrationData")
+
         return self._req.objects[0]
 
     def update_parts(self, confirmation, parts):
@@ -118,14 +120,12 @@ class Return(GsxObject):
         'comptiaModifier': 'A',\
         'returnType': 2}])
         """
-        dt = self._make_type("ns1:partsReturnUpdateRequestType")
-        repairData = {
-            'repairConfirmationNumber': confirmation,
-            'orderLines': parts
-        }
-        dt.repairData = repairData
-        result = self.submit("PartsReturnUpdate", dt)
-        return result
+        rd = GsxObject(repairConfirmationNumber=confirmation)
+        rd.orderLines = parts
+        self.repairData = rd
+        self._submit("repairData", "UpdateCarryIn", "repairConfirmation")
+        return self._req.objects[0]
+
 
 if __name__ == '__main__':
     import sys

@@ -384,7 +384,7 @@ class GsxObject(object):
 
                 setattr(obj, k, attr)
 
-            if k in ['packingList', 'proformaFileData', 'returnLabelFileData']:
+            if k in ["packingList", "proformaFileData", "returnLabelFileData"]:
                 v = base64.b64decode(v)
                 of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
                 of.write(v)
@@ -396,7 +396,11 @@ class GsxObject(object):
 
                 # convert Y and N to boolean
                 if re.search(r'^[YN]$', v):
-                    v = (v == 'Y')
+                    v = (v == "Y")
+
+                # convert true/false to boolean
+                if re.search(r'^(true)|(false)$', v):
+                    v = (v == "true")
 
                 # strip currency prefix and munge into float
                 if re.search(r'Price$', k):
@@ -405,7 +409,7 @@ class GsxObject(object):
                 # Convert timestamps to native Python type
                 # 18-Jan-13 14:38:04
                 if re.search(r'TimeStamp$', k):
-                    v = datetime.strptime(v, '%d-%b-%y %H:%M:%S')
+                    v = datetime.strptime(v, "%d-%b-%y %H:%M:%S")
 
                 if re.search(r'Date$', k):
                     # looks like some sort of date, let's try to convert
@@ -513,10 +517,10 @@ if __name__ == '__main__':
     parser.add_argument("user_id")
     parser.add_argument("password")
     parser.add_argument("sold_to")
-    parser.add_argument("--language", default='en')
-    parser.add_argument("--timezone", default='CEST')
-    parser.add_argument("--environment", default='it')
-    parser.add_argument("--region", default='emea')
+    parser.add_argument("--language", default="en")
+    parser.add_argument("--timezone", default="CEST")
+    parser.add_argument("--environment", default="it")
+    parser.add_argument("--region", default="emea")
 
     args = parser.parse_args()
     logging.basicConfig(level=logging.DEBUG)
