@@ -236,7 +236,12 @@ class IndirectOnsiteRepair(Repair):
     Once the repair is submitted, it is assigned a confirmation number,
     which is a reference number to identify the repair.
     """
-    pass
+
+    _namespace = "asp:"
+
+    def create(self):
+        return self._submit("repairData", "CreateIndirectOnsiteRepair",
+                            "repairConfirmation")
 
 
 if __name__ == '__main__':
