@@ -244,6 +244,10 @@ class IndirectOnsiteRepair(Repair):
             self.shippingLocation = self.shipTo
             del(self._data['shipTo'])
 
+        if getattr(self, "poNumber"):
+            self.purchaseOrderNumber = self.poNumber
+            del(self._data['poNumber'])
+
         return self._submit("repairData", "CreateIndirectOnsiteRepair",
                             "repairConfirmation")
 
