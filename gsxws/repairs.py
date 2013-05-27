@@ -248,6 +248,10 @@ class IndirectOnsiteRepair(Repair):
             self.purchaseOrderNumber = self.poNumber
             del(self._data['poNumber'])
 
+        if getattr(self, "diagnosedByTechId"):
+            self.technicianName = self.diagnosedByTechId
+            del(self._data['diagnosedByTechId'])
+
         return self._submit("repairData", "CreateIndirectOnsiteRepair",
                             "repairConfirmation")
 
