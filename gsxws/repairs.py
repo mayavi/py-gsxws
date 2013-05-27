@@ -240,6 +240,10 @@ class IndirectOnsiteRepair(Repair):
     _namespace = "asp:"
 
     def create(self):
+        if getattr(self, "shipTo"):  # Carry-In and OnSite use different field names!
+            self.shippingLocation = self.shipTo
+            del(self._data['shipTo'])
+
         return self._submit("repairData", "CreateIndirectOnsiteRepair",
                             "repairConfirmation")
 
