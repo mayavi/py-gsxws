@@ -145,40 +145,42 @@ class GsxError(Exception):
 
 class GsxCache(object):
     """
-    >>> GsxCache('spam').set('eggs').get()
+    The cache creates a separate shelf for each GSX session.
+
+    >>> GsxCache('test').set('spam', 'eggs').get('spam')
     'eggs'
     """
     shelf = None
     tmpdir = tempfile.gettempdir()
-    filename = os.path.join(tmpdir, "gsxws.tmp")
 
     def __init__(self, key, expires=timedelta(minutes=20)):
         self.key = key
         self.expires = expires
-        self.shelf = shelve.open(self.filename, protocol=-1)
         self.now = datetime.now()
+        filename = os.path.join(self.tmpdir, "gsxws_%s.db" % key)
+        self.shelf = shelve.open(filename, protocol=-1)
 
         if not self.shelf.get(key):
             # Initialize the key
-            self.set(None)
+            self.set(key, None)
 
-    def get(self):
+    def get(self, key):
         try:
-            d = self.shelf[self.key]
+            d = self.shelf[key]
             if d['expires'] > self.now:
                 return d['value']
             else:
-                del self.shelf[self.key]
+                del self.shelf[key]
         except KeyError:
             return None
 
-    def set(self, value):
+    def set(self, key, value):
         d = {
             'value': value,
             'expires': self.now + self.expires
         }
 
-        self.shelf[self.key] = d
+        self.shelf[key] = d
         return self
 
 
@@ -465,14 +467,14 @@ class GsxSession(GsxObject):
     def login(self):
         global GSX_SESSION
 
-        if not self._cache.get() is None:
-            GSX_SESSION = self._cache.get()
+        if not self._cache.get("session") is None:
+            GSX_SESSION = self._cache.get("session")
         else:
             self._req = GsxRequest(AuthenticateRequest=self)
             result = self._req._submit("Authenticate")
             self._session_id = result[0].userSessionId
             GSX_SESSION = self.get_session()
-            self._cache.set(GSX_SESSION)
+            self._cache.set("session", GSX_SESSION)
 
         return GSX_SESSION
 
