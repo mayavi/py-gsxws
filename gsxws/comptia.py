@@ -1,5 +1,3 @@
-import os
-import json
 import logging
 
 from core import GsxObject, GsxError, GsxCache
@@ -42,8 +40,6 @@ class CompTIA(GsxObject):
         """
         self._comptia = {}
         self._cache = GsxCache("comptia")
-        df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
-        self._comptia = json.load(df)
 
     def fetch(self):
         """
