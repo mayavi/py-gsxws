@@ -1,6 +1,5 @@
 import logging
-
-from core import GsxObject, GsxError, GsxCache
+from core import GsxObject, GsxCache
 
 MODIFIERS = (
     ("A", "Not Applicable"),
