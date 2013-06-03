@@ -37,7 +37,6 @@ class Customer(GsxObject):
 
 class RepairOrderLine(GsxObject):
     partNumber = ""
-    partNumber = ""
     comptiaCode = ""
     comptiaModifier = ""
 

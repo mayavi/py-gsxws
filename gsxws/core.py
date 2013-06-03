@@ -155,8 +155,8 @@ class GsxCache(object):
     def __init__(self, key, expires=timedelta(minutes=20)):
         self.key = key
         self.expires = expires
-        self.shelf = shelve.open(self.filename, protocol=-1)
         self.now = datetime.now()
+        self.shelf = shelve.open(self.filename, protocol=-1)
 
         if not self.shelf.get(key):
             # Initialize the key

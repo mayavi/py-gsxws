@@ -120,9 +120,8 @@ class Return(GsxObject):
         'comptiaModifier': 'A',\
         'returnType': 2}])
         """
-        rd = GsxObject(repairConfirmationNumber=confirmation)
-        rd.orderLines = parts
-        self.repairData = rd
+        self.repairConfirmationNumber = confirmation
+        self.orderLines = parts
         self._submit("repairData", "UpdateCarryIn", "repairConfirmation")
         return self._req.objects[0]
 
