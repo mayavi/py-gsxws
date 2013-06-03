@@ -1,8 +1,5 @@
-import os
-import json
 import logging
-
-from core import GsxObject, GsxError, GsxCache
+from core import GsxObject, GsxCache
 
 MODIFIERS = (
     ("A", "Not Applicable"),
@@ -42,8 +39,6 @@ class CompTIA(GsxObject):
         """
         self._comptia = {}
         self._cache = GsxCache("comptia")
-        df = open(os.path.join(os.path.dirname(__file__), 'comptia.json'))
-        self._comptia = json.load(df)
 
     def fetch(self):
         """
