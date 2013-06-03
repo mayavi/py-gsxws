@@ -1,5 +1,4 @@
 from core import GsxObject, validate
-from repairs import ServicePart
 
 RETURN_TYPES = (
     (1, "Dead On Arrival"),
@@ -122,7 +121,7 @@ class Return(GsxObject):
         """
         self.repairConfirmationNumber = confirmation
         self.orderLines = parts
-        self._submit("repairData", "UpdateCarryIn", "repairConfirmation")
+        self._submit("repairData", "PartsReturnUpdate", "PartsReturnUpdateResponse")
         return self._req.objects[0]
 
 
