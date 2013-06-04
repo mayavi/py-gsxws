@@ -151,6 +151,15 @@ MAC_ACC:
         - Time Capsule 802.11n (4th Gen)
         - ~VIN,AIRPORT EXTREME 802.11N (1ST GEN)
         - ~VIN,AirPort Extreme Base Station
+        - Magic Mouse
+        - Magic Trackpad
+        - Apple Keyboard with Numeric Keypad
+        - Apple Wireless Keyboard (Aluminum)
+        - Apple Wireless Mouse
+        - Apple Wireless Keyboard
+        - Apple 45W MagSafe Power Adapter
+        - Apple 60W MagSafe Power Adapter
+        - Apple 85W MagSafe Power Adapter
 
 MACMINI:
     name: Mac mini
