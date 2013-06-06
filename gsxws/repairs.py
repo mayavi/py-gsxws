@@ -223,6 +223,11 @@ class CarryInRepair(Repair):
         RFPU    Ready for Pickup
         """
         self._namespace = "asp:"
+
+        if not getattr(self, "repairConfirmationNumber"):
+            self.repairConfirmationNumber = self.dispatchId
+            del(self.dispatchId)
+
         # Merge old and new data (old data should have Dispatch ID)
         self._data.update(newdata)
         return self._submit("repairData", "UpdateCarryIn", "repairConfirmation")
