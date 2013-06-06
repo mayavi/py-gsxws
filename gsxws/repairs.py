@@ -224,7 +224,7 @@ class CarryInRepair(Repair):
         """
         self._namespace = "asp:"
 
-        if not getattr(self, "repairConfirmationNumber"):
+        if not hasattr(self, "repairConfirmationNumber"):
             self.repairConfirmationNumber = self.dispatchId
             del(self.dispatchId)
 
