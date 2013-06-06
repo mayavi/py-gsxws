@@ -225,7 +225,7 @@ class CarryInRepair(Repair):
         self._namespace = "asp:"
         # Merge old and new data (old data should have Dispatch ID)
         self._data.update(newdata)
-        return self._submit("repairData", "CarryInRepairUpdate", "repairConfirmation")
+        return self._submit("repairData", "UpdateCarryIn", "repairConfirmation")
 
 
 class IndirectOnsiteRepair(Repair):
