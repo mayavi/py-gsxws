@@ -196,7 +196,6 @@ class CarryInRepair(Repair):
     >>> CarryInRepair(requestReviewByApple=True).requestReviewByApple
     'Y'
     """
-
     _namespace = "emea:"
 
     def create(self):
@@ -226,7 +225,6 @@ class CarryInRepair(Repair):
 
         if not hasattr(self, "repairConfirmationNumber"):
             self.repairConfirmationNumber = self.dispatchId
-            del(self.dispatchId)
 
         # Merge old and new data (old data should have Dispatch ID)
         self._data.update(newdata)
