@@ -54,9 +54,10 @@ class ServicePart(GsxObject):
 
 class Repair(GsxObject):
     "Base class for the different GSX Repair types"
-    _namespace = "asp:"
 
     def __init__(self, number=None, **kwargs):
+
+        self._namespace = "asp:"
         super(Repair, self).__init__(**kwargs)
 
         if number is not None:
@@ -243,15 +244,15 @@ class IndirectOnsiteRepair(Repair):
     _namespace = "asp:"
 
     def create(self):
-        if getattr(self, "shipTo"):  # Carry-In and OnSite use different field names!
+        if hasattr(self, "shipTo"):  # Carry-In and OnSite use different field names!
             self.shippingLocation = self.shipTo
             del(self._data['shipTo'])
 
-        if getattr(self, "poNumber"):
+        if hasattr(self, "poNumber"):
             self.purchaseOrderNumber = self.poNumber
             del(self._data['poNumber'])
 
-        if getattr(self, "diagnosedByTechId"):
+        if hasattr(self, "diagnosedByTechId"):
             self.technicianName = self.diagnosedByTechId
             del(self._data['diagnosedByTechId'])
 
