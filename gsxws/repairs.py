@@ -197,13 +197,13 @@ class CarryInRepair(Repair):
     >>> CarryInRepair(requestReviewByApple=True).requestReviewByApple
     'Y'
     """
-    _namespace = "emea:"
 
     def create(self):
         """
         GSX validates the information and if all of the validations go through,
         it obtains a quote for the repair and creates the carry-in repair.
         """
+        self._namespace = "emea:"
         return self._submit("repairData", "CreateCarryIn", "repairConfirmation")
 
     def update(self, newdata):
@@ -240,10 +240,8 @@ class IndirectOnsiteRepair(Repair):
     Once the repair is submitted, it is assigned a confirmation number,
     which is a reference number to identify the repair.
     """
-
-    _namespace = "asp:"
-
     def create(self):
+        self._namespace = "asp:"
         if hasattr(self, "shipTo"):  # Carry-In and OnSite use different field names!
             self.shippingLocation = self.shipTo
             del(self._data['shipTo'])
