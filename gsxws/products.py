@@ -82,7 +82,7 @@ class Product(GsxObject):
 
     def fetch_image(self):
         """
-        >>> Product('DGKFL06JDHJP').warranty().fetch_image()
+        >>> Product('DGKFL06JDHJP').fetch_image()
         """
         if not hasattr(self, "imageURL"):
             raise GsxError("No URL to fetch product image")
