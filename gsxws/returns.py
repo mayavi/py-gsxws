@@ -82,7 +82,7 @@ class Return(GsxObject):
 
         self.partNumber = part_number
         self._submit("ReturnLabelRequest", "ReturnLabel", "returnLabelData")
-        return self._req.objects[0]
+        return self._req.objects
 
     def get_proforma(self):
         """
@@ -105,7 +105,7 @@ class Return(GsxObject):
                      "RegisterPartsForBulkReturn",
                      "bulkPartsRegistrationData")
 
-        return self._req.objects[0]
+        return self._req.objects
 
     def update_parts(self, confirmation, parts):
         """
@@ -122,7 +122,7 @@ class Return(GsxObject):
         self.repairConfirmationNumber = confirmation
         self.orderLines = parts
         self._submit("repairData", "PartsReturnUpdate", "PartsReturnUpdateResponse")
-        return self._req.objects[0]
+        return self._req.objects
 
 
 if __name__ == '__main__':
