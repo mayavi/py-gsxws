@@ -161,21 +161,18 @@ class Repair(GsxObject):
         """
         self._namespace = "core:"
         details = self._submit("RepairDetailsRequest", "RepairDetails", "lookupResponseData")
-        #self.parts = []
-"""
+
         # fix tracking URL if available
         for i, p in enumerate(details.partsInfo):
-            print p
             try:
                 url = re.sub('<<TRKNO>>', p.deliveryTrackingNumber, p.carrierURL)
-                #details.partsInfo[i].carrierURL = url
-                #self.parts.append(p)
+                details.partsInfo[i].carrierURL = url
             except AttributeError:
                 pass
 
         self.details = details
         return details
-"""
+
 
 class CannotDuplicateRepair(Repair):
     """

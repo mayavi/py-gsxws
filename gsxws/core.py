@@ -31,6 +31,7 @@ import hashlib
 import logging
 import httplib
 import tempfile
+import xmltodict
 from urlparse import urlparse
 import xml.etree.ElementTree as ET
 
@@ -263,10 +264,10 @@ class GsxRequest(object):
 
         logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
         response = response or self._response
-
-        for r in ET.fromstring(xml).findall("*//%s" % response):
-            o = r if raw else GsxObject.from_xml(r)
-            self.objects.append(o)
+        logging.debug("Looking for %s" % response)
+        root = ET.fromstring(xml).find("*//%s" % response)
+        data = xmltodict.ConvertXmlToDict(root)
+        self.objects = data[response]
 
         return self.objects
 
@@ -355,81 +356,6 @@ class GsxObject(object):
 
         return root
 
-    @classmethod
-    def from_xml(cls, el):
-        "Constructs a GsxObject from an XML Element"
-        obj = GsxObject()
-
-        for r in el:
-
-            newitem = cls.from_xml(r)
-            k, v = r.tag, r.text
-
-            if hasattr(obj, k):
-                # found duplicate tag %s" % k
-                attr = obj.__getattr__(k)
-                if isinstance(attr, list):
-                    # append to existing list
-                    newattr = attr.append(newitem)
-                    setattr(obj, k, newattr)
-                else:
-                    # convert to list
-                    setattr(obj, k, [v, newitem])
-            else:
-                # unique tag %s -> set the dictionary" % k
-                setattr(obj, k, newitem)
-
-            if k in ["partsInfo"]:
-                # found new list item %s" % k
-                attr = []
-                attr.append(GsxObject.from_xml(r))
-
-                setattr(obj, k, attr)
-
-            if k in ["packingList", "proformaFileData", "returnLabelFileData"]:
-                v = base64.b64decode(v)
-                of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-                of.write(v)
-                v = of.name
-
-            if isinstance(v, basestring):
-
-                v = unicode(v)  # "must be unicode, not str"
-
-                # convert Y and N to boolean
-                if re.search(r'^[YN]$', v):
-                    v = (v == "Y")
-
-                # strip currency prefix and munge into float
-                if re.search(r'Price$', k):
-                    v = float(re.sub(r'[A-Z ,]', '', v))
-
-                # Convert timestamps to native Python type
-                # 18-Jan-13 14:38:04
-                if re.search(r'TimeStamp$', k):
-                    v = datetime.strptime(v, "%d-%b-%y %H:%M:%S")
-
-                if re.search(r'Date$', k):
-                    # looks like some sort of date, let's try to convert
-                    # @TODO: return actual native dates, not isoformat()
-                    try:
-                        # standard GSX format: "mm/dd/yy"
-                        dt = datetime.strptime(v, "%m/%d/%y")
-                        v = dt.date().isoformat()
-                    except ValueError:
-                        pass
-
-                    try:
-                        # some dates are formatted as "yyyy-mm-dd"
-                        dt = datetime.strptime(v, "%Y-%m-%d")
-                        v = dt.date().isoformat()
-                    except (ValueError, TypeError):
-                        pass
-
-                setattr(obj, k, v)
-
-        return obj
-
 
 class GsxRequestObject(GsxObject):
     "The GSX-friendly representation of this GsxObject"
@@ -472,7 +398,7 @@ class GsxSession(GsxObject):
         else:
             self._req = GsxRequest(AuthenticateRequest=self)
             result = self._req._submit("Authenticate")
-            self._session_id = result[0].userSessionId
+            self._session_id = result.userSessionId
             GSX_SESSION = self.get_session()
             self._cache.set("session", GSX_SESSION)
 
