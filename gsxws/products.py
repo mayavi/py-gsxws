@@ -11,7 +11,7 @@ from core import GsxObject, GsxError
 def models():
     """
     >>> models() # doctest: +ELLIPSIS
-    {'iphone_acc': {'models': 'Bluetooth Headset',...
+    {'MAC_ACC': {'models': ['AirPort Card', ...
     """
     import os
     import yaml
@@ -48,28 +48,28 @@ class Product(GsxObject):
         >>> Product('DGKFL06JDHJP').warranty().warrantyStatus
         u'Out Of Warranty (No Coverage)'
         >>> Product('DGKFL06JDHJP').warranty().estimatedPurchaseDate
-        '2011-06-02'
+        datetime.date(2011, 6, 2)
         """
         self._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
-        self.warrantyDetails = self._req.objects[0]
+        self.warrantyDetails = self._req.objects
         return self.warrantyDetails
 
     def parts(self):
         """
         >>> Product('DGKFL06JDHJP').parts() # doctest: +ELLIPSIS
-        [<core.GsxObject object at ...
+        {'exchangePrice': '0', 'isSerialized': 'N', 'partType': 'Other',...
         >>> Product(productName='MacBook Pro (17-inch, Mid 2009)').parts() # doctest: +ELLIPSIS
-        [<core.GsxObject object at ...
+        {'exchangePrice': '0', 'isSerialized': 'N', 'partType': 'Other',...
         """
-        if hasattr(self, "serialNumber"):
+        try:
             return Lookup(serialNumber=self.serialNumber).parts()
-        else:
+        except AttributeError:
             return Lookup(productName=self.productName).parts()
 
     def repairs(self):
         """
         >>> Product(serialNumber='DGKFL06JDHJP').repairs() # doctest: +ELLIPSIS
-        <core.GsxObject object at ...
+        {'customerName': 'Lepalaan,Filipp',...
         """
         return Lookup(serialNumber=self.serialNumber).repairs()
 

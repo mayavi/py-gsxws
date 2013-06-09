@@ -33,6 +33,10 @@ class XmlDictObject(dict):
             if re.search(r'^[YN]$', v):
                 v = (v == "Y")
 
+            # convert true/false to boolean
+            if re.search(r'^(true)|(false)$', v):
+                v = (v == "true")
+
             # strip currency prefix and munge into float
             if re.search(r'Price$', item):
                 v = float(re.sub(r'[A-Z ,]', '', v))

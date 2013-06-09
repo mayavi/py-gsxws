@@ -264,7 +264,6 @@ class GsxRequest(object):
 
         logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
         response = response or self._response
-        logging.debug("Looking for %s" % response)
         root = ET.fromstring(xml).find("*//%s" % response)
         data = xmltodict.ConvertXmlToDict(root)
         self.objects = data[response]

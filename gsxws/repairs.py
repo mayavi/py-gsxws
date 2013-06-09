@@ -74,6 +74,9 @@ class Repair(GsxObject):
         serial number entry (see KGB serial update).
 
         >>> Repair('G135762375').update_sn(ServicePart('661-4964', oldSerialNumber='W882300FK22YA'))
+        Traceback (most recent call last):
+        ...
+        GsxError: This repair cannot be updated.
         """
         self.partInfo = parts
         if hasattr(self, "dispatchId"):
@@ -113,7 +116,7 @@ class Repair(GsxObject):
         to retrieve more details of the repair.
 
         >>> Repair(repairStatus='Open').lookup() #doctest: +ELLIPSIS
-        [<core.GsxObject object at ...
+        {'customerName': 'Lepalaan,Filipp',...
         """
         self._namespace = "core:"
         return Lookup(**self._data).repairs()
@@ -146,7 +149,7 @@ class Repair(GsxObject):
         u'Closed and Completed'
         """
         self.repairConfirmationNumbers = self.dispatchId
-        status = self._submit("RepairStatusRequest", "RepairStatus", "repairStatus")[0]
+        status = self._submit("RepairStatusRequest", "RepairStatus", "repairStatus")
         self.repairStatus = status.repairStatus
         self._status = status
         return status
@@ -157,7 +160,7 @@ class Repair(GsxObject):
         similar to the Repair Lookup API.
 
         >>> Repair('G135773004').details() #doctest: +ELLIPSIS
-        <core.GsxObject object at ...
+        {'isACPlusConsumed': 'N', 'configuration': 'IPAD 3RD GEN,WIFI+CELLULAR,16GB,BLACK',...
         """
         self._namespace = "core:"
         details = self._submit("RepairDetailsRequest", "RepairDetails", "lookupResponseData")
