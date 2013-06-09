@@ -17,7 +17,11 @@ class XmlDictObject(dict):
         dict.__init__(self, initdict)
 
     def __getattr__(self, item):
-        v = self.__getitem__(item)
+
+        try:
+            v = self.__getitem__(item)
+        except KeyError:
+            return
 
         if item in ["packingList", "proformaFileData", "returnLabelFileData"]:
             v = base64.b64decode(v)
