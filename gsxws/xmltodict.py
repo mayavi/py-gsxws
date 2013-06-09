@@ -21,7 +21,7 @@ class XmlDictObject(dict):
         try:
             v = self.__getitem__(item)
         except KeyError:
-            return
+            raise AttributeError("Invalid attribute: %s" % item)
 
         if item in ["packingList", "proformaFileData", "returnLabelFileData"]:
             v = base64.b64decode(v)
