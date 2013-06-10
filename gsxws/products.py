@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 https://gsxwsut.apple.com/apidocs/ut/html/WSAPIChangeLog.html?user=asp
 """

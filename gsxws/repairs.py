@@ -45,6 +45,7 @@ class RepairOrderLine(GsxObject):
 
 class ServicePart(GsxObject):
     "A generic service part (for PartInfo and whatnot)"
+
     def __init__(self, number, *args, **kwargs):
         super(ServicePart, self).__init__(*args, **kwargs)
 
