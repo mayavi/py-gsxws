@@ -39,7 +39,7 @@ class Product(GsxObject):
         self.configCode = result.configCode
         return result
 
-    def warranty(self):
+    def warranty(self, parts=None):
         """
         The Warranty Status API retrieves the same warranty details
         displayed on the GSX Coverage screen.
@@ -51,7 +51,17 @@ class Product(GsxObject):
         u'Out Of Warranty (No Coverage)'
         >>> Product('DGKFL06JDHJP').warranty().estimatedPurchaseDate
         datetime.date(2011, 6, 2)
+        >>> Product('WQ8094DW0P1').warranty([(u'661-5070', u'Z26',)]) # doctest: +ELLIPSIS
+        {'warrantyStatus': 'Out Of Warranty (No Coverage)',...
         """
+        try:
+            self.partNumbers = []
+            for k, v in parts:
+                part = GsxObject(partNumber=k, comptiaCode=v)
+                self.partNumbers.append(part)
+        except Exception:
+            pass
+
         self._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._req.objects
         return self.warrantyDetails
