@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Copyright (c) 2013, Filipp Lepalaan All rights reserved.
 

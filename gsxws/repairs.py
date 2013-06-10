@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 "gsxws/repairs.py"
 import re
 import sys
@@ -82,8 +84,7 @@ class Repair(GsxObject):
         if hasattr(self, "dispatchId"):
             self.repairConfirmationNumber = self.dispatchId
 
-        self._submit("repairData", "UpdateSerialNumber", "repairConfirmation")
-        return self._req.objects[0]
+        return self._submit("repairData", "UpdateSerialNumber", "repairConfirmation")
 
     def update_kgb_sn(self, sn):
         """
@@ -102,10 +103,8 @@ class Repair(GsxObject):
         self.serialNumber = sn
         self.repairConfirmationNumber = self.dispatchId
 
-        self._submit("UpdateKGBSerialNumberRequest", "UpdateKGBSerialNumber",
-                     "UpdateKGBSerialNumberResponse")
-
-        return self._req.objects[0]
+        return self._submit("UpdateKGBSerialNumberRequest", "UpdateKGBSerialNumber",
+                            "UpdateKGBSerialNumberResponse")
 
     def lookup(self):
         """
@@ -136,9 +135,8 @@ class Repair(GsxObject):
         repair confirmation numbers to be submitted to GSX to be marked as complete.
         """
         self.repairConfirmationNumbers = numbers or self.dispatchId
-        self._submit("MarkRepairCompleteRequest", "MarkRepairComplete",
-                     "MarkRepairCompleteResponse")
-        return self._req.objects[0]
+        return self._submit("MarkRepairCompleteRequest", "MarkRepairComplete",
+                            "MarkRepairCompleteResponse")
 
     def status(self, numbers=None):
         """

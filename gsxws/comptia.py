@@ -60,7 +60,7 @@ class CompTIA(GsxObject):
         if self._cache.get():
             return self._cache.get()
 
-        root = self._req.objects[0]
+        root = self._req.objects
 
         for el in root.findall(".//comptiaGroup"):
             group = {}

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from core import GsxObject
 
 
@@ -54,8 +56,7 @@ class StockingOrder(GsxObject):
         return self
 
     def submit(self):
-        self._submit("orderData", "CreateStockingOrder", "orderConfirmation")
-        return self._req.objects[0]
+        return self._submit("orderData", "CreateStockingOrder", "orderConfirmation")
 
 
 if __name__ == '__main__':

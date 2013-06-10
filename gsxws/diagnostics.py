@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from core import GsxObject
 
 
 class Diagnostics(GsxObject):
     _namespace = "glob:"
+
     def fetch(self):
         """
         The Fetch Repair Diagnostics API allows the service providers/depot/carriers
@@ -17,7 +20,7 @@ class Diagnostics(GsxObject):
         else:
             self._submit("lookupRequestData", "FetchRepairDiagnostic", "FetchRepairDiagnosticResponse")
 
-        return self._req.objects[0]
+        return self._req.objects
 
     def events(self):
         """
