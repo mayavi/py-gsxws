@@ -4,7 +4,7 @@ setup(
     name="gsxws",
     version="0.4",
     description="Apple GSX integration.",
-    install_requires=['yaml'],
+    install_requires=['PyYAML'],
     classifiers=[
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
