@@ -52,6 +52,10 @@ class Product(GsxObject):
         >>> Product('DGKFL06JDHJP').warranty().estimatedPurchaseDate
         datetime.date(2011, 6, 2)
         """
+        if hasattr(self, "alternateDeviceId"):
+            if not self.serialNumber:
+                self.activation()
+
         self._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._req.objects
         return self.warrantyDetails
@@ -108,10 +112,11 @@ class Product(GsxObject):
         GsxError: Provided serial number does not belong to an iOS Device...
         """
         self._namespace = "glob:"
-        act = self._submit("FetchIOSActivationDetailsRequest",
-                           "FetchIOSActivationDetails",
-                           "activationDetailsInfo")
-        return act
+        ad = self._submit("FetchIOSActivationDetailsRequest",
+                          "FetchIOSActivationDetails",
+                          "activationDetailsInfo")
+        self.serialNumber = ad.serialNumber
+        return ad
 
 
 if __name__ == '__main__':
