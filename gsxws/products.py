@@ -55,8 +55,9 @@ class Product(GsxObject):
         {'warrantyStatus': 'Out Of Warranty (No Coverage)',...
         """
         if hasattr(self, "alternateDeviceId"):
-            if not self.serialNumber:
+            if not hasattr(self, "serialNumber"):
                 self.activation()
+
         try:
             self.partNumbers = []
             for k, v in parts:
