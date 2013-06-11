@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="gsxws",
-    version="0.3",
+    version="0.4",
     description="Apple GSX integration.",
-    install_requires = ['suds'],
+    install_requires=['PyYAML'],
     classifiers=[
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
@@ -15,8 +15,8 @@ setup(
     ],
     keywords="gsx, python",
     author="Filipp Lepalaan",
-    author_email="filipp@mcare.fi",
+    author_email="filipp@fps.ee",
     url="https://github.com/filipp/py-gsxws",
     license="BSD",
-    packages = find_packages(),
+    packages=find_packages(),
 )
