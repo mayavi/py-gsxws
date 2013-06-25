@@ -1,267 +1,262 @@
 APPLETV:
     name: Apple TV
     models:
-        - Apple TV
-        - Apple TV (2nd generation)
-        - Apple TV (3rd generation)
+        - "Apple TV"
+        - "Apple TV (2nd generation)"
+        - "Apple TV (3rd generation)"
 
 DISPLAY:
     name: Display
     models:
-        - Cinema Display (20-inch DVI Early 2007)
-        - Cinema Display (23-inch DVI Early 2007)
-        - Cinema Display (30-inch DVI Early 2007)
-        - LED Cinema Display (24-inch)
-        - LED Cinema Display (27-inch)
-        - Thunderbolt Display (27-inch)
-        - Cinema Display (30-inch DVI Late 2005)
-        - ~VIN,Cinema Disply (20-in DVI Late 2005)
-        - ~VIN,Cinema Disply (23-in DVI Late 2005)
+        - "Cinema Display (20-in DVI Late 2005)"
+        - "Cinema Display (23-in DVI Late 2005)"
+        - "Cinema Display (30-inch DVI Late 2005)"
+        - "Cinema Display (20-inch DVI Early 2007)"
+        - "Cinema Display (23-inch DVI Early 2007)"
+        - "Cinema Display (30-inch DVI Early 2007)"
+        - "LED Cinema Display (24-inch)"
+        - "LED Cinema Display (27-inch)"
+        - "Apple Thunderbolt Display (27-inch)"
 
 IMAC:
     name: iMac
     models:
-        - iMac (17-inch Late 2006 CD)
-        - iMac (20-inch Early 2008)
-        - iMac (20-inch Mid 2007)
-        - iMac (20-inch, Early 2009)
-        - iMac (20-inch, Mid 2009)
-        - iMac (21.5-inch, Early 2013)
-        - iMac (21.5-inch, Late 2009)
-        - iMac (21.5-inch, Late 2011)
-        - iMac (21.5-inch, Late 2012)
-        - iMac (21.5-inch, Mid 2010)
-        - iMac (21.5-inch, Mid 2011)
-        - iMac (24-inch Early 2008)
-        - iMac (24-inch Mid 2007)
-        - iMac (24-inch, Early 2009)
-        - iMac (27-inch, Late 2009)
-        - iMac (27-inch, Late 2012)
-        - iMac (27-inch, Mid 2010)
-        - iMac (27-inch, Mid 2011)
-        - iMac Line (2012 and Later)
-        - ~VIN,IMAC (17-INCH LATE 2006)
-        - ~VIN,IMAC (20-INCH LATE 2006)
-        - ~VIN,IMAC (24-INCH)
-        - ~VIN,iMac (Early 2006 17-inch)
-        - ~VIN,iMac (Early 2006 20-inch)
-        - ~VIN,iMac (Mid 2006 17-inch)
-        - ~VIN,iMac G5 (17-inch iSight)
-        - ~VIN,iMac G5 (20-inch iSight)
+        - "iMac G5 (17-inch iSight)"
+        - "iMac G5 (20-inch iSight)"
+        - "iMac (Early 2006 20-inch)"
+        - "iMac (Mid 2006 17-inch)"
+        - "iMac (Late 17-inch 2006)"
+        - "iMac (20-inch Mid 2007)"
+        - "iMac (24-inch Mid 2007)"
+        - "iMac (20-inch Early 2008)"
+        - "iMac (24-inch, Early 2008)"
+        - "iMac (20-inch, Early 2009)"
+        - "iMac (24-inch, Early 2009)"
+        - "iMac (20-inch, Mid 2009)"
+        - "iMac (21.5-inch, Late 2009)"
+        - "iMac (27-inch, Late 2009)"
+        - "iMac (21.5-inch, Late 2011)"
+        - "iMac (21.5-inch, Late 2012)"
+        - "iMac (21.5-inch, Mid 2010)"
+        - "iMac (21.5-inch, Mid 2011)"
+        - "iMac (27-inch, Late 2012)"
+        - "iMac (27-inch, Mid 2010)"
+        - "iMac (27-inch, Mid 2011)"
+        - "iMac Line (2012 and Later)"
+        - "iMac (21.5-inch, Early 2013)"
 
 IPAD:
     name: iPad
     models:
-        - iPad
-        - iPad (3rd gen) Wi-Fi
-        - iPad (3rd gen) Wi-Fi, Cellular
-        - iPad (3rd gen) Wi-Fi, Cellular (VZ)
-        - iPad (4th gen) Wi-Fi
-        - iPad (4th gen) Wi-Fi, Cellular
-        - iPad (4th gen) Wi-Fi, Cellular (MM)
-        - iPad 2
-        - iPad 2 3G
-        - iPad 2 3G (Verizon)
-        - iPad 3G
-        - iPad mini Wi-Fi
-        - iPad mini Wi-Fi, Cellular
-        - iPad mini Wi-Fi, Cellular (MM)
+        - "iPad (Wi-Fi)"
+        - "iPad (Wi-Fi + 3G)"
+        - "iPad 2 (Wi-Fi)"
+        - "iPad 2 (Wi-Fi + 3G GSM)"
+        - "iPad 2 (Wi-Fi + 3G CDMA)"
+        - "iPad (3rd gen) Wi-Fi"
+        - "iPad (3rd gen) Wi-Fi, Cellular"
+        - "iPad (3rd gen) Wi-Fi, Cellular (VZ)"
+        - "iPad (4th gen) Wi-Fi"
+        - "iPad (4th gen) Wi-Fi, Cellular"
+        - "iPad (4th gen) Wi-Fi, Cellular (MM)"
+        - "iPad mini Wi-Fi"
+        - "iPad mini Wi-Fi, Cellular"
+        - "iPad mini Wi-Fi, Cellular (MM)"
 
 IPHONE:
     name: iPhone
     models:
-        - iPhone
-        - iPhone 3G
-        - iPhone 3G (CHINA)
-        - iPhone 3GS
-        - iPhone 3GS (8GB)
-        - iPhone 3GS (CHINA)
-        - iPhone 4
-        - iPhone 4 (8GB)
-        - iPhone 4 CDMA
-        - iPhone 4 CDMA (8GB)
-        - iPhone 4S
-        - iPhone 5
+        - "iPhone"
+        - "iPhone 3G"
+        - "iPhone 3G (CHINA)"
+        - "iPhone 3GS"
+        - "iPhone 3GS (8GB)"
+        - "iPhone 3GS (CHINA)"
+        - "iPhone 4"
+        - "iPhone 4 (8GB)"
+        - "iPhone 4 CDMA"
+        - "iPhone 4 CDMA (8GB)"
+        - "iPhone 4S"
+        - "iPhone 5"
 
 IPHONE_ACC:
     name: iPhone Accessory
     models:
-        - Bluetooth Headset
+        - "Bluetooth Headset"
 
 IPOD_CLASSIC:
     name: iPod Classic
     models:
-        - iPod 5th Generation (Late 2006)
-        - iPod 5th Generation U2 (Late 2006)
-        - iPod classic
-        - iPod classic (120GB)
-        - iPod classic 160GB (Late 2009)
-        - ~VIN,iPod 5th Generation
-        - ~VIN,iPod 5th Generation Harry Potter
-        - ~VIN,iPod 5th Generation U2
+        - "iPod 5th Generation (Late 2006)"
+        - "iPod 5th Generation U2 (Late 2006)"
+        - "iPod classic"
+        - "iPod classic (120GB)"
+        - "iPod classic 160GB (Late 2009)"
+        - "iPod 5th Generation"
+        - "iPod 5th Generation Harry Potter"
+        - "iPod 5th Generation U2"
 
 IPOD_NANO:
     name: iPod nano
     models:
-        - iPod nano
-        - iPod nano (4th Generation)
-        - iPod nano (5th Generation)
-        - iPod nano (6th generation)
-        - iPod nano (7th generation)
-        - iPod nano 3rd Generation
-        - ~VIN,IPOD NANO 2ND GENERATION
+        - "iPod nano"
+        - "iPod nano (2nd generation)"
+        - "iPod nano (3rd Generation)"
+        - "iPod nano (4th Generation)"
+        - "iPod nano (5th Generation)"
+        - "iPod nano (6th generation)"
+        - "iPod nano (7th generation)"
 
 IPOD_SHUFFLE:
     name: iPod Shuffle
     models:
-        - iPod shuffle (2nd Generation)
-        - iPod shuffle (3rd generation)
-        - iPod shuffle (4th generation late 2012)
-        - iPod shuffle (4th generation)
-        - iPod shuffle 2nd Generation (Late 2007)
-        - iPod shuffle 2nd generation (Late 2008)
-        - ~VIN,IPOD SHUFFLE 2ND GENERATION
-        - ~VIN,iPod shuffle
+        - "iPod shuffle"
+        - "iPod shuffle (2nd Generation)"
+        - "iPod shuffle (3rd generation)"
+        - "iPod shuffle (4th generation)"
 
 IPOD_TOUCH:
     name: iPod Touch
     models:
-        - iPod touch
-        - iPod touch (2nd Generation)
-        - iPod touch (3rd generation)
-        - iPod touch (4th generation)
-        - iPod touch (5th generation)
+        - "iPod touch"
+        - "iPod touch (2nd generation)"
+        - "iPod touch (3rd generation)"
+        - "iPod touch (4th generation)"
+        - "iPod touch (5th generation)"
+        - "iPod touch 16GB (5th generation)"
 
 MAC_ACC:
     name: Mac Accessory
     models:
-        - AirPort Card
-        - AirPort Express 802.11n (1st Gen)
-        - AirPort Express 802.11n (2nd Generation)
-        - AirPort Express Base Station
-        - AirPort Extreme 802.11n (2nd Gen)
-        - AirPort Extreme 802.11n (3rd Gen)
-        - AirPort Extreme 802.11n (4th Gen)
-        - AirPort Extreme 802.11n (5th Gen)
-        - AirPort Extreme Card
-        - LCD Display Adapter (DVI->ADC)
-        - Time Capsule 802.11n (1st Gen)
-        - Time Capsule 802.11n (2nd Gen)
-        - Time Capsule 802.11n (3rd Gen)
-        - Time Capsule 802.11n (4th Gen)
-        - ~VIN,AIRPORT EXTREME 802.11N (1ST GEN)
-        - ~VIN,AirPort Extreme Base Station
-        - Magic Mouse
-        - Magic Trackpad
-        - Apple Keyboard with Numeric Keypad
-        - Apple Wireless Keyboard (Aluminum)
-        - Apple Wireless Mouse
-        - Apple Wireless Keyboard
-        - Apple 45W MagSafe Power Adapter
-        - Apple 60W MagSafe Power Adapter
-        - Apple 85W MagSafe Power Adapter
+        - "AirPort Card"
+        - "AirPort Express 802.11n (1st Gen)"
+        - "AirPort Express Base Station"
+        - "AirPort Extreme Base Station"
+        - "AirPort Extreme 802.11n (2nd Gen)"
+        - "AirPort Extreme 802.11n (3rd Gen)"
+        - "AirPort Extreme 802.11n (4th Gen)"
+        - "AirPort Extreme 802.11n (5th Gen)"
+        - "AirPort Extreme Card"
+        - "LCD Display Adapter (DVI->ADC)"
+        - "Time Capsule 802.11n (1st Gen)"
+        - "Time Capsule 802.11n (2nd Gen)"
+        - "Time Capsule 802.11n (3rd Gen)"
+        - "Time Capsule 802.11n (4th Gen)"
+        - "AIRPORT EXTREME 802.11N (1ST GEN)"
+        - "Magic Mouse"
+        - "Magic Trackpad"
+        - "Apple Keyboard with Numeric Keypad"
+        - "Apple Wireless Keyboard (Aluminum)"
+        - "Apple Wireless Mouse"
+        - "Apple Wireless Keyboard"
+        - "Apple 45W MagSafe Power Adapter"
+        - "Apple 60W MagSafe Power Adapter"
+        - "Apple 85W MagSafe Power Adapter"
+        - "AirPort Extreme 802.11ac"
+        - "AirPort Time Capsule 802.11ac"
 
 MACMINI:
     name: Mac mini
     models:
-        - Mac mini (Early 2009)
-        - Mac mini (Late 2009)
-        - Mac mini (Late 2012)
-        - Mac mini (Mid 2007)
-        - Mac mini (Mid 2010)
-        - Mac mini (Mid 2011)
-        - Mac mini Server (Late 2012)
-        - Mac mini Server (Mid 2010)
-        - Mac mini Server (Mid 2011)
-        - ~VIN,MAC MINI (LATE 2006)
-        - ~VIN,Mac mini (Early 2006)
-        - ~VIN,Mac mini (Late 2005)
+        - "Mac mini (Late 2005)"
+        - "Mac mini (Early 2006)"
+        - "Mac mini (Late 2006)"
+        - "Mac mini (Mid 2007)"
+        - "Mac mini (Early 2009)"
+        - "Mac mini (Late 2009)"
+        - "Mac mini (Mac OS X Server, Late 2009)"
+        - "Mac mini Server (Mid 2010)"
+        - "Mac mini (Mid 2011)"
+        - "Mac mini Server (Mid 2011)"
+        - "Mac mini (Late 2012)"
+        - "Mac mini Server (Late 2012)"
 
 MACPRO:
     name: Mac Pro
     models:
         - Mac Pro
+        - Mac Pro (8-core)
         - Mac Pro (Early 2008)
         - Mac Pro (Early 2009)
         - Mac Pro (Mid 2010)
-        - Mac Pro (Mid 2012)
         - Mac Pro Server (Mid 2010)
+        - Mac Pro (Mid 2012)
         - Mac Pro Server (Mid 2012)
 
 MACBOOK:
     name: MacBook
     models:
-        - MacBook (13-inch Early 2008)
-        - MacBook (13-inch Late 2007)
-        - MacBook (13-inch Mid 2007)
-        - MacBook (13-inch, Aluminum, Late 2008)
-        - MacBook (13-inch, Early 2009)
-        - MacBook (13-inch, Late 2008)
-        - MacBook (13-inch, Late 2009)
-        - MacBook (13-inch, Mid 2009)
-        - MacBook (13-inch, Mid 2010)
-        - ~VIN,MacBook (13-inch Late 2006)
-        - ~VIN,MacBook (13-inch)
+        - "MacBook (13-inch)"
+        - "MacBook (13-inch Late 2006)"
+        - "MacBook (13-inch Mid 2007)"
+        - "MacBook (13-inch Late 2007)"
+        - "MacBook (13-inch Early 2008)"
+        - "MacBook (13-inch, Late 2008)"
+        - "MacBook (13-inch, Aluminum, Late 2008)"
+        - "MacBook (13-inch, Early 2009)"
+        - "MacBook (13-inch, Mid 2009)"
+        - "MacBook (13-inch, Late 2009)"
+        - "MacBook (13-inch, Mid 2010)"
 
 MACBOOKAIR:
     name: MacBook Air
     models:
-        - MacBook Air
-        - MacBook Air (11-inch, Late 2010)
-        - MacBook Air (11-inch, Mid 2011)
-        - MacBook Air (11-inch, Mid 2012)
-        - MacBook Air (13-inch, Late 2010)
-        - MacBook Air (13-inch, Mid 2011)
-        - MacBook Air (13-inch, Mid 2012)
-        - MacBook Air (Late 2008)
-        - MacBook Air (Mid 2009)
+        - "MacBook Air"
+        - "MacBook Air (Late 2008)"
+        - "MacBook Air (Mid 2009)"
+        - "MacBook Air (11-inch, Late 2010)"
+        - "MacBook Air (13-inch, Late 2010)"
+        - "MacBook Air (11-inch, Mid 2011)"
+        - "MacBook Air (13-inch, Mid 2011)"
+        - "MacBook Air (11-inch, Mid 2012)"
+        - "MacBook Air (13-inch, Mid 2012)"
+        - "MacBook Air (11-inch, Mid 2013)"
+        - "MacBook Air (13-inch, Mid 2013)"
 
 MACBOOKPRO:
     name: MacBook Pro
     models:
-        - MacBook Pro (13-inch, Early 2011)
-        - MacBook Pro (13-inch, Late 2011)
-        - MacBook Pro (13-inch, Mid 2009)
-        - MacBook Pro (13-inch, Mid 2010)
-        - MacBook Pro (13-inch, Mid 2012)
-        - MacBook Pro (15-inch 2.4/2.2GHz)
-        - MacBook Pro (15-inch Early 2008)
-        - MacBook Pro (15-inch, 2.53GHz, Mid 2009)
-        - MacBook Pro (15-inch, Early 2011)
-        - MacBook Pro (15-inch, Late 2008)
-        - MacBook Pro (15-inch, Late 2011)
-        - MacBook Pro (15-inch, Mid 2009)
-        - MacBook Pro (15-inch, Mid 2010)
-        - MacBook Pro (15-inch, Mid 2012)
-        - MacBook Pro (17-inch 2.4GHz)
-        - MacBook Pro (17-inch Early 2008)
-        - MacBook Pro (17-inch, Early 2009)
-        - MacBook Pro (17-inch, Early 2011)
-        - MacBook Pro (17-inch, Late 2008)
-        - MacBook Pro (17-inch, Late 2011)
-        - MacBook Pro (17-inch, Mid 2009)
-        - MacBook Pro (17-inch, Mid 2010)
-        - MacBook Pro (Retina, 13-inch, Late 2012)
-        - MacBook Pro (Retina, 13-inch,Early 2013)
-        - MacBook Pro (Retina, 15-inch,Early 2013)
-        - MacBook Pro (Retina, Mid 2012)
-        - ~VIN,MacBook (13-inch Late 2006)
-        - ~VIN,MacBook Pro
-        - ~VIN,MacBook Pro (15-inch Core 2 Duo)
-        - ~VIN,MacBook Pro (15-inch Glossy)
-        - ~VIN,MacBook Pro (17-inch Core 2 Duo)
-        - ~VIN,MacBook Pro (17-inch)
+        - "MacBook Pro"
+        - "MacBook Pro (17-inch)"
+        - "MacBook Pro (15-inch Glossy)"
+        - "MacBook Pro (15-inch Core 2 Duo)"
+        - "MacBook Pro (17-inch Core 2 Duo)"
+        - "MacBook Pro (15-inch 2.4/2.2GHz)"
+        - "MacBook Pro (17-inch 2.4GHz)"
+        - "MacBook Pro (15-inch Early 2008)"
+        - "MacBook Pro (17-inch Early 2008)"
+        - "MacBook Pro (15-inch, Late 2008)"
+        - "MacBook Pro (17-inch, Late 2008)"
+        - "MacBook Pro (17-inch, Early 2009)"
+        - "MacBook Pro (13-inch, Mid 2009)"
+        - "MacBook Pro (15-inch, 2.53GHz, Mid 2009)"
+        - "MacBook Pro (15-inch, Mid 2009)"
+        - "MacBook Pro (17-inch, Mid 2009)"
+        - "MacBook Pro (13-inch, Mid 2010)"
+        - "MacBook Pro (15-inch, Mid 2010)"
+        - "MacBook Pro (17-inch, Mid 2010)"
+        - "MacBook Pro (13-inch, Early 2011)"
+        - "MacBook Pro (15-inch, Early 2011)"
+        - "MacBook Pro (17-inch, Early 2011)"
+        - "MacBook Pro (13-inch, Late 2011)"
+        - "MacBook Pro (15-inch, Late 2011)"
+        - "MacBook Pro (17-inch, Late 2011)"
+        - "MacBook Pro (13-inch, Mid 2012)"
+        - "MacBook Pro (15-inch, Mid 2012)"
+        - "MacBook Pro (Retina, 15-inch, Mid 2012)"
+        - "MacBook Pro (Retina, 13-inch, Late 2012)"
+        - "MacBook Pro (Retina, 13-inch, Early 2013)"
+        - "MacBook Pro (Retina, 15-inch, Early 2013)"
 
 SERVER:
     name: Server
     models:
-        - XSERVE (EARLY 2009)
-        - Xserve (Early 2008)
-        - Xserve (Early 2009)
-        - Xserve (Late 2006)
-        - ~VIN,Xserve G5 (January 2005)
+        - "Xserve G5 (January 2005)"
+        - "Xserve (Late 2006)"
+        - "Xserve (Early 2008)"
+        - "Xserve (Early 2009)"
 
 OTHER:
     name: Other Products
     models:
-        - Unknown Product
+        - "Unknown Product"
