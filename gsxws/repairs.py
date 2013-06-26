@@ -84,7 +84,7 @@ class Repair(GsxObject):
         self.partInfo = parts
         if hasattr(self, "dispatchId"):
             self.repairConfirmationNumber = self.dispatchId
-            del self.dispatchId
+            del self._data['dispatchId']
 
         return self._submit("repairData", "UpdateSerialNumber", "repairConfirmation")
 
@@ -105,7 +105,7 @@ class Repair(GsxObject):
         self.serialNumber = sn
         if hasattr(self, "dispatchId"):
             self.repairConfirmationNumber = self.dispatchId
-            del self.dispatchId
+            del self._data['dispatchId']
 
         return self._submit("UpdateKGBSerialNumberRequest", "UpdateKGBSerialNumber",
                             "UpdateKGBSerialNumberResponse")
