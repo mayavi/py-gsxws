@@ -84,6 +84,7 @@ class Repair(GsxObject):
         self.partInfo = parts
         if hasattr(self, "dispatchId"):
             self.repairConfirmationNumber = self.dispatchId
+            del self.dispatchId
 
         return self._submit("repairData", "UpdateSerialNumber", "repairConfirmation")
 
@@ -102,7 +103,9 @@ class Repair(GsxObject):
         This API can be invoked only after carry-in repair creation API.
         """
         self.serialNumber = sn
-        self.repairConfirmationNumber = self.dispatchId
+        if hasattr(self, "dispatchId"):
+            self.repairConfirmationNumber = self.dispatchId
+            del self.dispatchId
 
         return self._submit("UpdateKGBSerialNumberRequest", "UpdateKGBSerialNumber",
                             "UpdateKGBSerialNumberResponse")
