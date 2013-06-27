@@ -79,53 +79,12 @@ IPHONE:
         - "iPhone 4S"
         - "iPhone 5"
 
-IPHONE_ACC:
+IPHONEACC:
     name: iPhone Accessory
     models:
         - "Bluetooth Headset"
 
-IPOD_CLASSIC:
-    name: iPod Classic
-    models:
-        - "iPod 5th Generation (Late 2006)"
-        - "iPod 5th Generation U2 (Late 2006)"
-        - "iPod classic"
-        - "iPod classic (120GB)"
-        - "iPod classic 160GB (Late 2009)"
-        - "iPod 5th Generation"
-        - "iPod 5th Generation Harry Potter"
-        - "iPod 5th Generation U2"
-
-IPOD_NANO:
-    name: iPod nano
-    models:
-        - "iPod nano"
-        - "iPod nano (2nd generation)"
-        - "iPod nano (3rd Generation)"
-        - "iPod nano (4th Generation)"
-        - "iPod nano (5th Generation)"
-        - "iPod nano (6th generation)"
-        - "iPod nano (7th generation)"
-
-IPOD_SHUFFLE:
-    name: iPod Shuffle
-    models:
-        - "iPod shuffle"
-        - "iPod shuffle (2nd Generation)"
-        - "iPod shuffle (3rd generation)"
-        - "iPod shuffle (4th generation)"
-
-IPOD_TOUCH:
-    name: iPod Touch
-    models:
-        - "iPod touch"
-        - "iPod touch (2nd generation)"
-        - "iPod touch (3rd generation)"
-        - "iPod touch (4th generation)"
-        - "iPod touch (5th generation)"
-        - "iPod touch 16GB (5th generation)"
-
-MAC_ACC:
+MACACC:
     name: Mac Accessory
     models:
         - "AirPort Card"
@@ -154,6 +113,47 @@ MAC_ACC:
         - "Apple 85W MagSafe Power Adapter"
         - "AirPort Extreme 802.11ac"
         - "AirPort Time Capsule 802.11ac"
+
+IPODCLASSIC:
+    name: iPod Classic
+    models:
+        - "iPod 5th Generation (Late 2006)"
+        - "iPod 5th Generation U2 (Late 2006)"
+        - "iPod classic"
+        - "iPod classic (120GB)"
+        - "iPod classic 160GB (Late 2009)"
+        - "iPod 5th Generation"
+        - "iPod 5th Generation Harry Potter"
+        - "iPod 5th Generation U2"
+
+IPODNANO:
+    name: iPod nano
+    models:
+        - "iPod nano"
+        - "iPod nano (2nd generation)"
+        - "iPod nano (3rd Generation)"
+        - "iPod nano (4th Generation)"
+        - "iPod nano (5th Generation)"
+        - "iPod nano (6th generation)"
+        - "iPod nano (7th generation)"
+
+IPODSHUFFLE:
+    name: iPod Shuffle
+    models:
+        - "iPod shuffle"
+        - "iPod shuffle (2nd Generation)"
+        - "iPod shuffle (3rd generation)"
+        - "iPod shuffle (4th generation)"
+
+IPODTOUCH:
+    name: iPod Touch
+    models:
+        - "iPod touch"
+        - "iPod touch (2nd generation)"
+        - "iPod touch (3rd generation)"
+        - "iPod touch (4th generation)"
+        - "iPod touch (5th generation)"
+        - "iPod touch 16GB (5th generation)"
 
 MACMINI:
     name: Mac mini
