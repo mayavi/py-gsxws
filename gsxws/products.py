@@ -13,7 +13,7 @@ from core import GsxObject, GsxError
 def models():
     """
     >>> models() # doctest: +ELLIPSIS
-    {'MAC_ACC': {'models': ['AirPort Card', ...
+    {'IPODCLASSIC': {'models': ['iPod 5th Generation (Late 2006)', ...
     """
     import os
     import yaml
@@ -57,6 +57,8 @@ class Product(GsxObject):
         if hasattr(self, "alternateDeviceId"):
             if not hasattr(self, "serialNumber"):
                 self.activation()
+
+        self.parts = []
 
         try:
             self.partNumbers = []
