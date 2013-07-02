@@ -87,7 +87,7 @@ class Product(GsxObject):
     def repairs(self):
         """
         >>> Product(serialNumber='DGKFL06JDHJP').repairs() # doctest: +ELLIPSIS
-        {'customerName': 'Lepalaan,Filipp',...
+        [{'customerName': 'Lepalaan,Filipp',...
         """
         return Lookup(serialNumber=self.serialNumber).repairs()
 
