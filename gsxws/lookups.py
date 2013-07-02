@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import base64
 import logging
 import tempfile
 from datetime import date
 
-from core import GsxObject
+from core import GsxObject, connect
+
 
 class Lookup(GsxObject):
     def __init__(self, *args, **kwargs):
@@ -32,8 +32,12 @@ class Lookup(GsxObject):
         It fetches up to 2500 repairs in a given criteria.
         Subsequently, the extended Repair Status API can be used
         to retrieve more details of the repair.
+
+        >>> Lookup(serialNumber='DGKFL06JDHJP').repairs() # doctest: +ELLIPSIS
+        [{'customerName': 'Lepalaan,Filipp',...
         """
-        return self.lookup("RepairLookup")
+        result = self.lookup("RepairLookup")
+        return [result] if isinstance(result, dict) else result
 
     def invoices(self):
         """
@@ -58,9 +62,10 @@ class Lookup(GsxObject):
         result.invoiceData = outfile.name
         return result
 
+
 if __name__ == '__main__':
     import sys
     import doctest
     logging.basicConfig(level=logging.DEBUG)
-    connect(*sys.argv[1:4])
+    connect(*sys.argv[1:])
     doctest.testmod()
