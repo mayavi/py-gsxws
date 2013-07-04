@@ -258,6 +258,10 @@ class IndirectOnsiteRepair(Repair):
             self.technicianName = self.diagnosedByTechId
             del(self._data['diagnosedByTechId'])
 
+        if hasattr(self, "requestReviewByApple"):
+            self.requestReview = self.requestReviewByApple
+            del(self._data['requestReviewByApple'])
+
         return self._submit("repairData", "CreateIndirectOnsiteRepair",
                             "repairConfirmation")
 
