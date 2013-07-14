@@ -35,8 +35,11 @@ TZMAP = {
 
 
 class GsxElement(StringElement):
+    def __unicode__(self):
+        return self.pyval
+
     def __str__(self):
-        return str(self.pyval)
+        return unicode(self).encode('utf-8')
 
 
 class GsxDateElement(GsxElement):
