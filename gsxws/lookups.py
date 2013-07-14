@@ -14,7 +14,8 @@ class Lookup(GsxObject):
         self._namespace = "asp:"
 
     def lookup(self, method, response="lookupResponseData"):
-        return self._submit("lookupRequestData", method, response)
+        result = self._submit("lookupRequestData", method, response)
+        return [result] if isinstance(result, dict) else result
 
     def parts(self):
         """
@@ -36,8 +37,7 @@ class Lookup(GsxObject):
         >>> Lookup(serialNumber='DGKFL06JDHJP').repairs() # doctest: +ELLIPSIS
         [{'customerName': 'Lepalaan,Filipp',...
         """
-        result = self.lookup("RepairLookup")
-        return [result] if isinstance(result, dict) else result
+        return self.lookup("RepairLookup")
 
     def invoices(self):
         """

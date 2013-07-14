@@ -33,7 +33,7 @@ import hashlib
 import logging
 import httplib
 import tempfile
-import xmltodict
+import objectify
 from urlparse import urlparse
 import xml.etree.ElementTree as ET
 
@@ -160,7 +160,7 @@ class GsxCache(object):
         self.key = key
         self.expires = expires
         self.now = datetime.now()
-        filename = os.path.join(self.tmpdir, "gsxws_%s.db" % key)
+        filename = os.path.join(self.tmpdir, "gsxws_%s" % key)
         self.shelf = shelve.open(filename, protocol=-1)
 
         if not self.shelf.get(key):
@@ -238,7 +238,7 @@ class GsxRequest(object):
         return ws.getresponse()
 
     def _submit(self, method, response=None, raw=False):
-        "Constructs the final SOAP message"
+        "Constructs and submits the final SOAP message"
         global GSX_SESSION
 
         root = ET.SubElement(self.body, self.obj._namespace + method)
@@ -266,10 +266,8 @@ class GsxRequest(object):
 
         logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
         response = response or self._response
-        root = ET.fromstring(xml).find("*//%s" % response)
-        data = xmltodict.ConvertXmlToDict(root)
-        self.objects = data[response]
-
+        #root = ET.fromstring(xml).find("*//%s" % response)
+        self.objects = objectify.parse(xml, response)
         return self.objects
 
     def __str__(self):
@@ -393,13 +391,14 @@ class GsxSession(GsxObject):
 
     def login(self):
         global GSX_SESSION
+        session = self._cache.get("session")
 
-        if not self._cache.get("session") is None:
-            GSX_SESSION = self._cache.get("session")
+        if not session is None:
+            GSX_SESSION = session
         else:
             self._req = GsxRequest(AuthenticateRequest=self)
             result = self._req._submit("Authenticate")
-            self._session_id = result.userSessionId
+            self._session_id = str(result.userSessionId)
             GSX_SESSION = self.get_session()
             self._cache.set("session", GSX_SESSION)
 

@@ -30,7 +30,7 @@ class Product(GsxObject):
         Returns the model description of this Product
 
         >>> Product('DGKFL06JDHJP').model().configDescription
-        u'iMac (27-inch, Mid 2011)'
+        'iMac (27-inch, Mid 2011)'
         """
         result = self._submit("productModelRequest", "FetchProductModel")
 
@@ -48,11 +48,15 @@ class Product(GsxObject):
         warranty status request, the unit level warranty information is returned.
 
         >>> Product('DGKFL06JDHJP').warranty().warrantyStatus
-        u'Out Of Warranty (No Coverage)'
-        >>> Product('DGKFL06JDHJP').warranty().estimatedPurchaseDate
-        datetime.date(2011, 6, 2)
-        >>> Product('WQ8094DW0P1').warranty([(u'661-5070', u'Z26',)]) # doctest: +ELLIPSIS
-        {'warrantyStatus': 'Out Of Warranty (No Coverage)',...
+        'Out Of Warranty (No Coverage)'
+        >>> Product('DGKFL06JDHJP').warranty().estimatedPurchaseDate.pyval
+        '06/02/11'
+        >>> Product('WQ8094DW0P1').warranty().blaa  # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        AttributeError: no such child: blaa
+        >>> Product('WQ8094DW0P1').warranty([(u'661-5070', u'Z26',)]).warrantyStatus
+        'Out Of Warranty (No Coverage)'
         """
         if hasattr(self, "alternateDeviceId"):
             if not hasattr(self, "serialNumber"):
@@ -75,9 +79,9 @@ class Product(GsxObject):
     def parts(self):
         """
         >>> Product('DGKFL06JDHJP').parts() # doctest: +ELLIPSIS
-        {'exchangePrice': '0', 'isSerialized': 'N', 'partType': 'Other',...
+        <Element parts at...
         >>> Product(productName='MacBook Pro (17-inch, Mid 2009)').parts() # doctest: +ELLIPSIS
-        {'exchangePrice': '0', 'isSerialized': 'N', 'partType': 'Other',...
+        <Element parts at...
         """
         try:
             return Lookup(serialNumber=self.serialNumber).parts()
@@ -87,7 +91,7 @@ class Product(GsxObject):
     def repairs(self):
         """
         >>> Product(serialNumber='DGKFL06JDHJP').repairs() # doctest: +ELLIPSIS
-        [{'customerName': 'Lepalaan,Filipp',...
+        <Element lookupResponseData at...
         """
         return Lookup(serialNumber=self.serialNumber).repairs()
 
@@ -100,7 +104,10 @@ class Product(GsxObject):
 
     def fetch_image(self):
         """
-        >>> Product('DGKFL06JDHJP').fetch_image()
+        >>> Product('DGKFL06JDHJP').fetch_image() # doctest: +ELLIPSIS
+        Traceback (most recent call last):
+        ...
+        GsxError: No URL to fetch product image
         """
         if not hasattr(self, "imageURL"):
             raise GsxError("No URL to fetch product image")
