@@ -4,7 +4,7 @@ import os
 import re
 import base64
 import tempfile
-from lxml import objectify
+from lxml import objectify, etree
 from lxml.objectify import StringElement
 
 from datetime import datetime
@@ -57,6 +57,9 @@ class GsxDateElement(GsxElement):
         except (ValueError, TypeError):
             pass
 
+    def __repr__(self):
+        return str(datetime.strftime(self.pyval, '%Y-%m-%d'))
+
 
 class GsxBooleanElement(GsxElement):
     @property
@@ -95,7 +98,7 @@ class GsxTimestampElement(GsxElement):
         return datetime.strptime(self.text, "%d-%b-%y %H:%M:%S")
 
 
-class GsxClassLookup(objectify.ObjectifyElementClassLookup):
+class GsxClassLookup(etree.CustomElementClassLookup):
     def lookup(self, node_type, document, namespace, name):
         if name == 'dispatchSentDate':
             return GsxDatetimeElement
@@ -116,7 +119,7 @@ class GsxClassLookup(objectify.ObjectifyElementClassLookup):
 def parse(root, response):
     """
     >>> parse('../tests/warranty_status.xml', 'warrantyDetailInfo').estimatedPurchaseDate
-    Sdt7tXp2XytTEVwHBeDx6lHTXI3w9s+M
+    2010-08-25
     """
     parser = objectify.makeparser(remove_blank_text=True)
     parser.set_element_class_lookup(GsxClassLookup())
