@@ -45,7 +45,6 @@ class GsxElement(StringElement):
 class GsxDateElement(GsxElement):
     @property
     def pyval(self):
-        # looks like some sort of date, let's try to convert
         try:
             # standard GSX format: "mm/dd/yy"
             return datetime.strptime(self.text, "%m/%d/%y").date()
@@ -83,7 +82,7 @@ class GsxAttachment(GsxElement):
 class GsxDatetimeElement(GsxElement):
     @property
     def pyval(self):
-        #2011-01-27 11:45:01 PST
+        # 2011-01-27 11:45:01 PST
         # Unfortunately we have to chomp off the TZ info...
         m = re.search(r'^(\d+\-\d+\-\d+ \d+:\d+:\d+) (\w+)$', self.text)
         ts, tz = m.groups()
@@ -116,7 +115,7 @@ class GsxClassLookup(objectify.ObjectifyElementClassLookup):
 
 def parse(root, response):
     """
-    >>> parse('/tmp/authenticate.xml', 'AuthenticateResponse').userSessionId
+    >>> parse('../tests/warranty_status.xml', 'warrantyDetailInfo').estimatedPurchaseDate
     Sdt7tXp2XytTEVwHBeDx6lHTXI3w9s+M
     """
     parser = objectify.makeparser(remove_blank_text=True)
