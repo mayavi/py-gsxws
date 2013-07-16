@@ -4,6 +4,7 @@ import os
 import re
 import base64
 import tempfile
+
 from lxml import objectify, etree
 from lxml.objectify import StringElement
 
@@ -11,7 +12,8 @@ from datetime import datetime
 
 BASE64_TYPES = ('packingList', 'proformaFileData', 'returnLabelFileData',)
 FLOAT_TYPES = ('totalFromOrder', 'exchangePrice', 'stockPrice', 'netPrice',)
-BOOLEAN_TYPES = ('isSerialized', 'popMandatory', 'limitedWarranty', 'partCovered',)
+BOOLEAN_TYPES = ('isSerialized', 'popMandatory', 'limitedWarranty', 'partCovered', 'acPlusFlag',)
+DATETIME_TYPES = ('dispatchSentDate',)
 
 TZMAP = {
     'GMT': '',        # Greenwich Mean Time
@@ -40,6 +42,9 @@ class GsxElement(StringElement):
 
     def __str__(self):
         return unicode(self).encode('utf-8')
+
+    def __repr__(self):
+        return str(self.text)
 
 
 class GsxDateElement(GsxElement):
@@ -100,10 +105,8 @@ class GsxTimestampElement(GsxElement):
 
 class GsxClassLookup(etree.CustomElementClassLookup):
     def lookup(self, node_type, document, namespace, name):
-        if name == 'dispatchSentDate':
+        if name in DATETIME_TYPES:
             return GsxDatetimeElement
-        if name == 'acPlusFlag':
-            return GsxBooleanElement
         if name in BOOLEAN_TYPES:
             return GsxBooleanElement
         if name in BASE64_TYPES:
@@ -117,10 +120,6 @@ class GsxClassLookup(etree.CustomElementClassLookup):
 
 
 def parse(root, response):
-    """
-    >>> parse('../tests/warranty_status.xml', 'warrantyDetailInfo').estimatedPurchaseDate
-    2010-08-25
-    """
     parser = objectify.makeparser(remove_blank_text=True)
     parser.set_element_class_lookup(GsxClassLookup())
 
