@@ -5,15 +5,12 @@ import re
 import base64
 import tempfile
 
-from lxml import objectify, etree
-from lxml.objectify import StringElement
-
+from lxml import objectify
 from datetime import datetime
 
+DATETIME_TYPES = ('dispatchSentDate',)
 BASE64_TYPES = ('packingList', 'proformaFileData', 'returnLabelFileData',)
 FLOAT_TYPES = ('totalFromOrder', 'exchangePrice', 'stockPrice', 'netPrice',)
-BOOLEAN_TYPES = ('isSerialized', 'popMandatory', 'limitedWarranty', 'partCovered', 'acPlusFlag',)
-DATETIME_TYPES = ('dispatchSentDate',)
 
 TZMAP = {
     'GMT': '',        # Greenwich Mean Time
@@ -36,92 +33,90 @@ TZMAP = {
 }
 
 
-class GsxElement(StringElement):
-    def __unicode__(self):
-        return self.pyval
+def gsx_date(value):
+    try:
+        # standard GSX format: "mm/dd/yy"
+        return datetime.strptime(value, "%m/%d/%y").date()
+    except ValueError:
+        pass
 
-    def __str__(self):
-        return unicode(self).encode('utf-8')
-
-    def __repr__(self):
-        return str(self.text)
-
-
-class GsxDateElement(GsxElement):
-    @property
-    def pyval(self):
-        try:
-            # standard GSX format: "mm/dd/yy"
-            return datetime.strptime(self.text, "%m/%d/%y").date()
-        except ValueError:
-            pass
-
-        try:
-            # some dates are formatted as "yyyy-mm-dd"
-            return datetime.strptime(self.text, "%Y-%m-%d").date()
-        except (ValueError, TypeError):
-            pass
-
-    def __repr__(self):
-        return str(datetime.strftime(self.pyval, '%Y-%m-%d'))
+    try:
+        # some dates are formatted as "yyyy-mm-dd"
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        pass
 
 
-class GsxBooleanElement(GsxElement):
-    @property
-    def pyval(self):
-        return self.text == 'Y'
+def gsx_boolean(value):
+    return value == 'Y'
 
 
-class GsxPriceElement(GsxElement):
+class GsxPriceElement():
     @property
     def pyval(self):
         return float(re.sub(r'[A-Z ,]', '', self.text))
 
 
-class GsxAttachment(GsxElement):
-    @property
-    def pyval(self):
-        v = base64.b64decode(self.text)
-        of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-        of.write(v)
-        return of.name
+def gsx_attachment(value):
+    v = base64.b64decode(value)
+    of = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+    of.write(v)
+    return of.name
 
 
-class GsxDatetimeElement(GsxElement):
-    @property
-    def pyval(self):
-        # 2011-01-27 11:45:01 PST
-        # Unfortunately we have to chomp off the TZ info...
-        m = re.search(r'^(\d+\-\d+\-\d+ \d+:\d+:\d+) (\w+)$', self.text)
-        ts, tz = m.groups()
-        return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+def gsx_datetime(value):
+    # 2011-01-27 11:45:01 PST
+    # Unfortunately we have to chomp off the TZ info...
+    m = re.search(r'^(\d+\-\d+\-\d+ \d+:\d+:\d+) (\w+)$', value)
+    ts, tz = m.groups()
+    return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
 
 
-class GsxTimestampElement(GsxElement):
-    @property
-    def pyval(self):
-        return datetime.strptime(self.text, "%d-%b-%y %H:%M:%S")
+def gsx_timestamp(value):
+    return datetime.strptime(value, "%d-%b-%y %H:%M:%S")
 
 
-class GsxClassLookup(etree.CustomElementClassLookup):
-    def lookup(self, node_type, document, namespace, name):
-        if name in DATETIME_TYPES:
-            return GsxDatetimeElement
-        if name in BOOLEAN_TYPES:
-            return GsxBooleanElement
-        if name in BASE64_TYPES:
-            return GsxAttachment
-        if name in FLOAT_TYPES:
-            return GsxPriceElement
-        if re.search(r'Date$', name):
-            return GsxDateElement
+class GsxElement(objectify.ObjectifiedElement):
+    def __getattribute__(self, name):
 
-        return objectify.ObjectifiedElement
+        result = super(GsxElement, self).__getattribute__(name)
+
+        if isinstance(result, objectify.NumberElement):
+            return result.pyval
+
+        if isinstance(result, objectify.StringElement):
+            name = result.tag
+
+            if not result.text:
+                return
+
+            if name in DATETIME_TYPES:
+                return gsx_datetime(result.text)
+            if name in BASE64_TYPES:
+                return gsx_attachment(result.text)
+            if name in FLOAT_TYPES:
+                return GsxPriceElement
+            if re.search(r'Date$', name):
+                return gsx_date(result.text)
+            if re.search(r'^[YN]$', result.text):
+                return gsx_boolean(result.text)
+
+        return result
 
 
 def parse(root, response):
+    """
+    >>> parse('tests/fixtures/warranty_status.xml', 'warrantyDetailInfo').warrantyStatus
+    'Apple Limited Warranty'
+    >>> parse('tests/fixtures/warranty_status.xml', 'warrantyDetailInfo').estimatedPurchaseDate
+    datetime.date(2010, 8, 25)
+    >>> parse('tests/fixtures/warranty_status.xml', 'warrantyDetailInfo').limitedWarranty
+    True
+    >>> parse('tests/fixtures/warranty_status.xml', 'warrantyDetailInfo').isPersonalized
+    """
     parser = objectify.makeparser(remove_blank_text=True)
-    parser.set_element_class_lookup(GsxClassLookup())
+    lookup = objectify.ObjectifyElementClassLookup(tree_class=GsxElement)
+    parser.set_element_class_lookup(lookup)
 
     if isinstance(root, basestring) and os.path.exists(root):
         root = objectify.parse(root, parser)
