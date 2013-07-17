@@ -5,7 +5,7 @@ APPLETV:
         - "Apple TV (2nd generation)"
         - "Apple TV (3rd generation)"
 
-DISPLAY:
+DISPLAYS:
     name: Display
     models:
         - "Cinema Display (20-in DVI Late 2005)"
