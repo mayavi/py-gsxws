@@ -85,21 +85,23 @@ class GsxElement(objectify.ObjectifiedElement):
             return result.pyval
 
         if isinstance(result, objectify.StringElement):
-            name = result.tag
 
-            if not result.text:
+            name = result.tag
+            result = result.text
+
+            if not result:
                 return
 
             if name in DATETIME_TYPES:
-                return gsx_datetime(result.text)
+                return gsx_datetime(result)
             if name in BASE64_TYPES:
-                return gsx_attachment(result.text)
+                return gsx_attachment(result)
             if name in FLOAT_TYPES:
                 return GsxPriceElement
             if re.search(r'Date$', name):
-                return gsx_date(result.text)
-            if re.search(r'^[YN]$', result.text):
-                return gsx_boolean(result.text)
+                return gsx_date(result)
+            if re.search(r'^[YN]$', result):
+                return gsx_boolean(result)
 
         return result
 
