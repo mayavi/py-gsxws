@@ -137,6 +137,16 @@ class Product(GsxObject):
         self.serialNumber = ad.serialNumber
         return ad
 
+    def is_unlocked(self, ad=None):
+        """
+        Returns true if this iOS device is unlocked
+        """
+        import re
+        return ad.unlocked or (re.search("Unlock", ad.nextTetherPolicyDetails) is not None)
+
+    def is_locked(self):
+        return not self.is_unlocked()
+
 
 if __name__ == '__main__':
     import sys

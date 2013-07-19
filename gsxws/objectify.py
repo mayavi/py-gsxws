@@ -48,7 +48,7 @@ def gsx_date(value):
 
 
 def gsx_boolean(value):
-    return value == 'Y'
+    return value == 'Y' or value == 'true'
 
 
 class GsxPriceElement():

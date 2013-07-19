@@ -35,6 +35,10 @@ class TestActivation(TestCase):
         self.assertIs(type(self.data.unlocked), bool)
         self.assertTrue(self.data.unlocked)
 
+        from gsxws.products import Product
+        p = Product()
+        self.assertTrue(p.is_unlocked(self.data))
+
 
 class TestPartsLookup(TestCase):
     def setUp(self):
