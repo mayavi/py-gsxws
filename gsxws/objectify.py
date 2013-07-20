@@ -51,10 +51,8 @@ def gsx_boolean(value):
     return value == 'Y' or value == 'true'
 
 
-class GsxPriceElement():
-    @property
-    def pyval(self):
-        return float(re.sub(r'[A-Z ,]', '', self.text))
+def gsx_price(value):
+    return float(re.sub(r'[A-Z ,]', '', value))
 
 
 def gsx_attachment(value):
@@ -97,7 +95,7 @@ class GsxElement(objectify.ObjectifiedElement):
             if name in BASE64_TYPES:
                 return gsx_attachment(result)
             if name in FLOAT_TYPES:
-                return GsxPriceElement
+                return gsx_price(result)
             if re.search(r'Date$', name):
                 return gsx_date(result)
             if re.search(r'^[YN]$', result):
