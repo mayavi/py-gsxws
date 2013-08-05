@@ -235,7 +235,10 @@ class GsxRequest(object):
         ws.endheaders()
         ws.send(xmldata)
 
-        return ws.getresponse()
+        try:
+            return ws.getresponse()
+        except Exception, e:
+            raise GsxError('GSX connection failed: %s' % e)
 
     def _submit(self, method, response=None, raw=False):
         "Constructs and submits the final SOAP message"
