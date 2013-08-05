@@ -124,20 +124,17 @@ def get_format(locale=GSX_LOCALE):
 
 class GsxError(Exception):
     def __init__(self, message=None, xml=None, url=None):
-        global GSX_ENV
         if message is not None:
-            raise ValueError(message)
+            self.message = message
 
         if xml is not None:
             logging.debug(url)
             logging.debug(xml)
             el = ET.fromstring(xml)
             self.code = el.findtext("*//faultcode")
+            self.message = el.findtext("*//faultstring")
 
-            if self.code is None:
-                raise ValueError("An unexpected error occured")
-
-        self.message = el.findtext("*//faultstring")
+        super(Exception, self).__init__(self.message)
 
     def __unicode__(self):
         return self.message
@@ -226,7 +223,7 @@ class GsxRequest(object):
         logging.debug(self._url)
         logging.debug(xmldata)
 
-        ws = httplib.HTTPSConnection(parsed.netloc)
+        ws = httplib.HTTPSConnection(parsed.netloc, timeout=10)
         ws.putrequest("POST", parsed.path)
         ws.putheader("User-Agent", "py-gsxws 0.9")
         ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
