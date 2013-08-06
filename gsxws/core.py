@@ -124,8 +124,8 @@ def get_format(locale=GSX_LOCALE):
 
 class GsxError(Exception):
     def __init__(self, message=None, xml=None, url=None):
-        if message is not None:
-            self.message = message
+        self.code = ""
+        self.message = message
 
         if xml is not None:
             logging.debug(url)
