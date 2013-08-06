@@ -223,7 +223,7 @@ class GsxRequest(object):
         logging.debug(self._url)
         logging.debug(xmldata)
 
-        ws = httplib.HTTPSConnection(parsed.netloc, timeout=10)
+        ws = httplib.HTTPSConnection(parsed.netloc, timeout=20)
         ws.putrequest("POST", parsed.path)
         ws.putheader("User-Agent", "py-gsxws 0.9")
         ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
