@@ -1,9 +1,41 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from datetime import date
-from unittest import main, TestCase
+from unittest import main, skip, TestCase
 
+from gsxws import repairs
 from gsxws.objectify import parse
+
+
+class TestRepairFunctions(TestCase):
+    @skip("Skip")
+    def test_whole_unit_exchange(self):
+        from gsxws.core import connect
+        logging.basicConfig(level=logging.DEBUG)
+        connect('', '', '', 'it')
+        rep = repairs.WholeUnitExchange()
+        rep.serialNumber = ''
+        rep.unitReceivedDate = '08/12/2013'
+        rep.unitReceivedTime = '11:00 am'
+        rep.shipTo = '677592'
+        rep.poNumber = '677592'
+        rep.symptom = 'test'
+        rep.diagnosis = 'test'
+        customer = repairs.Customer(emailAddress='test@example.com')
+        customer.firstName = 'First Name'
+        customer.lastName = 'Last Name'
+        customer.addressLine1 = 'Address Line 1'
+        customer.primaryPhone = '0123456789'
+        customer.city = 'Test'
+        customer.zipCode = '12345'
+        customer.state = 'Test'
+        customer.country = 'US'
+        rep.customerAddress = customer
+        part = repairs.RepairOrderLine()
+        part.partNumber = '661-5571'
+        rep.orderLines = [part]
+        rep.create()
 
 
 class TestWarrantyFunctions(TestCase):
@@ -75,6 +107,7 @@ class TestOnsiteDispatchDetail(TestCase):
 
     def test_orderlines(self):
         self.assertIsInstance(self.data.dispatchOrderLines.isSerialized, bool)
+
 
 if __name__ == '__main__':
     main()

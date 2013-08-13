@@ -45,7 +45,6 @@ class RepairOrderLine(GsxObject):
 
 class ServicePart(GsxObject):
     "A generic service part (for PartInfo and whatnot)"
-
     def __init__(self, number, *args, **kwargs):
         super(ServicePart, self).__init__(*args, **kwargs)
 
@@ -57,12 +56,9 @@ class ServicePart(GsxObject):
 
 class Repair(GsxObject):
     "Base class for the different GSX Repair types"
-
     def __init__(self, number=None, **kwargs):
-
         self._namespace = "asp:"
         super(Repair, self).__init__(**kwargs)
-
         if number is not None:
             self.dispatchId = number
 
@@ -265,6 +261,20 @@ class IndirectOnsiteRepair(Repair):
 
         return self._submit("repairData", "CreateIndirectOnsiteRepair",
                             "repairConfirmation")
+
+
+class WholeUnitExchange(Repair):
+    """
+    The Create Whole Unit Exchange API allows the service providers to send
+    all the information required to create a whole unit exchange repair.
+    GSX validates the information and if all the validations go through,
+    it obtains a quote for repair and creates the whole unit exchange repair.
+    The quote is sent as part of the response.
+    If a validation error occurs, a fault code is issued.
+    """
+    def create(self):
+        self._namespace = "asp:"
+        return self._submit("repairData", "CreateWholeUnitExchange", "repairConfirmation")
 
 
 if __name__ == '__main__':
