@@ -4,8 +4,43 @@ import logging
 from datetime import date
 from unittest import main, skip, TestCase
 
-from gsxws import repairs
 from gsxws.objectify import parse
+from gsxws import repairs, escalations
+
+
+class TestEscalationFunctions(TestCase):
+    def setUp(self):
+        from gsxws.core import connect
+        logging.basicConfig(level=logging.DEBUG)
+        connect('', '', '', 'it')
+        esc = escalations.Escalation()
+        esc.shipTo = ''
+        esc.issueTypeCode = 'WS'
+        esc.notes = 'This is a test'
+        self.escalation = esc.create()
+
+    def test_create_general_escalation(self):
+        self.assertTrue(self.escalation.escalationId)
+
+    def test_update_general_escalation(self):
+        esc = escalations.Escalation()
+        esc.escalationId = self.escalation.escalationId
+        esc.status = escalations.STATUS_CLOSED
+        result = esc.update()
+        self.assertEqual(result.updateStatus, 'SUCCESS')
+
+    def test_attach_general_escalation(self):
+        esc = escalations.Escalation()
+        esc.escalationId = self.escalation.escalationId
+        esc.attachment = escalations.FileAttachment('/tmp/logo.png')
+        result = esc.update()
+        self.assertEqual(result.updateStatus, 'SUCCESS')
+
+    def test_lookup_general_escalation(self):
+        esc = escalations.Escalation()
+        esc.escalationId = self.escalation.escalationId
+        result = esc.lookup()
+        self.assertEqual(result.escalationType, 'GSX Help')
 
 
 class TestRepairFunctions(TestCase):
@@ -18,8 +53,8 @@ class TestRepairFunctions(TestCase):
         rep.serialNumber = ''
         rep.unitReceivedDate = '08/12/2013'
         rep.unitReceivedTime = '11:00 am'
-        rep.shipTo = '677592'
-        rep.poNumber = '677592'
+        rep.shipTo = ''
+        rep.poNumber = ''
         rep.symptom = 'test'
         rep.diagnosis = 'test'
         customer = repairs.Customer(emailAddress='test@example.com')
@@ -40,7 +75,8 @@ class TestRepairFunctions(TestCase):
 
 class TestWarrantyFunctions(TestCase):
     def setUp(self):
-        self.data = parse('tests/fixtures/warranty_status.xml', 'warrantyDetailInfo')
+        self.data = parse('tests/fixtures/warranty_status.xml',
+                          'warrantyDetailInfo')
 
     def test_purchase_date(self):
         self.assertIsInstance(self.data.estimatedPurchaseDate, date)
@@ -58,7 +94,8 @@ class TestWarrantyFunctions(TestCase):
 
 class TestActivation(TestCase):
     def setUp(self):
-        self.data = parse('tests/fixtures/ios_activation.xml', 'activationDetailsInfo')
+        self.data = parse('tests/fixtures/ios_activation.xml',
+                          'activationDetailsInfo')
 
     def test_unlock_date(self):
         self.assertIsInstance(self.data.unlockDate, date)
@@ -74,7 +111,8 @@ class TestActivation(TestCase):
 
 class TestPartsLookup(TestCase):
     def setUp(self):
-        self.data = parse('tests/fixtures/parts_lookup.xml', 'PartsLookupResponse')
+        self.data = parse('tests/fixtures/parts_lookup.xml',
+                          'PartsLookupResponse')
         self.part = self.data.parts[0]
 
     def test_parts(self):
@@ -96,7 +134,8 @@ class TestPartsLookup(TestCase):
 
 class TestOnsiteDispatchDetail(TestCase):
     def setUp(self):
-        self.data = parse('tests/fixtures/onsite_dispatch_detail.xml', 'onsiteDispatchDetails')
+        self.data = parse('tests/fixtures/onsite_dispatch_detail.xml',
+                          'onsiteDispatchDetails')
 
     def test_details(self):
         self.assertEqual(self.data.dispatchId, 'G101260028')
