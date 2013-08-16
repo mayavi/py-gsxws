@@ -56,23 +56,32 @@ GSX_REGIONS = (
 )
 
 GSX_TIMEZONES = (
-    ('GMT', "UTC (Greenwich Mean Time)"),
-    ('PDT', "UTC - 7h (Pacific Daylight Time)"),
     ('PST', "UTC - 8h (Pacific Standard Time)"),
-    ('CDT', "UTC - 5h (Central Daylight Time)"),
+    ('PDT', "UTC - 7h (Pacific Daylight Time)"),
     ('CST', "UTC - 6h (Central Standard Time)"),
-    ('EDT', "UTC - 4h (Eastern Daylight Time)"),
+    ('CDT', "UTC - 5h (Central Daylight Time)"),
     ('EST', "UTC - 5h (Eastern Standard Time)"),
-    ('CEST', "UTC + 2h (Central European Summer Time)"),
+    ('EDT', "UTC - 4h (Eastern Daylight Time)"),
+    ('GMT', "UTC (Greenwich Mean Time)"),
     ('CET', "UTC + 1h (Central European Time)"),
-    ('JST', "UTC + 9h (Japan Standard Time)"),
+    ('CEST', "UTC + 2h (Central European Summer Time)"),
+    ('USZ1', "UTC + 3h (Kaliningrad Time)"),
+    ('MSK', "UTC + 4h (Moscow Time)"),
     ('IST', "UTC + 5.5h (Indian Standard Time)"),
+    ('YEKST', "UTC + 6h (Yekaterinburg Time)"),
+    ('OMSST', "UTC + 7h (Omsk Time)"),
+    ('KRAST', "UTC + 8h (Krasnoyarsk Time)"),
     ('CCT', "UTC + 8h (Chinese Coast Time)"),
+    ('IRKST', "UTC + 9h (Irkutsk Time)"),
+    ('JST', "UTC + 9h (Japan Standard Time)"),
+    ('YAKST', "UTC + 10h (Yakutsk Time)"),
     ('AEST', "UTC + 10h (Australian Eastern Standard Time)"),
+    ('VLAST', "UTC + 11h (Vladivostok Time)"),
     ('AEDT', "UTC + 11h (Australian Eastern Daylight Time)"),
     ('ACST', "UTC + 9.5h (Austrailian Central Standard Time)"),
     ('ACDT', "UTC + 10.5h (Australian Central Daylight Time)"),
     ('NZST', "UTC + 12h (New Zealand Standard Time)"),
+    ('MAGST', "UTC + 12h (Magadan Time)"),
 )
 
 REGION_CODES = ('apac', 'am', 'la', 'emea',)
