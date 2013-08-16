@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 from datetime import date
 from unittest import main, skip, TestCase
@@ -12,9 +13,10 @@ class TestEscalationFunctions(TestCase):
     def setUp(self):
         from gsxws.core import connect
         logging.basicConfig(level=logging.DEBUG)
-        connect('', '', '', 'it')
+        env = os.environ
+        connect(env['GSX_USER'], env['GSX_PASSWORD'], env['GSX_SOLDTO'], env['GSX_ENV'])
         esc = escalations.Escalation()
-        esc.shipTo = ''
+        esc.shipTo = env['GSX_SHIPTO']
         esc.issueTypeCode = 'WS'
         esc.notes = 'This is a test'
         self.escalation = esc.create()
