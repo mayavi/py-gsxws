@@ -100,6 +100,13 @@ def validate(value, what=None):
     """
     Tries to guess the meaning of value or validate that
     value looks like what it's supposed to be.
+
+    >>> validate('XD368Z/A', 'partNumber')
+    True
+    >>> validate('blaa', 'serialNumber')
+    False
+    >>> validate('MacBook Pro (Retina, Mid 2012)', 'productName')
+    True
     """
     result = None
 
@@ -107,7 +114,7 @@ def validate(value, what=None):
         raise ValueError('%s is not valid input')
 
     rex = {
-        'partNumber':       r'^([A-Z]{1,2})?\d{3}\-?(\d{4}|[A-Z]{2})(/[A-Z])?$',
+        'partNumber':       r'^([A-Z]{1,2})?\d{3}\-?(\d{4}|[A-Z]{1,2})(/[A-Z])?$',
         'serialNumber':     r'^[A-Z0-9]{11,12}$',
         'eeeCode':          r'^[A-Z0-9]{3,4}$',
         'returnOrder':      r'^7\d{9}$',
