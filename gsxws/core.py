@@ -103,6 +103,10 @@ def validate(value, what=None):
 
     >>> validate('XD368Z/A', 'partNumber')
     True
+    >>> validate('ZM661-5883', 'partNumber')
+    True
+    >>> validate('B661-6909', 'partNumber')
+    True
     >>> validate('blaa', 'serialNumber')
     False
     >>> validate('MacBook Pro (Retina, Mid 2012)', 'productName')
