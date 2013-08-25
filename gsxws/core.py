@@ -43,6 +43,7 @@ GSX_ENV = "it"
 GSX_LANG = "en"
 GSX_REGION = "emea"
 GSX_LOCALE = "en_XXX"
+GSX_TIMEOUT = 30
 
 GSX_SESSION = None
 
@@ -235,7 +236,7 @@ class GsxRequest(object):
 
     def _send(self, method, xmldata):
         "Send the final SOAP message"
-        global GSX_ENV, GSX_REGION, GSX_HOSTS, GSX_URL
+        global GSX_ENV, GSX_REGION, GSX_HOSTS, GSX_URL, GSX_TIMEOUT
 
         self._url = GSX_URL.format(env=GSX_HOSTS[GSX_ENV], region=GSX_REGION)
         parsed = urlparse(self._url)
@@ -243,7 +244,7 @@ class GsxRequest(object):
         logging.debug(self._url)
         logging.debug(xmldata)
 
-        ws = httplib.HTTPSConnection(parsed.netloc, timeout=20)
+        ws = httplib.HTTPSConnection(parsed.netloc, timeout=GSX_TIMEOUT)
         ws.putrequest("POST", parsed.path)
         ws.putheader("User-Agent", "py-gsxws 0.9")
         ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
