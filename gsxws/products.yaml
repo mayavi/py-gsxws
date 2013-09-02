@@ -79,12 +79,12 @@ IPHONE:
         - "iPhone 4S"
         - "iPhone 5"
 
-IPHONEACC:
+IPHONEACCESSORY:
     name: iPhone Accessory
     models:
         - "Bluetooth Headset"
 
-MACACC:
+MACACCESSORY:
     name: Mac Accessory
     models:
         - "AirPort Card"

@@ -10,6 +10,7 @@ from gsxws import repairs, escalations
 
 
 class TestEscalationFunctions(TestCase):
+    @skip("Skip")
     def setUp(self):
         from gsxws.core import connect
         logging.basicConfig(level=logging.DEBUG)
@@ -148,6 +149,18 @@ class TestOnsiteDispatchDetail(TestCase):
 
     def test_orderlines(self):
         self.assertIsInstance(self.data.dispatchOrderLines.isSerialized, bool)
+
+
+class TestCarryinRepairDetail(TestCase):
+    def setUp(self):
+        self.data = parse('tests/fixtures/repair_details_ca.xml',
+                          'lookupResponseData')
+
+    def test_details(self):
+        self.assertEqual(self.data.dispatchId, 'G2093174681')
+
+    def test_unicode_name(self):
+        self.assertEqual(self.data.primaryAddress.firstName, u'Ääkköset')
 
 
 if __name__ == '__main__':
