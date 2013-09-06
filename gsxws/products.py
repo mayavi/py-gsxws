@@ -144,8 +144,34 @@ class Product(GsxObject):
         import re
         return ad.unlocked or (re.search("Unlock", ad.nextTetherPolicyDetails) is not None)
 
+    @property
+    def is_vintage(self):
+        title = self.warrantyDetails.productDescription
+        return title.startswith('~VIN,')
+
+    @property
     def is_locked(self):
         return not self.is_unlocked()
+
+    @property
+    def parts_covered(self):
+        return self.warrantyDetails.partCovered is True
+
+    @property
+    def labor_covered(self):
+        return self.warrantyDetails.laborCovered is True
+
+    @property
+    def parts_and_labor_covered(self):
+        return self.parts_covered and self.labor_covered
+
+    @property
+    def has_onsite(self):
+        from datetime import date
+        try:
+            return date.today() < self.warrantyDetails.onsiteEndDate
+        except Exception:
+            return False
 
 
 if __name__ == '__main__':

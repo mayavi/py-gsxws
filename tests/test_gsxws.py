@@ -6,6 +6,7 @@ from datetime import date
 from unittest import main, skip, TestCase
 
 from gsxws.objectify import parse
+from gsxws.products import Product
 from gsxws import repairs, escalations
 
 
@@ -95,6 +96,25 @@ class TestWarrantyFunctions(TestCase):
         self.assertTrue(self.data.partCovered)
 
 
+class TestOnsiteCoverage(TestCase):
+    def setUp(self):
+        from gsxws.core import connect
+        logging.basicConfig(level=logging.DEBUG)
+        env = os.environ
+        connect(env['GSX_USER'], env['GSX_PASSWORD'], env['GSX_SOLDTO'], env['GSX_ENV'])
+        self.product = Product('XXXXXXXXXXX')
+        self.product.warranty()
+
+    def test_has_onsite(self):
+        self.assertTrue(self.product.has_onsite)
+
+    def test_coverage(self):
+        self.assertTrue(self.product.parts_and_labor_covered)
+
+    def test_is_vintage(self):
+        self.assertFalse(self.product.is_vintage)
+
+
 class TestActivation(TestCase):
     def setUp(self):
         self.data = parse('tests/fixtures/ios_activation.xml',
@@ -107,7 +127,6 @@ class TestActivation(TestCase):
         self.assertIs(type(self.data.unlocked), bool)
         self.assertTrue(self.data.unlocked)
 
-        from gsxws.products import Product
         p = Product()
         self.assertTrue(p.is_unlocked(self.data))
 

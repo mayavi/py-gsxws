@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
    <S:Body>
       <ns6:RepairDetailsResponse xmlns:ns2="http://asp.core.endpoint.ws.gsx.ist.apple.com/" xmlns:ns3="http://gsxws.apple.com/elements/global" xmlns:ns4="http://gsxws.apple.com/elements/core/asp" xmlns:ns5="http://gsxws.apple.com/elements/core/asp/am" xmlns:ns6="http://gsxws.apple.com/elements/core">
@@ -29,8 +30,8 @@
                   <county>Madera</county>
                   <region>005</region>
                   <city>CUPERTINO</city>
-                  <firstName>Ääkköset</firstName>
-                  <lastName>Tässäkin</lastName>
+                  <firstName>??kk?set</firstName>
+                  <lastName>T?ss?kin</lastName>
                   <primaryPhone>999999999</primaryPhone>
                </primaryAddress>
                <partsInfo>
