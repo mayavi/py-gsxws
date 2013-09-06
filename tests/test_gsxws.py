@@ -9,15 +9,19 @@ from gsxws.objectify import parse
 from gsxws.products import Product
 from gsxws import repairs, escalations
 
-
-class TestEscalationFunctions(TestCase):
-    @skip("Skip")
+class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
         logging.basicConfig(level=logging.DEBUG)
         env = os.environ
         connect(env['GSX_USER'], env['GSX_PASSWORD'], env['GSX_SOLDTO'], env['GSX_ENV'])
+
+class TestEscalationFunctions(RemoteTestCase):
+    @skip("Skip")
+    def setUp(self):
+        super(TestEscalationFunctions, self).setUp()
         esc = escalations.Escalation()
+        env = os.environ
         esc.shipTo = env['GSX_SHIPTO']
         esc.issueTypeCode = 'WS'
         esc.notes = 'This is a test'
@@ -96,12 +100,9 @@ class TestWarrantyFunctions(TestCase):
         self.assertTrue(self.data.partCovered)
 
 
-class TestOnsiteCoverage(TestCase):
+class TestOnsiteCoverage(RemoteTestCase):
     def setUp(self):
-        from gsxws.core import connect
-        logging.basicConfig(level=logging.DEBUG)
-        env = os.environ
-        connect(env['GSX_USER'], env['GSX_PASSWORD'], env['GSX_SOLDTO'], env['GSX_ENV'])
+        super(TestOnsiteCoverage, self).setUp()
         self.product = Product('XXXXXXXXXXX')
         self.product.warranty()
 
@@ -169,6 +170,20 @@ class TestOnsiteDispatchDetail(TestCase):
     def test_orderlines(self):
         self.assertIsInstance(self.data.dispatchOrderLines.isSerialized, bool)
 
+
+class TestRepairUpdate(RemoteTestCase):
+    def setUp(self):
+        super(TestRepairUpdate, self).setUp()
+        self.dispatchId = 'G135934345'
+        self.repair = repairs.CarryInRepair(self.dispatchId)
+
+    def test_set_repair_status(self):        
+        result = self.repair.set_status('BEGR')
+        self.assertEqual(result.confirmationNumber, self.dispatchId)
+
+    def test_set_repair_techid(self):
+        result = self.repair.set_techid('XXXXX')
+        self.assertEqual(result.confirmationNumber, self.dispatchId)
 
 class TestCarryinRepairDetail(TestCase):
     def setUp(self):

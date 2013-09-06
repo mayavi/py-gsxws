@@ -17,6 +17,12 @@ REPAIR_TYPES = (
     ('WH', "Mail-In"),
 )
 
+REPAIR_STATUSES = (
+    ('AWTP', 'Awaiting Parts'),
+    ('AWTR', 'Parts Allocated'),
+    ('BEGR', 'In Repair'),
+    ('RFPU', 'Ready for Pickup')
+)
 
 class Customer(GsxObject):
     """
@@ -215,12 +221,6 @@ class CarryInRepair(Repair):
         to a repair. On successful update, the repair confirmation number and
         quote for any newly added parts  would be returned.
         In case of any validation error or unsuccessful update, a fault code is issued.
-
-        Carry-In Repair Update Status Codes:
-        AWTP    Awaiting Parts
-        AWTR    Parts Allocated
-        BEGR    In Repair
-        RFPU    Ready for Pickup
         """
         self._namespace = "asp:"
 
@@ -231,6 +231,12 @@ class CarryInRepair(Repair):
         # Merge old and new data (old data should have Dispatch ID)
         self._data.update(newdata)
         return self._submit("repairData", "UpdateCarryIn", "repairConfirmation")
+
+    def set_techid(self, new_techid):
+        return self.update({'technicianId': new_techid})
+
+    def set_status(self, new_status):
+        return self.update({'statusCode': new_status})
 
 
 class IndirectOnsiteRepair(Repair):
