@@ -77,13 +77,21 @@ def gsx_timestamp(value):
 class GsxElement(objectify.ObjectifiedElement):
     def __getattribute__(self, name):
 
-        result = super(GsxElement, self).__getattribute__(name)
+        try:
+            result = super(GsxElement, self).__getattribute__(name)
+        except AttributeError:
+            """
+            The XML returned by GSX can be pretty inconsistent, especially
+            between the different environments. It's therefore more
+            practical to return None than to look for AttributeErrors all
+            over your application...
+            """
+            return
 
         if isinstance(result, objectify.NumberElement):
             return result.pyval
 
         if isinstance(result, objectify.StringElement):
-
             name = result.tag
             result = result.text
 

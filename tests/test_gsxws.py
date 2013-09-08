@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
 
-import os
 import logging
 from datetime import date
+from os import environ as env
+
 from unittest import main, skip, TestCase
 
 from gsxws.objectify import parse
 from gsxws.products import Product
 from gsxws import repairs, escalations
 
+
 class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
         logging.basicConfig(level=logging.DEBUG)
-        env = os.environ
         connect(env['GSX_USER'], env['GSX_PASSWORD'], env['GSX_SOLDTO'], env['GSX_ENV'])
+
 
 class TestEscalationFunctions(RemoteTestCase):
     @skip("Skip")
     def setUp(self):
         super(TestEscalationFunctions, self).setUp()
         esc = escalations.Escalation()
-        env = os.environ
         esc.shipTo = env['GSX_SHIPTO']
         esc.issueTypeCode = 'WS'
         esc.notes = 'This is a test'
@@ -81,6 +82,12 @@ class TestRepairFunctions(TestCase):
         rep.create()
 
 
+class TestPartFunction(RemoteTestCase):
+    def test_product_parts(self):
+        parts = Product(env['GSX_SN']).parts()
+        self.assertIsInstance(parts[0].partNumber, basestring)
+
+
 class TestWarrantyFunctions(TestCase):
     def setUp(self):
         self.data = parse('tests/fixtures/warranty_status.xml',
@@ -103,7 +110,7 @@ class TestWarrantyFunctions(TestCase):
 class TestOnsiteCoverage(RemoteTestCase):
     def setUp(self):
         super(TestOnsiteCoverage, self).setUp()
-        self.product = Product('XXXXXXXXXXX')
+        self.product = Product(env['GSX_SN'])
         self.product.warranty()
 
     def test_has_onsite(self):
@@ -128,7 +135,7 @@ class TestActivation(TestCase):
         self.assertIs(type(self.data.unlocked), bool)
         self.assertTrue(self.data.unlocked)
 
-        p = Product('XXXXXXXXXXX')
+        p = Product(env['GSX_SN'])
         self.assertTrue(p.is_unlocked(self.data))
 
 
