@@ -128,7 +128,7 @@ class TestActivation(TestCase):
         self.assertIs(type(self.data.unlocked), bool)
         self.assertTrue(self.data.unlocked)
 
-        p = Product()
+        p = Product('XXXXXXXXXXX')
         self.assertTrue(p.is_unlocked(self.data))
 
 

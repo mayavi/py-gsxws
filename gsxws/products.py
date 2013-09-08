@@ -21,9 +21,14 @@ def models():
     return yaml.load(open(filepath, 'r'))
 
 
-class Product(GsxObject):
-    "Something serviceable made by Apple"
-    _namespace = "glob:"
+class Product(object):
+    """
+    Something serviceable made by Apple
+    """
+    def __init__(self, sn):
+        self.serialNumber = sn
+        self._gsx = GsxObject(serialNumber=sn)
+        self._gsx._namespace = "glob:"
 
     def model(self):
         """
@@ -32,14 +37,13 @@ class Product(GsxObject):
         >>> Product('DGKFL06JDHJP').model().configDescription
         'iMac (27-inch, Mid 2011)'
         """
-        result = self._submit("productModelRequest", "FetchProductModel")
-
+        result = self._gsx._submit("productModelRequest", "FetchProductModel")
         self.configDescription = result.configDescription
         self.productLine = result.productLine
         self.configCode = result.configCode
         return result
 
-    def warranty(self, parts=None):
+    def warranty(self, parts=[]):
         """
         The Warranty Status API retrieves the same warranty details
         displayed on the GSX Coverage screen.
@@ -62,18 +66,16 @@ class Product(GsxObject):
             if not hasattr(self, "serialNumber"):
                 self.activation()
 
-        self.parts = []
-
         try:
-            self.partNumbers = []
+            self._gsx.partNumbers = []
             for k, v in parts:
                 part = GsxObject(partNumber=k, comptiaCode=v)
-                self.partNumbers.append(part)
+                self._gsx.partNumbers.append(part)
         except Exception:
             pass
 
-        self._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
-        self.warrantyDetails = self._req.objects
+        self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
+        self.warrantyDetails = self._gsx._req.objects
         return self.warrantyDetails
 
     def parts(self):
@@ -130,10 +132,10 @@ class Product(GsxObject):
         ...
         GsxError: Provided serial number does not belong to an iOS Device...
         """
-        self._namespace = "glob:"
-        ad = self._submit("FetchIOSActivationDetailsRequest",
-                          "FetchIOSActivationDetails",
-                          "activationDetailsInfo")
+        self._gsx._namespace = "glob:"
+        ad = self._gsx._submit("FetchIOSActivationDetailsRequest",
+                               "FetchIOSActivationDetails",
+                               "activationDetailsInfo")
         self.serialNumber = ad.serialNumber
         return ad
 
@@ -143,6 +145,10 @@ class Product(GsxObject):
         """
         import re
         return ad.unlocked or (re.search("Unlock", ad.nextTetherPolicyDetails) is not None)
+
+    @property
+    def has_warranty(self):
+        return self.warrantyDetails.limitedWarranty
 
     @property
     def is_vintage(self):
