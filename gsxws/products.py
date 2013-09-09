@@ -76,6 +76,9 @@ class Product(object):
 
         self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._gsx._req.objects
+        self.productDescription = self.warrantyDetails.productDescription
+        self.description = self.productDescription.lstrip('~VIN,')
+
         return self.warrantyDetails
 
     def parts(self):
@@ -143,8 +146,19 @@ class Product(object):
         """
         Returns true if this iOS device is unlocked
         """
-        import re
-        return ad.unlocked or (re.search("Unlock", ad.nextTetherPolicyDetails) is not None)
+        return ad.unlocked or ("unlock" in ad.nextTetherPolicyDetails)
+
+    @property
+    def is_iphone(self):
+        return self.description.startswith('iPhone')
+
+    @property
+    def is_ipad(self):
+        return self.description.startswith('iPad')
+
+    @property
+    def is_ios(self):
+        return self.is_iphone or self.is_ipad
 
     @property
     def has_warranty(self):
