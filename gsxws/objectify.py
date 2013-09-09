@@ -92,7 +92,8 @@ class GsxElement(objectify.ObjectifiedElement):
 
         if isinstance(result, objectify.StringElement):
             name = result.tag
-            result = result.text
+            result = result.text or ''
+            result = unicode(result)
 
             if not result:
                 return
