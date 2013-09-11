@@ -82,10 +82,10 @@ class GsxElement(objectify.ObjectifiedElement):
             """
             The XML returned by GSX can be pretty inconsistent, especially
             between the different environments. It's therefore more
-            practical to return None than to expect AttributeErrors all
+            practical to return and empty string than to expect AttributeErrors all
             over your application.
             """
-            return
+            return ''
 
         if isinstance(result, objectify.NumberElement):
             return result.pyval
