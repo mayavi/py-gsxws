@@ -78,6 +78,8 @@ IPHONE:
         - "iPhone 4 CDMA (8GB)"
         - "iPhone 4S"
         - "iPhone 5"
+        - "iPhone 5C"
+        - "iPhone 5S"
 
 IPHONEACCESSORY:
     name: iPhone Accessory
