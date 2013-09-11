@@ -31,7 +31,7 @@ CONTEXTS = (
 
 ISSUE_TYPES = (
     ('AMQ', 'Account Management Question'),
-    ('UQ', 'Account Management Question'),
+    ('UQ', 'GSX Usage Question'),
     ('OSI', 'Order Status Issue'),
     ('PRI', 'Part Return Issue'),
     ('PPOR', 'Problem Placing Order/Repair'),
