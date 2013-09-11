@@ -76,6 +76,7 @@ class Product(object):
 
         self._gsx._submit("unitDetail", "WarrantyStatus", "warrantyDetailInfo")
         self.warrantyDetails = self._gsx._req.objects
+        self.imageURL = self.warrantyDetails.imageURL
         self.productDescription = self.warrantyDetails.productDescription
         self.description = self.productDescription.lstrip('~VIN,')
 
@@ -107,19 +108,20 @@ class Product(object):
         diags = Diagnostics(serialNumber=self.serialNumber)
         return diags.fetch()
 
-    def fetch_image(self):
+    def fetch_image(self, url=None):
         """
         >>> Product('DGKFL06JDHJP').fetch_image() # doctest: +ELLIPSIS
         Traceback (most recent call last):
         ...
         GsxError: No URL to fetch product image
         """
-        if not hasattr(self, "imageURL"):
+        url = url or self.imageURL
+
+        if not url:
             raise GsxError("No URL to fetch product image")
 
         try:
-            result = urllib.urlretrieve(self.imageURL)
-            return result[0]
+            return urllib.urlretrieve(url)[0]
         except Exception, e:
             raise GsxError("Failed to fetch product image: %s" % e)
 
