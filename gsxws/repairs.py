@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 "gsxws/repairs.py"
-import re
 import sys
 import logging
 
@@ -169,15 +168,15 @@ class Repair(GsxObject):
         self._namespace = "core:"
         details = self._submit("RepairDetailsRequest", "RepairDetails", "lookupResponseData")
 
-        # fix tracking URL if available
+        # fix tracking URL, if available
         for i, p in enumerate(details.partsInfo):
             try:
-                url = re.sub('<<TRKNO>>', p.deliveryTrackingNumber, p.carrierURL)
+                url = p.carrierURL.replace('<<TRKNO>>', p.deliveryTrackingNumber)
                 details.partsInfo[i].carrierURL = url
             except AttributeError:
                 pass
 
-        self.details = details
+        self._details = details
         return details
 
 
@@ -210,7 +209,9 @@ class CarryInRepair(Repair):
         it obtains a quote for the repair and creates the carry-in repair.
         """
         self._namespace = "emea:"
-        return self._submit("repairData", "CreateCarryIn", "repairConfirmation")
+        result = self._submit("repairData", "CreateCarryIn", "repairConfirmation")
+        self.dispatchId = result.confirmationNumber
+        return result
 
     def update(self, newdata):
         """
