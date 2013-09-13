@@ -6,6 +6,7 @@ import tempfile
 from lookups import Lookup
 from core import GsxObject, GsxError
 
+IMAGE_URL = "https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s"
 
 class Part(GsxObject):
     """
@@ -26,7 +27,7 @@ class Part(GsxObject):
             raise GsxError("Cannot fetch part image without part number")
 
         image = "%s_350_350.gif" % self.partNumber
-        url = "https://km.support.apple.com.edgekey.net/kb/imageService.jsp?image=%s" % image
+        url = IMAGE_URL % image
         tmpfile = tempfile.mkstemp(suffix=image)
 
         try:
@@ -41,5 +42,5 @@ if __name__ == '__main__':
     import logging
     from core import connect
     logging.basicConfig(level=logging.DEBUG)
-    connect(*sys.argv[1:5])
+    connect(*sys.argv[1:])
     doctest.testmod()
