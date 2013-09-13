@@ -85,7 +85,7 @@ class GsxElement(objectify.ObjectifiedElement):
             practical to return and empty string than to expect AttributeErrors all
             over your application.
             """
-            return ''
+            return None
 
         if isinstance(result, objectify.NumberElement):
             return result.pyval
