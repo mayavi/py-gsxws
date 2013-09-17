@@ -85,7 +85,7 @@ class GsxElement(objectify.ObjectifiedElement):
             practical to return and empty string than to expect AttributeErrors all
             over your application.
             """
-            return None
+            return
 
         if isinstance(result, objectify.NumberElement):
             return result.pyval
@@ -104,7 +104,7 @@ class GsxElement(objectify.ObjectifiedElement):
                 return gsx_attachment(result)
             if name in FLOAT_TYPES:
                 return gsx_price(result)
-            if re.search(r'Date$', name):
+            if name.endswith('Date'):
                 return gsx_date(result)
             if re.search(r'^[YN]$', result):
                 return gsx_boolean(result)
