@@ -7,7 +7,7 @@ import urllib
 
 from lookups import Lookup
 from diagnostics import Diagnostics
-from core import GsxObject, GsxError
+from core import GsxObject, GsxError, validate
 
 
 def models():
@@ -26,8 +26,13 @@ class Product(object):
     Something serviceable made by Apple
     """
     def __init__(self, sn):
-        self.serialNumber = sn
-        self._gsx = GsxObject(serialNumber=sn)
+        if validate(sn, 'alternateDeviceId'):
+            self.alternateDeviceId = sn
+            self._gsx = GsxObject(alternateDeviceId=sn)
+        else:
+            self.serialNumber = sn
+            self._gsx = GsxObject(serialNumber=sn)
+
         self._gsx._namespace = "glob:"
 
     def model(self):
@@ -62,9 +67,8 @@ class Product(object):
         >>> Product('WQ8094DW0P1').warranty([(u'661-5070', u'Z26',)]).warrantyStatus
         'Out Of Warranty (No Coverage)'
         """
-        if hasattr(self, "alternateDeviceId"):
-            if not hasattr(self, "serialNumber"):
-                self.activation()
+        if self.should_check_activation:
+            self.activation()
 
         try:
             self._gsx.partNumbers = []
@@ -142,6 +146,7 @@ class Product(object):
                                "FetchIOSActivationDetails",
                                "activationDetailsInfo")
         self.serialNumber = ad.serialNumber
+        self._gsx.serialNumber = self.serialNumber
         return ad
 
     def is_unlocked(self, ad=None):
@@ -149,6 +154,10 @@ class Product(object):
         Returns true if this iOS device is unlocked
         """
         return ad.unlocked or ("unlock" in ad.nextTetherPolicyDetails)
+
+    @property
+    def should_check_activation(self):
+        return hasattr(self, "alternateDeviceId") and not hasattr(self, "serialNumber")
 
     @property
     def is_iphone(self):
