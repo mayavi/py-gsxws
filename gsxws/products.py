@@ -153,7 +153,8 @@ class Product(object):
         """
         Returns true if this iOS device is unlocked
         """
-        return ad.unlocked or ("unlock" in ad.nextTetherPolicyDetails)
+        policy = ad.nextTetherPolicyDetails or ''
+        return ad.unlocked or ("unlock" in policy)
 
     @property
     def should_check_activation(self):
