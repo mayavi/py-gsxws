@@ -145,23 +145,39 @@ def get_format(locale=GSX_LOCALE):
 
 class GsxError(Exception):
     def __init__(self, message=None, xml=None, url=None):
-        self.code = ""
-        self.message = message
+        self.codes = []
+        self.messages = []
 
         if xml is not None:
             logging.debug(url)
             logging.debug(xml)
-            el = ET.fromstring(xml)
-            self.code = el.findtext("*//faultcode")
-            self.message = el.findtext("*//faultstring")
+            root = ET.fromstring(xml)
+
+            for el in root.findall('*//faultcode'):
+                self.codes.append(el.text)
+            for el in root.findall('*//faultstring'):
+                self.messages.append(el.text)
+            for el in root.findall('*//code'):
+                self.codes.append(el.text)
+            for el in root.findall('*//message'):
+                self.messages.append(el.text)
 
         super(Exception, self).__init__(self.message)
 
-    def __unicode__(self):
-        return self.message
+    @property
+    def code(self):
+        return self.codes[0]
 
-    def __str__(self):
-        return self.message
+    @property
+    def message(self):
+        return unicode(self)
+
+    @property
+    def errors(self):
+        return dict(zip(self.codes, self.messages))
+
+    def __unicode__(self):
+        return u' '.join(self.messages)
 
 
 class GsxCache(object):

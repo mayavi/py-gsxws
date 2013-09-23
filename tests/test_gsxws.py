@@ -8,14 +8,29 @@ from unittest import main, skip, TestCase
 
 from gsxws.objectify import parse
 from gsxws.products import Product
-from gsxws import repairs, escalations
+from gsxws import repairs, escalations, GsxError
 
 
 class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
         logging.basicConfig(level=logging.DEBUG)
-        connect(env['GSX_USER'], env['GSX_PASSWORD'], env['GSX_SOLDTO'], env['GSX_ENV'])
+        connect(env['GSX_USER'],
+                env['GSX_PASSWORD'],
+                env['GSX_SOLDTO'],
+                env['GSX_ENV'])
+
+
+class TestErrorFunctions(TestCase):
+    def setUp(self):
+        xml = open('tests/fixtures/multierror.xml', 'r').read()
+        self.data = GsxError(xml=xml)
+
+    def test_code(self):
+        self.assertEqual(self.data.errors['RPR.ONS.025'], 
+                        'This unit is not eligible for an Onsite repair from GSX.')
+    def test_message(self):
+        self.assertRegexpMatches(self.data.message, 'Multiple error messages exist.')
 
 
 class TestEscalationFunctions(RemoteTestCase):
