@@ -8,13 +8,12 @@ from unittest import main, skip, TestCase
 
 from gsxws.objectify import parse
 from gsxws.products import Product
-from gsxws import repairs, escalations, GsxError
+from gsxws import repairs, escalations, lookups, GsxError
 
 
 class RemoteTestCase(TestCase):
     def setUp(self):
         from gsxws.core import connect
-        logging.basicConfig(level=logging.DEBUG)
         connect(env['GSX_USER'],
                 env['GSX_PASSWORD'],
                 env['GSX_SOLDTO'],
@@ -29,8 +28,18 @@ class TestErrorFunctions(TestCase):
     def test_code(self):
         self.assertEqual(self.data.errors['RPR.ONS.025'], 
                         'This unit is not eligible for an Onsite repair from GSX.')
+
     def test_message(self):
         self.assertRegexpMatches(self.data.message, 'Multiple error messages exist.')
+
+
+class TestLookupFunctions(RemoteTestCase):
+    def test_component_check(self):
+        l = lookups.Lookup(serialNumber=env['GSX_SN'])
+        l.repairStrategy = "CA"
+        l.shipTo = env['GSX_SHIPTO']
+        r = l.component_check()
+        self.assertFalse(r.eligibility)
 
 
 class TestEscalationFunctions(RemoteTestCase):
@@ -67,12 +76,9 @@ class TestEscalationFunctions(RemoteTestCase):
         self.assertEqual(result.escalationType, 'GSX Help')
 
 
-class TestRepairFunctions(TestCase):
+class TestRepairFunctions(RemoteTestCase):
     @skip("Skip")
     def test_whole_unit_exchange(self):
-        from gsxws.core import connect
-        logging.basicConfig(level=logging.DEBUG)
-        connect('', '', '', 'it')
         rep = repairs.WholeUnitExchange()
         rep.serialNumber = ''
         rep.unitReceivedDate = '08/12/2013'
@@ -220,4 +226,5 @@ class TestCarryinRepairDetail(TestCase):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     main()
