@@ -8,7 +8,7 @@ from unittest import main, skip, TestCase
 
 from gsxws.objectify import parse
 from gsxws.products import Product
-from gsxws import repairs, escalations, lookups, GsxError
+from gsxws import repairs, escalations, lookups, GsxError, ServicePart
 
 
 class RemoteTestCase(TestCase):
@@ -39,6 +39,15 @@ class TestLookupFunctions(RemoteTestCase):
         l.repairStrategy = "CA"
         l.shipTo = env['GSX_SHIPTO']
         r = l.component_check()
+        self.assertFalse(r.eligibility)
+
+    def test_component_check_with_parts(self):
+        l = lookups.Lookup(serialNumber=env['GSX_SN'])
+        l.repairStrategy = "CA"
+        l.shipTo = env['GSX_SHIPTO']
+        part = ServicePart('661-5502')
+        part.symptomCode = 'H06'
+        r = l.component_check([part])
         self.assertFalse(r.eligibility)
 
 

@@ -62,22 +62,17 @@ class Lookup(GsxObject):
         result.invoiceData = outfile.name
         return result
 
-    def component_check(self):
+    def component_check(self, parts=[]):
         """
         The Component Check API allows service providers to send 
         the information required to create a repair and check if 
         the repair is eligible for component serial number verification 
         for certain components listed in response.
-        If service providers will not be able to provide these component 
-        serial numbers, the repairs will not be created until service providers 
-        choose an option to send the repair for Component Check Review.
-        GSX validates the information and, if all the validations go through, 
-        it obtains a status message explaining if the repair 
-        is eligible for Component Serial Number verification 
-        and lists the component codes for which component serial numbers are required.
         """
-        return self._submit("repairData", "ComponentCheck",
-                            "componentCheckDetails")
+        if parts:
+            self.orderLines = parts
+
+        return self._submit("repairData", "ComponentCheck", "componentCheckDetails")
 
 
 if __name__ == '__main__':
