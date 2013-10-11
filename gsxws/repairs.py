@@ -48,6 +48,11 @@ class RepairOrderLine(GsxObject):
     comptiaModifier = ""
 
 
+class ComponentCheck(GsxObject):
+    component = ""
+    serialNumber = ""
+
+
 class ServicePart(GsxObject):
     "A generic service part (for PartInfo and whatnot)"
     def __init__(self, number, *args, **kwargs):
