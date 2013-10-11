@@ -22,8 +22,11 @@ class RemoteTestCase(TestCase):
 
 class TestCoreFunctions(TestCase):
     def test_dump(self):
-        r = repairs.Repair(blaa='test')
-        self.assertRegexpMatches(str(r), '<root><blaa>test</blaa></root>')
+        rep = repairs.Repair(blaa='test')
+        part = repairs.RepairOrderLine()
+        part.partNumber = '661-5571'
+        rep.orderLines = [part]
+        self.assertRegexpMatches(str(rep), '<root><blaa>test</blaa><orderLines>')
 
 
 class TestErrorFunctions(TestCase):

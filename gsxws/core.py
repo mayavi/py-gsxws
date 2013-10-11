@@ -288,8 +288,7 @@ class GsxRequest(object):
             request.append(GSX_SESSION)
 
             if self._request == request_name:
-                "Some requests don't have a top-level container"
-                #self.data = list(self.data)[0]
+                # Some requests lack a top-level container
                 request.extend(self.data)
             else:
                 request.append(self.data)
@@ -303,7 +302,6 @@ class GsxRequest(object):
 
         logging.debug("Response: %s %s %s" % (res.status, res.reason, xml))
         response = response or self._response
-        #root = ET.fromstring(xml).find("*//%s" % response)
         self.objects = objectify.parse(xml, response)
         return self.objects
 
@@ -393,7 +391,10 @@ class GsxObject(object):
         return root
 
     def __unicode__(self):
-        return ET.tostring(self.to_xml('root'), encoding='UTF-8')
+        #root = self.to_xml('root')
+        #root.append(self._data)
+        req = GsxRequest(**{'root': self})
+        return ET.tostring(req.data, encoding='UTF-8')
 
     def __str__(self):
         return unicode(self).encode('utf-8')
