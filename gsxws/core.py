@@ -392,6 +392,12 @@ class GsxObject(object):
 
         return root
 
+    def __unicode__(self):
+        return ET.tostring(self.to_xml('root'), encoding='UTF-8')
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
+
 
 class GsxRequestObject(GsxObject):
     "The GSX-friendly representation of this GsxObject"

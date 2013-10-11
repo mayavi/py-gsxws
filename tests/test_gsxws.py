@@ -20,6 +20,12 @@ class RemoteTestCase(TestCase):
                 env['GSX_ENV'])
 
 
+class TestCoreFunctions(TestCase):
+    def test_dump(self):
+        r = repairs.Repair(blaa='test')
+        self.assertRegexpMatches(str(r), '<root><blaa>test</blaa></root>')
+
+
 class TestErrorFunctions(TestCase):
     def setUp(self):
         xml = open('tests/fixtures/multierror.xml', 'r').read()
