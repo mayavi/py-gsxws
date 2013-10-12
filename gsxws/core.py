@@ -39,6 +39,8 @@ import xml.etree.ElementTree as ET
 
 from datetime import date, time, datetime, timedelta
 
+VERSION = "0.9"
+
 GSX_ENV = "it"
 GSX_LANG = "en"
 GSX_REGION = "emea"
@@ -262,7 +264,7 @@ class GsxRequest(object):
 
         ws = httplib.HTTPSConnection(parsed.netloc, timeout=GSX_TIMEOUT)
         ws.putrequest("POST", parsed.path)
-        ws.putheader("User-Agent", "py-gsxws 0.9")
+        ws.putheader("User-Agent", "py-gsxws %s" % VERSION)
         ws.putheader("Content-type", 'text/xml; charset="UTF-8"')
         ws.putheader("Content-length", "%d" % len(xmldata))
         ws.putheader("SOAPAction", '"%s"' % method)
@@ -305,8 +307,11 @@ class GsxRequest(object):
         self.objects = objectify.parse(xml, response)
         return self.objects
 
-    def __str__(self):
+    def __unicode__(self):
         return ET.tostring(self.env)
+
+    def __str__(self):
+        return unicode(self).encode('utf-8') 
 
 
 class GsxObject(object):
@@ -390,14 +395,9 @@ class GsxObject(object):
 
         return root
 
-    def __unicode__(self):
-        #root = self.to_xml('root')
-        #root.append(self._data)
-        req = GsxRequest(**{'root': self})
-        return ET.tostring(req.data, encoding='UTF-8')
-
-    def __str__(self):
-        return unicode(self).encode('utf-8')
+    def dumps(self):
+        req = GsxRequest(**{'GsxObject': self})
+        return ET.tostring(req.data, encoding='utf-8')
 
 
 class GsxRequestObject(GsxObject):

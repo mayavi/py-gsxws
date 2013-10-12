@@ -22,11 +22,11 @@ class RemoteTestCase(TestCase):
 
 class TestCoreFunctions(TestCase):
     def test_dump(self):
-        rep = repairs.Repair(blaa='test')
+        rep = repairs.Repair(blaa=u'ääöö')
         part = repairs.RepairOrderLine()
         part.partNumber = '661-5571'
         rep.orderLines = [part]
-        self.assertRegexpMatches(str(rep), '<root><blaa>test</blaa><orderLines>')
+        self.assertRegexpMatches(rep.dumps(), '<GsxObject><blaa>ääöö</blaa><orderLines>')
 
 
 class TestErrorFunctions(TestCase):
