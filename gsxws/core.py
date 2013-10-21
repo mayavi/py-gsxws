@@ -150,6 +150,9 @@ class GsxError(Exception):
         self.codes = []
         self.messages = []
 
+        if isinstance(message, basestring):
+            self.messages.append(message)
+
         if xml is not None:
             logging.debug(url)
             logging.debug(xml)

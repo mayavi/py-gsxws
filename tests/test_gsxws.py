@@ -41,6 +41,11 @@ class TestErrorFunctions(TestCase):
     def test_message(self):
         self.assertRegexpMatches(self.data.message, 'Multiple error messages exist.')
 
+    def test_exception(self):
+        msg = 'Connection failed'
+        e = GsxError(msg)
+        self.assertEqual(e.message, msg)
+
 
 class TestLookupFunctions(RemoteTestCase):
     def test_component_check(self):
